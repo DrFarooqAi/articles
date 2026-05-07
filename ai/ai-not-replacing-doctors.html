@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyberpunk Carousel — Dr. Muhammad Farooq</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden; background: #000;
+      font-family: 'Inter', 'Space Grotesk', system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .carousel { width: 100vw; height: 100vh; position: relative; }
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: flex-start;
+      padding: 70px 96px 88px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.45s ease;
+    }
+    .slide.active { opacity: 1; pointer-events: all; }
+
+    .bg-grid { background: #0a0a2a; background-image: linear-gradient(rgba(0,229,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.06) 1px, transparent 1px); background-size: 40px 40px; }
+    .bg-pulse { background: radial-gradient(ellipse at center, #0d0030 0%, #000 70%); }
+    .bg-glitch { background: #050510; }
+    .bg-circuit { background: #030318; background-image: radial-gradient(circle at 20% 50%, rgba(123,47,255,0.08) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0,229,255,0.06) 0%, transparent 40%); }
+    .bg-holo { background: linear-gradient(135deg, #0d001a, #000d2e, #001a0d, #000); }
+    .bg-matrix { background: #000410; background-image: repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(0,255,100,0.03) 19px); }
+
+    .slide::before {
+      content: '';
+      position: absolute; inset: 16px;
+      border: 2px solid var(--accent);
+      border-radius: 6px;
+      box-shadow: 0 0 22px var(--accent), inset 0 0 12px rgba(0,0,0,0.8);
+      pointer-events: none;
+    }
+    .slide::after {
+      content: '';
+      position: absolute;
+      top: 12px; left: 12px;
+      width: 48px; height: 48px;
+      border-top: 3px solid var(--secondary);
+      border-left: 3px solid var(--secondary);
+    }
+    .corner-br {
+      position: absolute;
+      bottom: 80px; right: 20px;
+      width: 48px; height: 48px;
+      border-bottom: 3px solid var(--secondary);
+      border-right: 3px solid var(--secondary);
+    }
+
+    /* ── MOOD TAG — Space Mono for that terminal feel ── */
+    .mood-tag {
+      position: absolute; top: 30px; right: 48px;
+      font-family: 'Space Mono', monospace;
+      font-size: 12px; letter-spacing: 3px; font-weight: 700;
+      color: var(--accent); opacity: 0.65;
+      text-transform: uppercase;
+    }
+
+    /* ── SLIDE NUMBER ── */
+    .slide-num {
+      position: absolute; bottom: 84px; right: 64px;
+      font-family: 'Space Mono', monospace;
+      font-size: 13px; color: rgba(255,255,255,0.25);
+      letter-spacing: 2px;
+    }
+
+    /* ── SLIDE LABEL — Space Mono, small caps ── */
+    .slide-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 13px; letter-spacing: 5px; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 28px; opacity: 0.8;
+      font-weight: 700;
+    }
+
+    /* ── MAIN SLIDE TEXT — Inter, large, beautiful ── */
+    .slide-text {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(26px, 3.2vw, 42px);   /* was clamp(17px,2.1vw,26px) → +50% */
+      font-weight: 500;
+      line-height: 1.6;
+      color: #dde8ff;
+      max-width: 900px;
+      letter-spacing: -0.01em;
+      text-shadow: 0 0 30px rgba(0,229,255,0.08);
+    }
+    .slide-text .hl {
+      color: var(--accent);
+      font-weight: 700;
+      text-shadow: 0 0 14px var(--accent);
+    }
+
+    /* ── TITLE SLIDE — Space Grotesk, extra bold ── */
+    .slide.title-slide .slide-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(38px, 5.5vw, 76px);   /* was clamp(26px,3.8vw,52px) → +50% */
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      text-shadow: 0 0 40px var(--accent), 0 0 80px var(--accent);
+    }
+
+    /* ── SLIDE 9 REPRISE — bold Space Grotesk ── */
+    .reprise-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(34px, 4.5vw, 62px);   /* was clamp(22px,3vw,40px) → +50% */
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    .hud-line { position: absolute; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent 5%, var(--accent) 50%, transparent 95%); opacity: 0.2; }
+    .hud-line.top { top: 88px; }
+    .hud-line.bottom { bottom: 108px; }
+
+    .scanlines { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px); border-radius: 4px; }
+
+    /* ── FOOTER ── */
+    .footer {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 72px; background: rgba(0,0,0,0.9);
+      border-top: 2px solid var(--accent);
+      display: flex; align-items: center;
+      padding: 0 48px; gap: 18px;
+    }
+    .footer-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700; font-size: 15px; color: #000;
+      flex-shrink: 0; box-shadow: 0 0 14px var(--accent);
+      letter-spacing: 0;
+    }
+    .footer-name {
+      font-family: 'Inter', sans-serif;
+      font-size: 17px; font-weight: 700; color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .footer-title {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px; color: rgba(255,255,255,0.4);
+      letter-spacing: 0.5px; margin-top: 3px;
+      font-weight: 400;
+    }
+    .footer-right {
+      margin-left: auto;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; color: var(--accent); letter-spacing: 2px; opacity: 0.65;
+    }
+
+    /* ── SUBTITLE BYLINE ── */
+    .byline {
+      font-family: 'Inter', sans-serif;
+      margin-top: 32px; font-size: 16px;   /* was 13px → +50% ≈ 16px */
+      color: rgba(255,255,255,0.35); letter-spacing: 3px;
+      font-weight: 300;
+    }
+
+    /* ── CTA LINE ── */
+    .cta-line {
+      font-family: 'Inter', sans-serif;
+      margin-top: 36px; font-size: 18px;   /* was 13px → +50% */
+      color: rgba(255,255,255,0.4); letter-spacing: 1.5px;
+      font-weight: 300;
+    }
+
+    /* ── NAV ── */
+    .nav-dots { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 100; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.18); cursor: pointer; transition: all 0.3s; }
+    .dot.active { background: var(--global-accent, #00E5FF); box-shadow: 0 0 8px var(--global-accent, #00E5FF); width: 26px; border-radius: 4px; }
+
+    .arrow { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.45); font-size: 24px; padding: 14px 20px; cursor: pointer; transition: all 0.2s; z-index: 100; user-select: none; font-family: system-ui; }
+    .arrow:hover { color: #fff; border-color: rgba(255,255,255,0.6); }
+    .arrow.left { left: 16px; }
+    .arrow.right { right: 16px; }
+
+    @keyframes glitch {
+      0%, 92%, 100% { transform: translate(0); filter: none; }
+      93% { transform: translate(-3px, 1px); filter: hue-rotate(90deg); }
+      95% { transform: translate(3px, -1px); filter: hue-rotate(-90deg); }
+      97% { transform: translate(-1px, 2px); filter: none; }
+    }
+    .glitch-text { animation: glitch 6s infinite; }
+
+    @keyframes pulse-border { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .slide.active::before { animation: pulse-border 3s ease-in-out infinite; }
+
+    @media print {
+      .arrow, .nav-dots { display: none !important; }
+      .slide { position: relative !important; opacity: 1 !important; pointer-events: all !important; height: 100vh; page-break-after: always; display: flex !important; }
+      .carousel { height: auto; overflow: visible; }
+      body, html { overflow: visible; height: auto; }
+    }
+  </style>
+</head>
+<body>
+<div class="carousel" id="carousel">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide title-slide bg-pulse" style="--accent: #00E5FF; --secondary: #FF00FF;">
+    <div class="scanlines"></div>
+    <div class="hud-line top"></div>
+    <div class="hud-line bottom"></div>
+    <div class="mood-tag">⬡ SIGNAL LOCKED</div>
+    <div class="slide-num">1 / 10</div>
+    <div class="corner-br"></div>
+    <div class="slide-label">FEATURED POST</div>
+    <div class="slide-text glitch-text">AI is not replacing doctors — it is replacing doctors who don't use AI.</div>
+    <div class="byline">by Dr. Muhammad Farooq &nbsp;|&nbsp; AI Top Voice</div>
+    <div class="footer">
+      <div class="footer-avatar">MF</div>
+      <div>
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-title">AI Top Voice &nbsp;•&nbsp; AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice</div>
+      </div>
+      <div class="footer-right">START &nbsp;▶</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2 -->
+  <div class="slide bg-grid" style="--accent: #FF00CC; --secondary: #00E5FF;">
+    <div class="scanlines"></div>
+    <div class="hud-line top"></div>
+    <div class="hud-line bottom"></div>
+    <div class="mood-tag">⬡ SYSTEM OVERRIDE</div>
+    <div class="slide-num">2 / 10</div>
+    <div class="corner-br"></div>
+    <div class="slide-label">THE SHIFT</div>
+    <div class="slide-text">This shift is <span class="hl">already happening.</span> Hospitals and health systems around the world are adopting AI tools for diagnostics, workflow automation, and patient communication.</div>
+    <div class="footer">
+      <div class="footer-avatar">MF</div>
+      <div>
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-title">AI Top Voice &nbsp;•&nbsp; AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice</div>
+      </div>
+      <div class="footer-right">SLIDE 02</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3 -->
+  <div class="slide bg-circuit" style="--accent: #7B2FFF; --secondary: #00FF88;">
+    <div class="scanlines"></div>
+    <div class="hud-line top"></div>
+    <div class="hud-line bottom"></div>
+    <div class="mood-tag">⬡ NEURAL DATA FLOW</div>
+    <div class="slide-num">3 / 10</div>
+    <div class="corner-br"></div>
+    <div class="slide-label">THE QUESTION</div>
+    <div class="slide-text">The question is no longer <span class="hl">"will AI transform healthcare?"</span> — it already is.</div>
+    <div class="footer">
+      <div class="footer-avatar">MF</div>
+      <div>
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-title">AI Top Voice &nbsp;•&nbsp; AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice</div>
+      </div>
+      <div class="footer-right">SLIDE 03</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4 -->
+  <div class="slide bg-glitch" style="--accent: #00FF88; --secondary: #FFD700;">
+    <div class="scanlines"></div>
+    <div class="hud-line top"></div>
+    <div class="hud-line bottom"></div>
+    <div class="mood-tag">⬡ CORE BREACH</div>
+    <div class="slide-num">4 / 10</div>
+    <div class="corner-br"></div>
+    <div class="slide-label">THE REAL QUESTION</div>
+    <div class="slide-text">The real question is: are you <span class="hl">building the skills to lead</span> this transformation, or waiting to be disrupted by it?</div>
+    <div class="footer">
+      <div class="footer-avatar">MF</div>
+      <div>
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-title">AI Top Voice &nbsp;•&nbsp; AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice</div>
+      </div>
+      <div class="footer-right">SLIDE 04</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 -->
+  <div class="slide bg-matrix" style="--accent: #FFD700; --secondary: #FF00CC;">
+    <div class="scanlines"></div>
+    <div class="hud-line top"></div>
+    <div class="hud-line bottom"></div>
+    <div class="mood-tag">⬡ QUANTUM SHIFT</div>
+    <div class="slide-num">5 / 10</div>
+    <div class="corner-br"></div>
+    <div class="slide-label">COMPETITIVE EDGE</div>
+    <div class="slide-text">Healthcare professionals who understand AI — <span class="hl">how it works, where it adds value, and where it fails</span> — will have an enormous competitive advantage in the next decade.</div>
+    <div class="footer">
+      <div class="footer-avatar">MF</div>
+      <div>
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-title">AI Top Voice &nbsp;•&nbsp; AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice</div>
+      </div>
+      <div class="footer-right">SLIDE 05</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6 -->
+  <div class="slide bg-pulse" style="--accent: #FF6600; --secondary: #00CCFF;">
+    <div class="scanlines"></div>
+    <div class="hud-line top"></div>
+    <div class="hud-line bottom"></div>
+    <div class="mood-tag">⬡ DARK NET PROTOCOL</div>
+    <div class="slide-num">6 / 10</div>
+    <div class="corner-br"></div>
+    <div class="slide-label">THE PROGRAM</div>
+    <div class="slide-text">This is why I created the <span class="hl">Healthcare AI Leadership Program.</span></div>
+    <div class="footer">
+      <div class="footer-avatar">MF</div>
+      <div>
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-title">AI Top Voice &nbsp;•&nbsp; AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice</div>
+      </div>
+      <div class="footer-right">SLIDE 06</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7 -->
+  <div class="slide bg-grid" style="--accent: #00E5FF; --secondary: #FF6600;">
+    <div class="scanlines"></div>
+    <div class="hud-line top"></div>
+    <div class="hud-line bottom"></div>
+    <div class="mood-tag">⬡ MATRIX PULSE</div>
+    <div class="slide-num">7 / 10</div>
+    <div class="corner-br"></div>
+    <div class="slide-label">NOT TO CODE</div>
+    <div class="slide-text">Not to teach you to code. Not to make you a data scientist. But to <span class="hl">make you the person in the room</span> who can speak intelligently about AI, evaluate tools critically, and lead digital transformation in your institution.</div>
+    <div class="footer">
+      <div class="footer-avatar">MF</div>
+      <div>
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-title">AI Top Voice &nbsp;•&nbsp; AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice</div>
+      </div>
+      <div class="footer-right">SLIDE 07</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8 -->
+  <div class="slide bg-circuit" style="--accent: #FF00CC; --secondary: #7B2FFF;">
+    <div class="scanlines"></div>
+    <div class="hud-line top"></div>
+    <div class="hud-line bottom"></div>
+    <div class="mood-tag">⬡ HOLO SCAN</div>
+    <div class="slide-num">8 / 10</div>
+    <div class="corner-br"></div>
+    <div class="slide-label">THE FUTURE</div>
+    <div class="slide-text">Because the future of medicine belongs to the physician who understands both <span class="hl">the stethoscope and the algorithm.</span></div>
+    <div class="footer">
+      <div class="footer-avatar">MF</div>
+      <div>
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-title">AI Top Voice &nbsp;•&nbsp; AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice</div>
+      </div>
+      <div class="footer-right">SLIDE 08</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: KEY REPEAT (Title reprise for impact) -->
+  <div class="slide bg-glitch" style="--accent: #7B2FFF; --secondary: #FFD700;">
+    <div class="scanlines"></div>
+    <div class="hud-line top"></div>
+    <div class="hud-line bottom"></div>
+    <div class="mood-tag">⬡ AI UPRISING</div>
+    <div class="slide-num">9 / 10</div>
+    <div class="corner-br"></div>
+    <div class="slide-label">REMEMBER THIS</div>
+    <div class="slide-text reprise-text" style="text-shadow: 0 0 30px #7B2FFF;">AI is not replacing doctors — it is replacing doctors who <span class="hl">don't use AI.</span></div>
+    <div class="footer">
+      <div class="footer-avatar">MF</div>
+      <div>
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-title">AI Top Voice &nbsp;•&nbsp; AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice</div>
+      </div>
+      <div class="footer-right">SLIDE 09</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: CTA / CLOSING -->
+  <div class="slide bg-holo" style="--accent: #FFD700; --secondary: #FF00CC;">
+    <div class="scanlines"></div>
+    <div class="hud-line top"></div>
+    <div class="hud-line bottom"></div>
+    <div class="mood-tag">⬡ TRANSMISSION END</div>
+    <div class="slide-num">10 / 10</div>
+    <div class="corner-br"></div>
+    <div class="slide-label">FOLLOW FOR MORE</div>
+    <div class="slide-text">Follow Dr. Muhammad Farooq for daily insights on AI in Healthcare.</div>
+    <div class="cta-line">🔔 Daily AI in Healthcare insights on LinkedIn.</div>
+    <div class="footer">
+      <div class="footer-avatar" style="background: #FFD700;">MF</div>
+      <div>
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-title">AI Top Voice &nbsp;•&nbsp; AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice</div>
+      </div>
+      <div class="footer-right">END TRANSMISSION</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="nav-dots" id="navDots"></div>
+<div class="arrow left" onclick="changeSlide(-1)">&#8592;</div>
+<div class="arrow right" onclick="changeSlide(1)">&#8594;</div>
+
+<script>
+  let current = 0;
+  const slides = document.querySelectorAll('.slide');
+  const dotsContainer = document.getElementById('navDots');
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsContainer.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dotsContainer.children[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dotsContainer.children[current].classList.add('active');
+    const accent = getComputedStyle(slides[current]).getPropertyValue('--accent').trim();
+    document.documentElement.style.setProperty('--global-accent', accent);
+  }
+
+  function changeSlide(dir) { goTo(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') changeSlide(1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') changeSlide(-1);
+  });
+
+  slides[0].classList.add('active');
+  const firstAccent = getComputedStyle(slides[0]).getPropertyValue('--accent').trim();
+  document.documentElement.style.setProperty('--global-accent', firstAccent);
+</script>
+</body>
+</html>
