@@ -94,37 +94,56 @@ nav {
   padding: 160px 60px 80px;
   max-width: 1100px;
   margin: 0 auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-author {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+  background: linear-gradient(90deg, #22d3ee, #818cf8, #a78bfa, #22d3ee, #818cf8, #22d3ee);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: title-flow 4s linear infinite;
+  filter: drop-shadow(0 0 20px rgba(34,211,238,0.35));
 }
 
 .hero-eyebrow {
   font-family: 'Space Mono', monospace;
   font-size: 11px;
-  color: var(--cyan);
+  color: var(--text-muted);
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  margin-bottom: 20px;
+  margin-bottom: 28px;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 .hero-eyebrow::before, .hero-eyebrow::after {
   content: '';
-  width: 24px; height: 1px;
-  background: var(--cyan);
-  opacity: 0.5;
+  width: 40px; height: 1px;
+  background: var(--border);
 }
 
 .hero-title {
   font-family: 'Syne', sans-serif;
-  font-size: clamp(42px, 6vw, 72px);
+  font-size: clamp(48px, 7vw, 88px);
   font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  margin-bottom: 24px;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  margin-bottom: 28px;
 }
 
-.hero-title .line1 { color: var(--text); }
+.hero-title .line1 { color: var(--text); display: block; }
 .hero-title .line2 {
+  display: block;
   background: linear-gradient(90deg, #e879a0, #f472b6, #fb923c, #f59e0b, #f472b6, #e879a0);
   background-size: 300% 100%;
   -webkit-background-clip: text;
@@ -138,17 +157,19 @@ nav {
 }
 
 .hero-desc {
-  font-size: 18px;
+  font-size: 17px;
   color: var(--text-muted);
-  max-width: 620px;
+  max-width: 580px;
   line-height: 1.8;
-  margin-bottom: 40px;
+  margin-bottom: 44px;
+  text-align: center;
 }
 
 .hero-stats {
   display: flex;
-  gap: 40px;
+  gap: 48px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .hero-stat {
@@ -180,6 +201,7 @@ nav {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .filter-btn {
@@ -493,17 +515,18 @@ footer p {
 
 <!-- NAV -->
 <nav>
-  <a href="https://drfarooqai.github.io/" class="nav-back">← Back to Portfolio</a>
+  <a href="https://drfarooqai.github.io/dr-farooq-cv/" class="nav-back">← Back to Portfolio</a>
   <span class="nav-title">Articles & Longform</span>
   <span class="nav-count">3 Published · 3 Coming Soon</span>
 </nav>
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-eyebrow">Dr. Muhammad Farooq</div>
+  <div class="hero-author">Dr. Muhammad Farooq</div>
+  <div class="hero-eyebrow">AI in Healthcare · Researcher · Builder</div>
   <h1 class="hero-title">
-    <div class="line1">Articles &</div>
-    <div class="line2">Longform Writing</div>
+    <span class="line1">Articles &</span>
+    <span class="line2">Longform Writing</span>
   </h1>
   <p class="hero-desc">
     Deep, structured explainers on AI in Healthcare, emerging tools, and the future of medicine —
@@ -637,7 +660,7 @@ footer p {
 
 <!-- BACK -->
 <div class="back-section">
-  <a href="https://drfarooqai.github.io/" class="back-btn">← Back to Main Portfolio</a>
+  <a href="https://drfarooqai.github.io/dr-farooq-cv/" class="back-btn">← Back to Main Portfolio</a>
 </div>
 
 <!-- FOOTER -->
