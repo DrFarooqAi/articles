@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mee&amp;Yoo — Encrypted Chat · Privacy is Blessing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+:root{
+  --bg:#07060f;
+  --surface:#0f0d1c;
+  --surface2:#161428;
+  --border:rgba(124,58,237,0.2);
+  --purple:#7C3AED;
+  --pink:#E040FB;
+  --purple-dim:rgba(124,58,237,0.15);
+  --pink-dim:rgba(224,64,251,0.12);
+  --text:#f0eeff;
+  --muted:rgba(240,238,255,0.45);
+  --danger:#E53935;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  overflow-x:hidden;
+  line-height:1.7;
+}
+
+/* grid overlay */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(124,58,237,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(124,58,237,0.04) 1px,transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;z-index:0;
+}
+
+/* noise */
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.025'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:0;
+}
+
+section,header,footer,nav{position:relative;z-index:1}
+
+/* ── NAV ── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  background:rgba(7,6,15,0.88);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;height:64px;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:14px;
+  text-decoration:none;
+}
+.nav-logo img{width:36px;height:36px;object-fit:contain;filter:drop-shadow(0 0 8px rgba(224,64,251,0.4));}
+.nav-logo span{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:20px;font-weight:700;
+  background:linear-gradient(135deg,#7C3AED,#E040FB);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.nav-links{display:flex;align-items:center;gap:32px;}
+.nav-links a{
+  font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;transition:color .2s;
+}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{
+  background:linear-gradient(135deg,#7C3AED,#E040FB);
+  color:#fff;border:none;padding:10px 24px;border-radius:8px;
+  font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;
+  box-shadow:0 0 20px rgba(224,64,251,0.25);
+  transition:all .2s;
+}
+.nav-cta:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(224,64,251,0.4);}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:160px 24px 80px;
+}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--purple-dim);
+  border:1px solid rgba(124,58,237,0.35);
+  padding:8px 20px;border-radius:50px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2.5px;text-transform:uppercase;
+  color:rgba(200,180,255,0.8);
+  margin-bottom:40px;
+}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:#E040FB;box-shadow:0 0 8px #E040FB;animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.hero-logo{
+  width:280px;height:280px;object-fit:contain;
+  margin-bottom:36px;
+  filter:drop-shadow(0 0 40px rgba(224,64,251,0.45)) drop-shadow(0 0 80px rgba(124,58,237,0.3));
+  animation:float 4s ease-in-out infinite;
+}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+.hero-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(56px,8vw,110px);
+  font-weight:800;line-height:1;
+  letter-spacing:-3px;
+  background:linear-gradient(135deg,#c4b5fd 0%,#E040FB 40%,#7C3AED 80%,#c4b5fd 100%);
+  background-size:300% 100%;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:title-flow 5s linear infinite;
+  margin-bottom:16px;
+}
+@keyframes title-flow{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+
+.hero-sub{
+  font-size:clamp(14px,1.8vw,18px);
+  font-weight:700;letter-spacing:3px;text-transform:uppercase;
+  color:var(--danger);
+  margin-bottom:28px;
+  font-family:'Space Mono',monospace;
+}
+
+.hero-desc{
+  font-size:clamp(17px,2vw,22px);
+  color:rgba(220,210,255,0.7);
+  max-width:680px;line-height:1.7;
+  margin-bottom:52px;
+}
+.hero-desc strong{color:#e0d0ff;font-weight:600;}
+
+.hero-actions{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:72px;}
+
+.btn-primary{
+  background:linear-gradient(135deg,#7C3AED,#E040FB);
+  color:#fff;border:none;padding:16px 40px;border-radius:10px;
+  font-size:15px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;
+  box-shadow:0 0 30px rgba(224,64,251,0.3);
+  transition:all .25s;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 45px rgba(224,64,251,0.5);}
+
+.btn-ghost{
+  background:transparent;
+  color:rgba(200,180,255,0.7);
+  border:1px solid rgba(124,58,237,0.4);
+  padding:16px 40px;border-radius:10px;
+  font-size:15px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+  cursor:pointer;text-decoration:none;
+  transition:all .25s;
+}
+.btn-ghost:hover{border-color:rgba(224,64,251,0.6);color:#e0d0ff;background:var(--purple-dim);}
+
+/* tag row */
+.tag-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+.tag{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  padding:6px 16px;border-radius:6px;
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(200,180,255,0.6);
+}
+
+/* ── SECTION COMMON ── */
+.section{padding:100px 24px;}
+.section-inner{max-width:1100px;margin:0 auto;}
+
+.section-eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(224,64,251,0.6);
+  margin-bottom:16px;
+}
+.section-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(32px,4vw,52px);
+  font-weight:800;letter-spacing:-1px;
+  color:var(--text);line-height:1.1;
+  margin-bottom:20px;
+}
+.section-title span{
+  background:linear-gradient(135deg,#7C3AED,#E040FB);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.section-lead{
+  font-size:17px;color:var(--muted);
+  max-width:600px;line-height:1.75;
+  margin-bottom:60px;
+}
+
+/* ── FEATURES ── */
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+@media(max-width:900px){.features-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.features-grid{grid-template-columns:1fr;}}
+
+.feature-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:32px 28px;
+  transition:all .3s;
+  position:relative;overflow:hidden;
+}
+.feature-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--purple),var(--pink));
+  opacity:0;transition:opacity .3s;
+}
+.feature-card:hover{
+  border-color:rgba(224,64,251,0.3);
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(124,58,237,0.15);
+}
+.feature-card:hover::before{opacity:1;}
+
+.feature-icon{
+  width:52px;height:52px;border-radius:14px;
+  background:var(--purple-dim);border:1px solid rgba(124,58,237,0.25);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-bottom:20px;
+}
+.feature-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:18px;font-weight:700;
+  color:#e0d0ff;margin-bottom:10px;
+}
+.feature-desc{font-size:14px;color:var(--muted);line-height:1.7;}
+
+.feature-mono{
+  display:inline-block;margin-top:12px;
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(224,64,251,0.55);
+}
+
+/* ── HOW IT WORKS ── */
+.how-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+
+.steps{display:flex;flex-direction:column;gap:0;max-width:800px;margin:0 auto;}
+
+.step{
+  display:grid;grid-template-columns:72px 1fr;
+  gap:32px;align-items:flex-start;
+  padding:40px 0;
+  border-bottom:1px solid rgba(124,58,237,0.1);
+  position:relative;
+}
+.step:last-child{border-bottom:none;}
+
+.step-num{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,#7C3AED,#E040FB);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',monospace;
+  font-size:22px;font-weight:700;color:#fff;
+  flex-shrink:0;
+  box-shadow:0 0 24px rgba(224,64,251,0.3);
+}
+.step-body{}
+.step-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:22px;font-weight:700;
+  color:#e0d0ff;margin-bottom:8px;
+}
+.step-desc{font-size:15px;color:var(--muted);line-height:1.7;max-width:560px;}
+.step-code{
+  margin-top:12px;
+  background:rgba(0,0,0,0.4);
+  border:1px solid rgba(124,58,237,0.2);
+  border-radius:8px;padding:10px 16px;
+  font-family:'Space Mono',monospace;
+  font-size:12px;color:rgba(180,160,255,0.7);
+  letter-spacing:0.5px;
+  display:inline-block;
+}
+
+/* ── SECURITY SPECS ── */
+.specs-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:16px;
+}
+@media(max-width:700px){.specs-grid{grid-template-columns:1fr;}}
+
+.spec-row{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:20px 24px;
+  display:flex;gap:20px;align-items:flex-start;
+}
+.spec-label{
+  font-family:'Space Mono',monospace;
+  font-size:10px;letter-spacing:2.5px;text-transform:uppercase;
+  color:rgba(224,64,251,0.5);
+  margin-bottom:6px;
+}
+.spec-val{
+  font-size:15px;font-weight:600;color:#ddd0ff;
+}
+.spec-icon{
+  font-size:22px;flex-shrink:0;margin-top:2px;
+}
+
+/* ── FLOW DIAGRAM ── */
+.flow{
+  display:flex;align-items:center;
+  gap:0;flex-wrap:wrap;justify-content:center;
+  margin:48px 0;
+}
+.flow-node{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 20px;
+  text-align:center;
+  min-width:110px;
+}
+.flow-node .fn-label{
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(224,64,251,0.5);margin-bottom:4px;
+}
+.flow-node .fn-val{
+  font-size:13px;font-weight:700;color:#e0d0ff;
+}
+.flow-arrow{
+  font-size:22px;color:rgba(124,58,237,0.4);
+  padding:0 8px;
+}
+.flow-node.highlight{
+  background:linear-gradient(135deg,rgba(124,58,237,0.15),rgba(224,64,251,0.12));
+  border-color:rgba(224,64,251,0.35);
+  box-shadow:0 0 18px rgba(224,64,251,0.12);
+}
+.flow-node.highlight .fn-val{color:#E040FB;text-shadow:0 0 10px rgba(224,64,251,0.4);}
+
+/* ── PRIVACY PROMISE ── */
+.promise-section{
+  background:radial-gradient(ellipse at center,rgba(124,58,237,0.08) 0%,transparent 70%);
+  text-align:center;
+}
+.promise-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:24px;margin-top:56px;
+}
+@media(max-width:800px){.promise-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:480px){.promise-grid{grid-template-columns:1fr;}}
+
+.promise-item{
+  padding:32px 20px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+}
+.promise-emoji{font-size:36px;margin-bottom:14px;}
+.promise-title{font-size:15px;font-weight:700;color:#e0d0ff;margin-bottom:6px;}
+.promise-text{font-size:13px;color:var(--muted);}
+
+/* ── CTA SECTION ── */
+.cta-section{
+  text-align:center;
+  padding:120px 24px;
+  background:linear-gradient(180deg,transparent,rgba(124,58,237,0.06));
+}
+.cta-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(36px,5vw,64px);
+  font-weight:800;letter-spacing:-2px;
+  color:var(--text);margin-bottom:20px;
+}
+.cta-sub{font-size:18px;color:var(--muted);margin-bottom:48px;max-width:520px;margin-left:auto;margin-right:auto;}
+
+/* ── FOOTER ── */
+footer{
+  border-top:1px solid var(--border);
+  padding:40px 48px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:20px;
+}
+.footer-left{display:flex;align-items:center;gap:12px;}
+.footer-left img{width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 0 6px rgba(224,64,251,0.3));}
+.footer-brand{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:16px;font-weight:700;
+  background:linear-gradient(135deg,#7C3AED,#E040FB);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.footer-tagline{font-size:12px;color:var(--danger);font-style:italic;}
+.footer-right{
+  font-family:'Space Mono',monospace;
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--muted);
+}
+
+/* scrollbar */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:rgba(124,58,237,0.4);border-radius:2px;}
+
+@media(max-width:768px){
+  .nav{padding:0 20px;}
+  .nav-links{display:none;}
+  .section{padding:70px 20px;}
+  .hero{padding:100px 20px 60px;}
+  footer{padding:30px 20px;}
+  .flow{gap:4px;}
+  .flow-arrow{font-size:14px;padding:0 2px;}
+  .flow-node{min-width:80px;padding:10px 10px;}
+  .flow-node .fn-val{font-size:11px;}
+}
+</style>
+</head>
+<body>
+<!-- SITE NAV -->
+<style>.site-nav{position:fixed;top:0;left:0;right:0;z-index:10000;background:rgba(3,7,18,.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:16px;padding:0 28px;height:40px;font-family:'Space Mono',monospace,sans-serif;font-size:10px;letter-spacing:2.5px;}.site-nav a{color:rgba(255,255,255,.45);text-decoration:none;text-transform:uppercase;transition:color .2s;}.site-nav a:hover{color:#E040FB;}.site-nav .sep{color:rgba(255,255,255,.15);}</style>
+<nav class="site-nav"><a href="https://drfarooqai.github.io/articles/">← All Articles</a><span class="sep"> | </span><a href="https://drfarooqai.github.io/dr-farooq-cv/">Main Portfolio</a></nav>
+
+<!-- NAV -->
+<nav class="nav" style="top:40px;">
+  <a href="#" class="nav-logo">
+    <img src="meeyoo-logo.png" alt="Mee&Yoo Logo">
+    <span>Mee&amp;Yoo</span>
+  </a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how-it-works">How It Works</a>
+    <a href="#security">Security</a>
+    <a href="#privacy">Privacy</a>
+  </div>
+  <a href="http://localhost:8443" class="nav-cta" target="_blank">Launch Chat</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <span class="dot"></span>
+    Zero-Account · Ephemeral · End-to-End Encrypted
+  </div>
+
+  <img src="meeyoo-logo.png" alt="Mee&Yoo" class="hero-logo">
+
+  <h1 class="hero-title">Mee&amp;Yoo</h1>
+  <p style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:3px;color:#E53935;text-transform:uppercase;margin-bottom:10px;">1 to 1 Private Chat App</p>
+  <p class="hero-sub">Privacy is Blessing</p>
+
+  <p class="hero-desc">
+    Zero-account, ephemeral two-person chat with <strong>client-side AES-256-GCM encryption.</strong>
+    Messages exist only in RAM — never touch a database, vanish when the tab closes.
+  </p>
+
+  <p style="font-family:'Space Mono',monospace;font-size:13px;font-weight:700;letter-spacing:4px;text-transform:uppercase;background:linear-gradient(90deg,#7C3AED,#E040FB,#ff6b35,#7C3AED);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:title-flow 4s linear infinite;filter:drop-shadow(0 0 10px rgba(224,64,251,0.5));margin-bottom:40px;">Dr. Muhammad Farooq</p>
+
+  <div class="hero-actions">
+    <a href="http://localhost:8443" class="btn-primary" target="_blank">🔐 Launch Encrypted Chat</a>
+    <a href="#how-it-works" class="btn-ghost">How It Works</a>
+  </div>
+
+  <div class="tag-row">
+    <span class="tag">AES-256-GCM</span>
+    <span class="tag">Zero-Trust</span>
+    <span class="tag">RAM-Only</span>
+    <span class="tag">No Accounts</span>
+    <span class="tag">Blind Relay</span>
+    <span class="tag">Ephemeral</span>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="section-inner">
+    <p class="section-eyebrow">Core Features</p>
+    <h2 class="section-title">Built around <span>radical privacy</span></h2>
+    <p class="section-lead">Every decision in Mee&amp;Yoo is made with one principle: the server should never know what you're saying.</p>
+
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon">🔐</div>
+        <div class="feature-title">AES-256-GCM Encryption</div>
+        <p class="feature-desc">Military-grade encryption happens entirely in your browser using the Web Crypto API. Your message is locked before it ever leaves your device.</p>
+        <span class="feature-mono">PBKDF2 · 100k iterations · SHA-256</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🧠</div>
+        <div class="feature-title">RAM-Only Messages</div>
+        <p class="feature-desc">No database. No disk writes. Messages live in server memory only — cleared after delivery, wiped on Ctrl+C, erased when you close the tab.</p>
+        <span class="feature-mono">No SQL · No Logs · No Persistence</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">👤</div>
+        <div class="feature-title">Zero Accounts</div>
+        <p class="feature-desc">No sign-up. No email. No phone number. Just share the link and a shared passphrase once — then chat privately, instantly.</p>
+        <span class="feature-mono">No Registration · No Identity</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🕶️</div>
+        <div class="feature-title">Blind Relay Server</div>
+        <p class="feature-desc">The server only routes ciphertext. It never sees your passphrase, never derives a key, never reads plaintext. Zero-trust by architecture.</p>
+        <span class="feature-mono">Ciphertext-Only · Zero-Trust</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💨</div>
+        <div class="feature-title">Ephemeral by Design</div>
+        <p class="feature-desc">Close the tab — keys are erased. Stop the server — memory is cleared. No message can be recovered after a session ends. Ever.</p>
+        <span class="feature-mono">Tab Closed → Gone Forever</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">Zero Dependencies</div>
+        <p class="feature-desc">Pure Python standard library. Pure Vanilla JS. No npm. No pip install. No external APIs. One command to run. Works on any machine instantly.</p>
+        <span class="feature-mono">Python 3 · HTML5 · Vanilla JS</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section how-section" id="how-it-works">
+  <div class="section-inner">
+    <p class="section-eyebrow">How It Works</p>
+    <h2 class="section-title">Three steps. <span>Zero traces.</span></h2>
+    <p class="section-lead">The entire flow from your keyboard to the other person's screen — without a single server ever seeing your message.</p>
+
+    <!-- Data Flow -->
+    <div class="flow">
+      <div class="flow-node">
+        <div class="fn-label">You Type</div>
+        <div class="fn-val">Plaintext</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node highlight">
+        <div class="fn-label">Browser</div>
+        <div class="fn-val">AES-GCM 🔐</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-label">Server RAM</div>
+        <div class="fn-val">Ciphertext</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node highlight">
+        <div class="fn-label">Their Browser</div>
+        <div class="fn-val">Decrypt 🔓</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-label">They Read</div>
+        <div class="fn-val">Plaintext</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">
+        <div class="fn-label">Server</div>
+        <div class="fn-val">Wipes 🗑️</div>
+      </div>
+    </div>
+
+    <div class="steps">
+
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-body">
+          <div class="step-title">Share the link &amp; a secret word</div>
+          <p class="step-desc">Send your partner the server link and agree on a shared passphrase (e.g. "sunflower"). Your browsers each derive the same AES key from it using PBKDF2 — the key never leaves your devices.</p>
+          <span class="step-code">passphrase → PBKDF2(100k, SHA-256) → AES-256-GCM key</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-body">
+          <div class="step-title">Type — your browser encrypts before sending</div>
+          <p class="step-desc">Every message is locked with a random 12-byte IV and your AES key inside your browser before it touches the network. The server receives only Base64 ciphertext. It has no idea what you said.</p>
+          <span class="step-code">lock(plaintext) → AES-GCM(IV + ciphertext) → POST /api/send</span>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-body">
+          <div class="step-title">Close the tab — everything vanishes</div>
+          <p class="step-desc">When your partner's browser polls and receives the message, it's decrypted locally. The server immediately wipes its queue. Close the tab and your AES key is erased from memory. No one can recover it.</p>
+          <span class="step-code">Tab closed → key erased → server wipes → RAM cleared → gone</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SECURITY -->
+<section class="section" id="security">
+  <div class="section-inner">
+    <p class="section-eyebrow">Security Architecture</p>
+    <h2 class="section-title">Technical <span>security specs</span></h2>
+    <p class="section-lead">Every layer of Mee&amp;Yoo is designed with zero-trust principles — the server is assumed hostile by design.</p>
+
+    <div class="specs-grid">
+
+      <div class="spec-row">
+        <div class="spec-icon">🔑</div>
+        <div>
+          <div class="spec-label">Key Derivation</div>
+          <div class="spec-val">PBKDF2 · 100,000 iterations · SHA-256</div>
+        </div>
+      </div>
+
+      <div class="spec-row">
+        <div class="spec-icon">🔐</div>
+        <div>
+          <div class="spec-label">Encryption Algorithm</div>
+          <div class="spec-val">AES-256-GCM · 12-byte random IV per message</div>
+        </div>
+      </div>
+
+      <div class="spec-row">
+        <div class="spec-icon">🧾</div>
+        <div>
+          <div class="spec-label">Server Trust Model</div>
+          <div class="spec-val">Zero-Trust · Ciphertext-only · No key access</div>
+        </div>
+      </div>
+
+      <div class="spec-row">
+        <div class="spec-icon">💾</div>
+        <div>
+          <div class="spec-label">Storage</div>
+          <div class="spec-val">None · Python list in RAM only · No disk writes</div>
+        </div>
+      </div>
+
+      <div class="spec-row">
+        <div class="spec-icon">🌐</div>
+        <div>
+          <div class="spec-label">Crypto Engine</div>
+          <div class="spec-val">Web Crypto API (browser-native · no libraries)</div>
+        </div>
+      </div>
+
+      <div class="spec-row">
+        <div class="spec-icon">📡</div>
+        <div>
+          <div class="spec-label">Transport</div>
+          <div class="spec-val">HTTPS/TLS · Tailscale recommended · Port 8443</div>
+        </div>
+      </div>
+
+      <div class="spec-row">
+        <div class="spec-icon">🗑️</div>
+        <div>
+          <div class="spec-label">Data Lifecycle</div>
+          <div class="spec-val">Queued → Delivered → Wiped → Tab close → Keys erased</div>
+        </div>
+      </div>
+
+      <div class="spec-row">
+        <div class="spec-icon">👥</div>
+        <div>
+          <div class="spec-label">Capacity</div>
+          <div class="spec-val">2 users · Single room · Text-only · v1.0</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACY PROMISE -->
+<section class="section promise-section" id="privacy">
+  <div class="section-inner" style="text-align:center;">
+    <p class="section-eyebrow">The Privacy Promise</p>
+    <h2 class="section-title" style="margin:0 auto 16px;">What we <span>never do</span></h2>
+    <p class="section-lead" style="margin:0 auto 0;">Four absolute guarantees — not policies, not terms of service, but architectural impossibilities.</p>
+
+    <div class="promise-grid">
+
+      <div class="promise-item">
+        <div class="promise-emoji">🚫</div>
+        <div class="promise-title">No Database</div>
+        <p class="promise-text">No SQL, no NoSQL, no file system. Messages exist in a Python list in RAM and nowhere else.</p>
+      </div>
+
+      <div class="promise-item">
+        <div class="promise-emoji">🚫</div>
+        <div class="promise-title">No Logs</div>
+        <p class="promise-text">No server-side logging of messages, IPs, or sessions. No analytics. No telemetry. Nothing is written to disk.</p>
+      </div>
+
+      <div class="promise-item">
+        <div class="promise-emoji">🚫</div>
+        <div class="promise-title">No Accounts</div>
+        <p class="promise-text">No username, email, phone, or identity of any kind required or stored. You are anonymous by design.</p>
+      </div>
+
+      <div class="promise-item">
+        <div class="promise-emoji">🚫</div>
+        <div class="promise-title">No Plaintext</div>
+        <p class="promise-text">The server receives only ciphertext. It has no passphrase, no key, no ability to decrypt what you send. Ever.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <p class="section-eyebrow" style="text-align:center;">Ready?</p>
+  <h2 class="cta-title">Start a private conversation.</h2>
+  <p class="cta-sub">Share the link. Agree on a word. Chat. Close the tab. Gone forever.</p>
+  <a href="http://localhost:8443" class="btn-primary" style="font-size:17px;padding:18px 52px;" target="_blank">🔐 Open Mee&amp;Yoo Chat</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <img src="meeyoo-logo.png" alt="Mee&Yoo">
+    <div>
+      <div class="footer-brand">Mee&amp;Yoo</div>
+      <div class="footer-tagline">Privacy is blessing</div>
+    </div>
+  </div>
+  <div class="footer-right">AES-256-GCM · Zero-Trust · RAM-Only · v1.0</div>
+</footer>
+
+</body>
+</html>
