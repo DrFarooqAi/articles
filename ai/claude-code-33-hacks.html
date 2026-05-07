@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>33 Insane Claude Code Hacks Carousel</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontsource-inter@5.0.17/index.min.css">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .carousel-container {
+    width: 100%;
+    max-width: 800px;
+    position: relative;
+  }
+
+  .slide {
+    width: 100%;
+    min-height: 600px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+    padding: 40px;
+    display: none;
+    flex-direction: column;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .slide.active {
+    display: flex;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .cover {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 40%, #40916C 70%, #52B788 100%);
+    color: white;
+    min-height: 650px;
+  }
+
+  .cover .badge {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .cover h1 {
+    font-size: 46px;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+
+  .cover h1 span {
+    color: #B7E4C7;
+  }
+
+  .cover p {
+    font-size: 19px;
+    opacity: 0.85;
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  .cover .author-line {
+    margin-top: 32px;
+    font-size: 14px;
+    opacity: 0.65;
+  }
+
+  .slide-header {
+    margin-bottom: 28px;
+    border-bottom: 3px solid #2D6A4F;
+    padding-bottom: 14px;
+  }
+
+  .slide-header .category {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+
+  .cat-beginner { background: #E8F5E9; color: #2E7D32; }
+  .cat-intermediate { background: #FFF8E1; color: #F57F17; }
+  .cat-advanced { background: #F3E5F5; color: #7B1FA2; }
+  .cat-bonus { background: #E3F2FD; color: #1565C0; }
+  .cat-end { background: #2D6A4F; color: white; }
+
+  .slide-header h2 {
+    font-size: 26px;
+    font-weight: 800;
+    color: #1a1a1a;
+  }
+
+  .hack-item {
+    margin-bottom: 22px;
+    padding-left: 0;
+  }
+
+  .hack-item .hack-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #2D6A4F;
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+
+  .hack-item .hack-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1a;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 6px;
+  }
+
+  .hack-item .hack-title span {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  .hack-desc {
+    font-size: 14.5px;
+    color: #444;
+    line-height: 1.65;
+    padding-left: 44px;
+  }
+
+  .hack-tip {
+    background: #f0faf4;
+    border-left: 3px solid #52B788;
+    padding: 8px 14px;
+    border-radius: 0 8px 8px 0;
+    font-size: 13px;
+    color: #2D6A4F;
+    margin-top: 6px;
+    padding-left: 14px;
+  }
+
+  .nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .nav-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: #2D6A4F;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .nav-btn:hover {
+    background: #1B4332;
+    transform: scale(1.08);
+  }
+
+  .nav-btn:disabled {
+    background: #ccc;
+    cursor: default;
+    transform: none;
+  }
+
+  .slide-counter {
+    font-size: 15px;
+    color: #555;
+    font-weight: 600;
+    min-width: 70px;
+    text-align: center;
+  }
+
+  .dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 14px;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .dot.active {
+    background: #2D6A4F;
+    width: 24px;
+    border-radius: 4px;
+  }
+
+  .cta-slide {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, #1B4332, #40916C);
+    color: white;
+    min-height: 500px;
+  }
+
+  .cta-slide h2 {
+    font-size: 34px;
+    font-weight: 800;
+    margin-bottom: 16px;
+  }
+
+  .cta-slide p {
+    font-size: 18px;
+    opacity: 0.85;
+    margin-bottom: 30px;
+  }
+
+  .cta-icons {
+    display: flex;
+    gap: 30px;
+    margin-top: 20px;
+  }
+
+  .cta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .cta-item .icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
+
+  .cta-item span {
+    font-size: 13px;
+    font-weight: 600;
+    opacity: 0.85;
+  }
+
+  @media (max-width: 600px) {
+    .slide { padding: 24px; min-height: auto; }
+    .cover h1 { font-size: 32px; }
+    .hack-item .hack-title { font-size: 15px; }
+    .hack-desc { font-size: 13.5px; padding-left: 44px; }
+  }
+</style>
+</head>
+<body>
+<!-- SITE NAV -->
+<style>.site-nav{position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(3,7,18,.93);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:16px;padding:0 28px;height:46px;font-family:'Space Mono',monospace,sans-serif;font-size:10px;letter-spacing:2.5px;}.site-nav a{color:rgba(255,255,255,.55);text-decoration:none;text-transform:uppercase;transition:color .2s;}.site-nav a:hover{color:#00e5ff;}.site-nav .sep{color:rgba(255,255,255,.2);}</style>
+<nav class="site-nav"><a href="https://drfarooqai.github.io/articles/">← All Articles</a><span class="sep"> | </span><a href="https://drfarooqai.github.io/dr-farooq-cv/">Main Portfolio</a></nav>
+
+<div class="carousel-container" style="margin-top:46px;">
+  <!-- Slide 0: Cover -->
+  <div class="slide cover active" id="slide-0">
+    <div class="badge">✦ Developer Toolkit 2026</div>
+    <h1>33 Insane <span>Claude Code</span> Hacks That Will 10x Your Productivity</h1>
+    <p>From setup to scaling—everything you need to stop wasting tokens and start shipping faster.</p>
+    <div class="author-line">Swipe through →</div>
+  </div>
+
+  <!-- Slide 1: Beginner 1-4 -->
+  <div class="slide" id="slide-1">
+    <div class="slide-header">
+      <div class="category cat-beginner">🟢 Beginner — Foundation Setup & Daily Basics</div>
+      <h2>Hacks #1–4</h2>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">1</span>Run <code>/init</code> on every project</span></div>
+      <div class="hack-desc">Open your project folder and type <code>/init</code>. Claude scans your codebase, architecture, conventions, and generates a <strong>CLAUDE.md</strong> file—your persistent project memory and cheat sheet loaded into every session.</div>
+      <div class="hack-tip">💡 For new projects, describe your goal, tech stack, rules, and structure—Claude creates the CLAUDE.md automatically.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">2</span>Set up a status line</span></div>
+      <div class="hack-desc">Customize a mini-dashboard at the bottom of your terminal showing model, context usage %, cost, and more. Helps monitor and avoid context rot.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">3</span>Use voice input</span></div>
+      <div class="hack-desc">Claude Code has native voice support. Alternatively, use a system-wide voice dictation tool to talk directly into the terminal.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">4</span>Keep context small & focused</span></div>
+      <div class="hack-desc">Don't dump your whole codebase into one conversation. Break big tasks into small, specific steps. Less noise = better reasoning.</div>
+    </div>
+  </div>
+
+  <!-- Slide 2: Beginner 5-8 -->
+  <div class="slide" id="slide-2">
+    <div class="slide-header">
+      <div class="category cat-beginner">🟢 Beginner — Foundation Setup & Daily Basics</div>
+      <h2>Hacks #5–8</h2>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">5</span>Diagnose token bloat with <code>/context</code></span></div>
+      <div class="hack-desc">See a breakdown of what's consuming tokens—system prompts, files, MCP tools, conversation history. Use this when sessions feel slow or expensive.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">6</span>Compact at ~60% and clear between tasks</span></div>
+      <div class="hack-desc">Run <code>/compact</code> when context hits ~60%. It summarizes history while preserving key details. Use <code>/clear</code> for a full reset between unrelated tasks.</div>
+      <div class="hack-tip">💡 Use <code>/compact keep all API integration decisions and database schema</code> to preserve specifics.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">7</span>Always start in Plan mode</span></div>
+      <div class="hack-desc">Press Shift+Tab to enter Plan mode. Claude researches, outlines steps, and asks clarifying questions <em>before</em> making changes. Review the plan, then switch to execute mode. Dramatically reduces revisions.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">8</span>Treat it like a junior developer</span></div>
+      <div class="hack-desc">Instead of "write a function that does X", pose problems: "How should we handle growth tracking?" Let it reason, explain assumptions, and think step-by-step.</div>
+    </div>
+  </div>
+
+  <!-- Slide 3: Beginner 9-11 -->
+  <div class="slide" id="slide-3">
+    <div class="slide-header">
+      <div class="category cat-beginner">🟢 Beginner — Foundation Setup & Daily Basics</div>
+      <h2>Hacks #9–11</h2>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">9</span>Make Claude ask questions</span></div>
+      <div class="hack-desc">Explicitly instruct it to use its "ask user question" tool and keep asking until it's 95% confident. Reduces costly back-and-forth later.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">10</span>Build self-checking into to-do lists</span></div>
+      <div class="hack-desc">Add verification steps to task lists: "Take a screenshot and check layout", "Open Chrome DevTools and verify no errors", "Don't proceed until 95% confident". Bake quality gates directly into the plan.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">11</span>Exit early and re-ask (steer tight)</span></div>
+      <div class="hack-desc">If it's going down the wrong path, hit Escape immediately, correct course, and reprompt. Saves tokens and prevents wasted effort.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">12</span>Use <code>/re</code> for quick undos</span></div>
+      <div class="hack-desc">Roll back to a previous point in the conversation without starting over. Your personal "Ctrl+Z" for Claude.</div>
+    </div>
+  </div>
+
+  <!-- Slide 4: Intermediate 13-16 -->
+  <div class="slide" id="slide-4">
+    <div class="slide-header">
+      <div class="category cat-intermediate">🟡 Intermediate — Speed & Consistency</div>
+      <h2>Hacks #13–16</h2>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">13</span>Deploy sub-agents for parallel work</span></div>
+      <div class="hack-desc">Instruct Claude to spin up sub-agents via <code>/agents</code> or natural language. Each gets its own isolated context and can run on different models (cheaper Haiku for research, Opus for main). They work in parallel and report back.</div>
+      <div class="hack-tip">💡 Great for complex, multi-threaded problems.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">14</span>Build custom skills</span></div>
+      <div class="hack-desc">Create reusable prompt files in a <code>~/.claude/skills</code> directory (e.g., techdebt.md, code_review.md). Invoke by name. Commit to Git for team use—automates SOPs and ensures consistency.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">15</span>Use Haiku for sub-agents & heavy reading</span></div>
+      <div class="hack-desc">Assign cheaper/faster models like Haiku to sub-agents handling large data, scraping, or summarization. Keep the main thread on a stronger model. Saves cost without quality loss on simple subtasks.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">16</span>Constantly refresh your CLAUDE.md</span></div>
+      <div class="hack-desc">After discoveries, new patterns, or skills, update CLAUDE.md so future sessions inherit knowledge. Aim for 150–200 lines max to avoid bloat.</div>
+    </div>
+  </div>
+
+  <!-- Slide 5: Intermediate 17-19 -->
+  <div class="slide" id="slide-5">
+    <div class="slide-header">
+      <div class="category cat-intermediate">🟡 Intermediate — Speed & Consistency</div>
+      <h2>Hacks #17–19</h2>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">17</span>Route CLAUDE.md to other files</span></div>
+      <div class="hack-desc">Keep the main CLAUDE.md slim by having it reference separate files—style guides, business context, reference docs. Claude knows where to look without loading everything upfront.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">18</span>Challenge outputs aggressively</span></div>
+      <div class="hack-desc">If the result is "just okay", push back: "Scrap that. Do a more elegant version" or "Try a completely different approach." Often yields big improvements on the second try.</div>
+      <div class="hack-tip">💡 Update skills/CLAUDE.md with the lesson learned.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">19</span>Set up hooks for notifications</span></div>
+      <div class="hack-desc">Configure lifecycle hooks (<code>/hooks</code>) so Claude notifies you (sound, etc.) when a session finishes or needs input. Essential when running multiple sessions in parallel.</div>
+    </div>
+  </div>
+
+  <!-- Slide 6: Intermediate 20-22 -->
+  <div class="slide" id="slide-6">
+    <div class="slide-header">
+      <div class="category cat-intermediate">🟡 Intermediate — Speed & Consistency</div>
+      <h2>Hacks #20–22</h2>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">20</span>Leverage screenshots (multimodal)</span></div>
+      <div class="hack-desc">Claude can see images. Feed error messages, inspiration sites, or self-check loops: "Take a screenshot and analyze the layout." Combine with iterative build → screenshot → fix cycles for stronger V1s on front-end work.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">21</span>Use Chrome DevTools / browser interaction</span></div>
+      <div class="hack-desc">Claude can open a browser, interact with apps, fill forms, check functionality, and debug. Great for front-end—especially when there's no clean API.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">22</span>Clone inspiration sites</span></div>
+      <div class="hack-desc">Screenshot sites you like and say "Make it look like this." Use as a starting template, then customize to avoid generic AI output. Huge for front-end polish.</div>
+    </div>
+  </div>
+
+  <!-- Slide 7: Advanced 23-26 -->
+  <div class="slide" id="slide-7">
+    <div class="slide-header">
+      <div class="category cat-advanced">🟣 Advanced — Scaling & Power-User</div>
+      <h2>Hacks #23–26</h2>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">23</span>Run parallel sessions with Git worktrees</span></div>
+      <div class="hack-desc">Use <code>claude-worktree &lt;feature&gt;</code> to create isolated workspaces on separate Git branches. Run multiple Claude sessions without conflicts. Supports 3–5+ parallel agents safely.</div>
+      <div class="hack-tip">💡 Merge back when done—conflict-free.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">24</span>Prefer direct API endpoints over full MCP servers</span></div>
+      <div class="hack-desc">MCP servers load all tool definitions into context (expensive). For narrow needs (e.g., reading one Notion database), hardcode a specific API endpoint to save tokens.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">25</span>Use <code>/loop</code> for recurring tasks</span></div>
+      <div class="hack-desc">Example: "Every 5 minutes check the deployment" or one-time reminders. Runs in background and only interrupts when needed. (~3 day limit; use desktop scheduled tasks for longer.)</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">26</span>Host on a VPS for always-on sessions</span></div>
+      <div class="hack-desc">Run Claude Code on a remote server so it continues even when your laptop is off. SSH in or control via Telegram for long-running tasks.</div>
+    </div>
+  </div>
+
+  <!-- Slide 8: Advanced 27-29 -->
+  <div class="slide" id="slide-8">
+    <div class="slide-header">
+      <div class="category cat-advanced">🟣 Advanced — Scaling & Power-User</div>
+      <h2>Hacks #27–29</h2>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">27</span>Remote control from phone/browser</span></div>
+      <div class="hack-desc">Start a task locally, then steer it from your phone or any browser. Code stays on your machine; you get full mobility.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">28</span>No-SQL / plain English data analytics</span></div>
+      <div class="hack-desc">Connect CLI tools (e.g., BigQuery) and ask natural language questions. Claude translates to queries and runs them. No SQL required.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">29</span>Use "ultrathink" for hard problems</span></div>
+      <div class="hack-desc">Type <code>ultrathink</code> to allocate maximum thinking budget (~32k tokens) for architecture, complex debugging, big refactors, or when initial attempts fail.</div>
+    </div>
+  </div>
+
+  <!-- Slide 9: Advanced 30-32 -->
+  <div class="slide" id="slide-9">
+    <div class="slide-header">
+      <div class="category cat-advanced">🟣 Advanced — Scaling & Power-User</div>
+      <h2>Hacks #30–32</h2>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">30</span>Edit permissions for safe autonomy</span></div>
+      <div class="hack-desc">In permissions settings, explicitly allow safe commands and deny destructive ones (deletes, etc.). Deny list takes priority. Gets near-full speed without high risk.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">31</span>Agent teams (vs. simple sub-agents)</span></div>
+      <div class="hack-desc">Multiple agents that communicate, share task lists, assign work, and collaborate directly. More cohesive for big projects—but more expensive and longer-running.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number">32</span>Context7 MCP server</span></div>
+      <div class="hack-desc">Install this MCP server for up-to-date, version-specific documentation on thousands of libraries (Next.js, React, MongoDB, etc.). Prevents Claude from suggesting deprecated APIs. One of the highest-ROI additions for code quality.</div>
+    </div>
+  </div>
+
+  <!-- Slide 10: Bonus #33 -->
+  <div class="slide" id="slide-10">
+    <div class="slide-header">
+      <div class="category cat-bonus">🔵 Bonus — Token Savings</div>
+      <h2>Hack #33: Master Prompt Caching</h2>
+    </div>
+    <div class="hack-item">
+      <div class="hack-title"><span><span class="hack-number" style="background:#1565C0">33</span>Put static info first for massive token savings</span></div>
+      <div class="hack-desc">Place unchanging information (full CLAUDE.md, core architecture rules, style guides, large unchanging code sections) at the <strong>top of prompts</strong> or in dedicated cached blocks. Claude then caches these tokens—making them <strong>much cheaper and faster</strong> to reuse across messages and sessions.</div>
+    </div>
+    <div class="hack-item">
+      <div class="hack-desc" style="margin-top:12px;">
+        This is especially powerful for long-running projects, agent teams, or when you frequently reload project context. Combine with a lean CLAUDE.md and regular <code>/compact</code> for compounding savings.
+      </div>
+    </div>
+    <div class="hack-tip" style="margin-top:16px; font-size:14px;">
+      🎯 Users report <strong>30–50%+ reduction</strong> in effective token costs on repetitive workflows.<br><br>
+      <strong>Rule:</strong> Always place cacheable content first, then put dynamic instructions or the current task at the end.
+    </div>
+  </div>
+
+  <!-- Slide 11: CTA -->
+  <div class="slide cta-slide" id="slide-11">
+    <h2>Save This For Later</h2>
+    <p>Follow for more Claude Code tips, developer workflows, and productivity hacks every week.</p>
+    <div class="cta-icons">
+      <div class="cta-item">
+        <div class="icon">♻️</div>
+        <span>Repost</span>
+      </div>
+      <div class="cta-item">
+        <div class="icon">💾</div>
+        <span>Save</span>
+      </div>
+      <div class="cta-item">
+        <div class="icon">👋</div>
+        <span>Follow</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-row">
+    <button class="nav-btn" id="prevBtn" disabled>←</button>
+    <span class="slide-counter" id="counter">1 / 12</span>
+    <button class="nav-btn" id="nextBtn">→</button>
+  </div>
+  <div class="dots" id="dots"></div>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const counter = document.getElementById('counter');
+  const dotsContainer = document.getElementById('dots');
+
+  // Create dots
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.addEventListener('click', () => goTo(i));
+    dotsContainer.appendChild(dot);
+  }
+
+  function update() {
+    slides.forEach((s, i) => {
+      s.classList.toggle('active', i === current);
+    });
+    const dots = dotsContainer.querySelectorAll('.dot');
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    counter.textContent = (current + 1) + ' / ' + total;
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  function goTo(idx) {
+    current = Math.max(0, Math.min(total - 1, idx));
+    update();
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+  });
+
+  // Touch/swipe support
+  let touchStartX = 0;
+  document.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; });
+  document.addEventListener('touchend', (e) => {
+    const diff = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goTo(current + 1);
+      else goTo(current - 1);
+    }
+  });
+
+  update();
+</script>
+
+</body>
+</html>
+
