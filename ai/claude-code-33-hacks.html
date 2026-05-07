@@ -4,18 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>33 Insane Claude Code Hacks Carousel</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontsource-inter@5.0.17/index.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
+
   body {
     font-family: 'Inter', sans-serif;
-    background: #f0f2f5;
+    background: #030712;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.035) 1px, transparent 1px);
+    background-size: 50px 50px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    padding: 20px;
+    padding: 66px 20px 30px;
   }
 
   .carousel-container {
@@ -27,43 +32,84 @@
   .slide {
     width: 100%;
     min-height: 600px;
-    background: white;
+    background: #0d1117;
+    border: 1px solid rgba(0,229,255,0.12);
     border-radius: 16px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
+    box-shadow: 0 0 40px rgba(0,229,255,0.06), 0 20px 60px rgba(0,0,0,0.6);
     padding: 40px;
     display: none;
     flex-direction: column;
     animation: fadeIn 0.4s ease-out;
+    position: relative;
+    overflow: hidden;
   }
 
-  .slide.active {
-    display: flex;
+  .slide::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(0,229,255,0.04) 0%, transparent 70%);
+    pointer-events: none;
   }
+
+  .slide.active { display: flex; }
 
   @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
+  @keyframes cp-flow {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+
+  @keyframes glitch {
+    0%,88%,100% { transform: translate(0); filter: none; }
+    89% { transform: translate(-2px,1px); filter: hue-rotate(90deg); }
+    91% { transform: translate(2px,-1px); filter: hue-rotate(-90deg); }
+    93% { transform: translate(-1px,0); }
+  }
+
+  /* ── COVER ── */
   .cover {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 40%, #40916C 70%, #52B788 100%);
-    color: white;
+    background: radial-gradient(ellipse at 30% 40%, #0d0030 0%, #000d2e 55%, #000 100%);
+    border: 1px solid rgba(0,229,255,0.25);
+    box-shadow: 0 0 80px rgba(0,229,255,0.1), inset 0 0 80px rgba(0,0,0,0.5);
     min-height: 650px;
+    color: white;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.05) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    border-radius: 16px;
   }
 
   .cover .badge {
-    background: rgba(255,255,255,0.18);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.35);
     padding: 8px 24px;
     border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
     margin-bottom: 28px;
+    color: #00e5ff;
+    position: relative;
+    z-index: 1;
+    font-family: 'Space Mono', monospace;
   }
 
   .cover h1 {
@@ -71,122 +117,178 @@
     font-weight: 800;
     line-height: 1.15;
     margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+    animation: glitch 8s infinite;
+    color: #f0f8ff;
   }
 
   .cover h1 span {
-    color: #B7E4C7;
+    background: linear-gradient(90deg, #00e5ff, #a855f7, #ff6b35, #00e5ff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: cp-flow 3s linear infinite;
   }
 
-  .cover p {
-    font-size: 19px;
-    opacity: 0.85;
+  .cover > p {
+    font-size: 18px;
+    color: rgba(200,230,255,0.6);
     max-width: 500px;
-    line-height: 1.6;
+    line-height: 1.65;
+    position: relative;
+    z-index: 1;
   }
 
   .cover .author-line {
-    margin-top: 32px;
-    font-size: 14px;
-    opacity: 0.65;
+    margin-top: 10px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 2.5px;
+    position: relative;
+    z-index: 1;
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
   }
 
+  .cover .author-name {
+    margin-top: 28px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #00e5ff, #a855f7, #ff6b35, #00e5ff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: cp-flow 4s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(168,85,247,0.55));
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── SLIDE HEADER ── */
   .slide-header {
-    margin-bottom: 28px;
-    border-bottom: 3px solid #2D6A4F;
+    margin-bottom: 26px;
+    border-bottom: 1px solid rgba(0,229,255,0.15);
     padding-bottom: 14px;
+    position: relative;
+    z-index: 1;
   }
 
   .slide-header .category {
     display: inline-block;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 1.2px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     padding: 5px 14px;
-    border-radius: 6px;
+    border-radius: 4px;
     margin-bottom: 10px;
+    font-family: 'Space Mono', monospace;
   }
 
-  .cat-beginner { background: #E8F5E9; color: #2E7D32; }
-  .cat-intermediate { background: #FFF8E1; color: #F57F17; }
-  .cat-advanced { background: #F3E5F5; color: #7B1FA2; }
-  .cat-bonus { background: #E3F2FD; color: #1565C0; }
-  .cat-end { background: #2D6A4F; color: white; }
+  .cat-beginner    { background: rgba(0,229,255,0.07);   color: #00e5ff;  border: 1px solid rgba(0,229,255,0.3); }
+  .cat-intermediate{ background: rgba(255,165,0,0.07);   color: #ffaa00;  border: 1px solid rgba(255,165,0,0.3); }
+  .cat-advanced    { background: rgba(168,85,247,0.07);  color: #a855f7;  border: 1px solid rgba(168,85,247,0.3); }
+  .cat-bonus       { background: rgba(255,107,53,0.07);  color: #ff6b35;  border: 1px solid rgba(255,107,53,0.3); }
+  .cat-end         { background: rgba(0,229,255,0.12);   color: #00e5ff;  border: 1px solid rgba(0,229,255,0.4); }
 
   .slide-header h2 {
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 800;
-    color: #1a1a1a;
+    color: #e8f4ff;
+    letter-spacing: -0.5px;
   }
 
+  /* ── HACK ITEMS ── */
   .hack-item {
-    margin-bottom: 22px;
-    padding-left: 0;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
   }
 
   .hack-item .hack-number {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    background: #2D6A4F;
-    color: white;
-    font-size: 14px;
+    background: transparent;
+    border: 1px solid #00e5ff;
+    color: #00e5ff;
+    font-size: 12px;
     font-weight: 700;
     margin-right: 12px;
     flex-shrink: 0;
+    font-family: 'Space Mono', monospace;
+    box-shadow: 0 0 10px rgba(0,229,255,0.25), inset 0 0 6px rgba(0,229,255,0.05);
   }
 
   .hack-item .hack-title {
-    font-size: 17px;
+    font-size: 15.5px;
     font-weight: 700;
-    color: #1a1a1a;
+    color: #daeeff;
     display: flex;
     align-items: flex-start;
     margin-bottom: 6px;
   }
 
-  .hack-item .hack-title span {
-    display: flex;
-    align-items: flex-start;
+  .hack-item .hack-title span { display: flex; align-items: flex-start; }
+
+  .hack-item .hack-title code,
+  .hack-desc code {
+    background: rgba(0,229,255,0.09);
+    color: #00e5ff;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 12.5px;
+    border: 1px solid rgba(0,229,255,0.2);
+    font-family: 'Space Mono', monospace;
   }
 
   .hack-desc {
-    font-size: 14.5px;
-    color: #444;
-    line-height: 1.65;
-    padding-left: 44px;
+    font-size: 14px;
+    color: rgba(180,210,255,0.65);
+    line-height: 1.7;
+    padding-left: 42px;
   }
+
+  .hack-desc strong { color: #daeeff; font-weight: 700; }
 
   .hack-tip {
-    background: #f0faf4;
-    border-left: 3px solid #52B788;
+    background: rgba(0,229,255,0.04);
+    border-left: 2px solid #00e5ff;
     padding: 8px 14px;
-    border-radius: 0 8px 8px 0;
+    border-radius: 0 6px 6px 0;
     font-size: 13px;
-    color: #2D6A4F;
-    margin-top: 6px;
-    padding-left: 14px;
+    color: rgba(0,229,255,0.75);
+    margin-top: 8px;
   }
 
+  .hack-tip strong { color: #00e5ff; }
+
+  /* ── NAV ── */
   .nav-row {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 16px;
-    margin-top: 20px;
+    margin-top: 22px;
   }
 
   .nav-btn {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    border: none;
-    background: #2D6A4F;
-    color: white;
-    font-size: 22px;
+    border: 1px solid rgba(0,229,255,0.35);
+    background: rgba(0,229,255,0.07);
+    color: #00e5ff;
+    font-size: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -195,72 +297,79 @@
   }
 
   .nav-btn:hover {
-    background: #1B4332;
+    background: rgba(0,229,255,0.15);
+    box-shadow: 0 0 18px rgba(0,229,255,0.3);
     transform: scale(1.08);
   }
 
   .nav-btn:disabled {
-    background: #ccc;
+    border-color: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.18);
+    background: transparent;
     cursor: default;
     transform: none;
+    box-shadow: none;
   }
 
   .slide-counter {
-    font-size: 15px;
-    color: #555;
-    font-weight: 600;
+    font-size: 12px;
+    color: rgba(0,229,255,0.55);
+    font-weight: 700;
     min-width: 70px;
     text-align: center;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1.5px;
   }
 
-  .dots {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    margin-top: 14px;
-  }
+  .dots { display: flex; gap: 6px; justify-content: center; margin-top: 14px; }
 
   .dot {
-    width: 8px;
-    height: 8px;
+    width: 8px; height: 8px;
     border-radius: 50%;
-    background: #ccc;
+    background: rgba(255,255,255,0.1);
     transition: all 0.3s;
     cursor: pointer;
   }
 
   .dot.active {
-    background: #2D6A4F;
+    background: #00e5ff;
     width: 24px;
     border-radius: 4px;
+    box-shadow: 0 0 8px rgba(0,229,255,0.5);
   }
 
+  /* ── CTA ── */
   .cta-slide {
     align-items: center;
     justify-content: center;
     text-align: center;
-    background: linear-gradient(135deg, #1B4332, #40916C);
-    color: white;
+    background: radial-gradient(ellipse at center, #0d0030 0%, #000d2e 60%, #000 100%);
+    border: 1px solid rgba(168,85,247,0.25);
+    box-shadow: 0 0 60px rgba(168,85,247,0.08);
     min-height: 500px;
+    color: white;
   }
 
   .cta-slide h2 {
-    font-size: 34px;
+    font-size: 32px;
     font-weight: 800;
     margin-bottom: 16px;
+    background: linear-gradient(90deg, #00e5ff, #a855f7, #ff6b35, #00e5ff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: cp-flow 4s linear infinite;
   }
 
   .cta-slide p {
-    font-size: 18px;
-    opacity: 0.85;
+    font-size: 16px;
+    color: rgba(180,210,255,0.6);
     margin-bottom: 30px;
+    max-width: 460px;
   }
 
-  .cta-icons {
-    display: flex;
-    gap: 30px;
-    margin-top: 20px;
-  }
+  .cta-icons { display: flex; gap: 30px; margin-top: 20px; }
 
   .cta-item {
     display: flex;
@@ -270,27 +379,29 @@
   }
 
   .cta-item .icon {
-    width: 52px;
-    height: 52px;
+    width: 56px; height: 56px;
     border-radius: 14px;
-    background: rgba(255,255,255,0.18);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: rgba(0,229,255,0.07);
+    border: 1px solid rgba(0,229,255,0.22);
+    display: flex; align-items: center; justify-content: center;
     font-size: 24px;
+    box-shadow: 0 0 14px rgba(0,229,255,0.1);
   }
 
   .cta-item span {
-    font-size: 13px;
-    font-weight: 600;
-    opacity: 0.85;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(0,229,255,0.55);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
   }
 
   @media (max-width: 600px) {
     .slide { padding: 24px; min-height: auto; }
-    .cover h1 { font-size: 32px; }
-    .hack-item .hack-title { font-size: 15px; }
-    .hack-desc { font-size: 13.5px; padding-left: 44px; }
+    .cover h1 { font-size: 30px; }
+    .hack-item .hack-title { font-size: 14px; }
+    .hack-desc { font-size: 13px; }
   }
 </style>
 </head>
@@ -306,6 +417,7 @@
     <h1>33 Insane <span>Claude Code</span> Hacks That Will 10x Your Productivity</h1>
     <p>From setup to scaling—everything you need to stop wasting tokens and start shipping faster.</p>
     <div class="author-line">Swipe through →</div>
+    <div class="author-name">Dr. Muhammad Farooq</div>
   </div>
 
   <!-- Slide 1: Beginner 1-4 -->
