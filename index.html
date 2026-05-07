@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr. Muhammad Farooq — Articles & Longform Writing</title>
+<meta name="description" content="Deep dives on AI in Healthcare, emerging tools, and the future of medicine — by Dr. Muhammad Farooq.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #030712;
+  --surface: #0f1923;
+  --surface2: #162033;
+  --border: #2d3f55;
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34,211,238,0.1);
+  --gold: #f59e0b;
+  --purple: #a855f7;
+  --pink: #e879f9;
+  --text: #f9fafb;
+  --text-muted: #94a3b8;
+  --green: #10b981;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(34,211,238,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,211,238,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 16px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(3,7,18,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(34,211,238,0.08);
+}
+
+.nav-back {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cyan);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  transition: opacity 0.2s;
+}
+.nav-back:hover { opacity: 0.7; }
+
+.nav-title {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nav-count {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  z-index: 1;
+  padding: 160px 60px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-eyebrow::before, .hero-eyebrow::after {
+  content: '';
+  width: 24px; height: 1px;
+  background: var(--cyan);
+  opacity: 0.5;
+}
+
+.hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+
+.hero-title .line1 { color: var(--text); }
+.hero-title .line2 {
+  background: linear-gradient(90deg, #e879a0, #f472b6, #fb923c, #f59e0b, #f472b6, #e879a0);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: title-flow 5s linear infinite;
+}
+@keyframes title-flow {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+.hero-desc {
+  font-size: 18px;
+  color: var(--text-muted);
+  max-width: 620px;
+  line-height: 1.8;
+  margin-bottom: 40px;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hero-stat-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--cyan);
+}
+.hero-stat-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── CATEGORY FILTERS ── */
+.filters {
+  position: relative;
+  z-index: 1;
+  padding: 0 60px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.filter-btn:hover, .filter-btn.active {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: var(--cyan-dim);
+}
+.filter-btn.all.active { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); }
+
+/* ── FEATURED ── */
+.section {
+  position: relative;
+  z-index: 1;
+  padding: 0 60px 80px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--cyan);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+}
+
+.featured-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid rgba(34,211,238,0.25);
+  border-radius: 20px;
+  padding: 48px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  text-decoration: none;
+  display: block;
+}
+.featured-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #22d3ee, #a855f7, #f59e0b, #22d3ee);
+  background-size: 300% 100%;
+  animation: title-flow 4s linear infinite;
+}
+.featured-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(34,211,238,0.12);
+}
+
+.featured-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  border: 1px solid rgba(245,158,11,0.3);
+  background: rgba(245,158,11,0.08);
+  padding: 4px 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.featured-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 3vw, 34px);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.featured-desc {
+  font-size: 16px;
+  color: var(--text-muted);
+  max-width: 640px;
+  line-height: 1.8;
+  margin-bottom: 28px;
+}
+
+.featured-meta {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.tag.cyan { border-color: rgba(34,211,238,0.4); color: var(--cyan); background: var(--cyan-dim); }
+.tag.purple { border-color: rgba(168,85,247,0.4); color: #c084fc; background: rgba(168,85,247,0.08); }
+.tag.gold { border-color: rgba(245,158,11,0.4); color: var(--gold); background: rgba(245,158,11,0.08); }
+.tag.green { border-color: rgba(16,185,129,0.4); color: #34d399; background: rgba(16,185,129,0.08); }
+.tag.pink { border-color: rgba(232,121,249,0.4); color: var(--pink); background: rgba(232,121,249,0.08); }
+
+.read-link {
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.06em;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+/* ── ARTICLES GRID ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 580px) { .grid { grid-template-columns: 1fr; } }
+
+.article-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  overflow: hidden;
+}
+.article-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.article-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(34,211,238,0.3);
+  box-shadow: 0 12px 40px rgba(34,211,238,0.08);
+}
+.article-card:hover::before { opacity: 1; }
+
+.card-category {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cyan);
+}
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  flex: 1;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.card-date {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.card-arrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--cyan);
+  font-weight: 700;
+}
+
+/* Coming soon card */
+.article-card.coming-soon {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+.coming-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 3px;
+  width: fit-content;
+}
+
+/* ── BACK BUTTON ── */
+.back-section {
+  position: relative;
+  z-index: 1;
+  padding: 40px 60px 100px;
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-btn {
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  padding: 14px 32px;
+  border-radius: 10px;
+  letter-spacing: 0.06em;
+  transition: all 0.2s;
+}
+.back-btn:hover {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: var(--cyan-dim);
+}
+
+/* ── FOOTER ── */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 28px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+footer p {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* ── DIVIDER ── */
+.divider {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto 60px;
+  padding: 0 60px;
+}
+.divider hr {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .hero { padding: 120px 24px 60px; }
+  .filters { padding: 0 24px 40px; }
+  .section { padding: 0 24px 60px; }
+  .back-section { padding: 40px 24px 80px; }
+  .featured-card { padding: 28px; }
+  footer { padding: 24px; }
+  .divider { padding: 0 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="https://drfarooqai.github.io/" class="nav-back">← Back to Portfolio</a>
+  <span class="nav-title">Articles & Longform</span>
+  <span class="nav-count">2 Published · 4 Coming Soon</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Dr. Muhammad Farooq</div>
+  <h1 class="hero-title">
+    <div class="line1">Articles &</div>
+    <div class="line2">Longform Writing</div>
+  </h1>
+  <p class="hero-desc">
+    Deep, structured explainers on AI in Healthcare, emerging tools, and the future of medicine —
+    written for founders, clinicians, and engineers. Not theorists.
+  </p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <span class="hero-stat-num">2</span>
+      <span class="hero-stat-label">Published</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">4</span>
+      <span class="hero-stat-label">Coming Soon</span>
+    </div>
+    <div class="hero-stat">
+      <span class="hero-stat-num">3</span>
+      <span class="hero-stat-label">Categories</span>
+    </div>
+  </div>
+</div>
+
+<!-- FILTERS -->
+<div class="filters">
+  <a href="#all" class="filter-btn all active">All</a>
+  <a href="#ai" class="filter-btn">AI & Agents</a>
+  <a href="#healthcare" class="filter-btn">Healthcare AI</a>
+  <a href="#mobile" class="filter-btn">Mobile AI</a>
+  <a href="#analytics" class="filter-btn">Analytics</a>
+</div>
+
+<!-- FEATURED -->
+<div class="section">
+  <div class="section-label">★ Featured Article</div>
+  <a href="ai/webmcp.html" class="featured-card">
+    <div class="featured-badge">★ Must Read</div>
+    <div class="featured-title">Google Ships WebMCP — The Browser-Based Backbone for the Agentic Web</div>
+    <p class="featured-desc">
+      A deep-dive into Google's WebMCP protocol — how it turns the browser into a first-class MCP host,
+      what it means for agentic AI systems, and why every AI builder should understand it now.
+    </p>
+    <div class="featured-meta">
+      <span class="tag cyan">AI & Agents</span>
+      <span class="tag purple">MCP Protocol</span>
+      <span class="tag gold">Google</span>
+      <span class="read-link">Read Article →</span>
+    </div>
+  </a>
+</div>
+
+<div class="divider"><hr></div>
+
+<!-- ARTICLE GRID -->
+<div class="section">
+  <div class="section-label">All Articles</div>
+  <div class="grid">
+
+    <!-- Published -->
+    <a href="ai/webmcp.html" class="article-card">
+      <div class="card-category">AI & Agents</div>
+      <div class="card-title">Google Ships WebMCP — Browser-Based MCP</div>
+      <p class="card-desc">How WebMCP turns the browser into a first-class MCP host for the agentic web.</p>
+      <div class="card-footer">
+        <span class="card-date">Feb 2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <a href="ai/ai-insights.html" class="article-card">
+      <div class="card-category">Healthcare AI</div>
+      <div class="card-title">AI in Healthcare — The Insights Hub</div>
+      <p class="card-desc">Curated AI in healthcare analysis, tools, and frameworks for practitioners.</p>
+      <div class="card-footer">
+        <span class="card-date">2026</span>
+        <span class="card-arrow">→</span>
+      </div>
+    </a>
+
+    <!-- Coming Soon -->
+    <div class="article-card coming-soon">
+      <div class="coming-badge">Coming Soon</div>
+      <div class="card-category">AI & Agents</div>
+      <div class="card-title">How AI Agents Are Transforming Clinical Decision Making</div>
+      <p class="card-desc">The latest AI systems reshaping how doctors diagnose, treat, and care for patients.</p>
+      <div class="card-footer">
+        <span class="card-date">In Progress</span>
+      </div>
+    </div>
+
+    <div class="article-card coming-soon">
+      <div class="coming-badge">Coming Soon</div>
+      <div class="card-category">Mobile AI</div>
+      <div class="card-title">On-Device AI — The Samsung S24 Ultra Stack</div>
+      <p class="card-desc">Building privacy-first AI apps on edge hardware without cloud dependency.</p>
+      <div class="card-footer">
+        <span class="card-date">In Progress</span>
+      </div>
+    </div>
+
+    <div class="article-card coming-soon">
+      <div class="coming-badge">Coming Soon</div>
+      <div class="card-category">Analytics</div>
+      <div class="card-title">Hospital Revenue Metrics — A Practitioner's Framework</div>
+      <p class="card-desc">20 years of healthcare operations distilled into actionable analytics patterns.</p>
+      <div class="card-footer">
+        <span class="card-date">In Progress</span>
+      </div>
+    </div>
+
+    <div class="article-card coming-soon">
+      <div class="coming-badge">Coming Soon</div>
+      <div class="card-category">AI & Agents</div>
+      <div class="card-title">RAG Systems Explained — From Theory to Production</div>
+      <p class="card-desc">A complete breakdown of retrieval-augmented generation for healthcare use cases.</p>
+      <div class="card-footer">
+        <span class="card-date">In Progress</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BACK -->
+<div class="back-section">
+  <a href="https://drfarooqai.github.io/" class="back-btn">← Back to Main Portfolio</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>Dr. Muhammad Farooq — AI in Healthcare · Riyadh, KSA</p>
+  <p>drfarooqai.github.io/articles</p>
+</footer>
+
+<script>
+  // Category filter highlight (visual only)
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
