@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What is Claude — Feature Carousel</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Syne:wght@400;600;700;800&family=DM+Mono:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  --slide-w: 560px;
+  --slide-h: 720px;
+  --gap: 20px;
+  --bg: #0a0a0a;
+  --white: #f5f0e8;
+  --c1: #ff6b35;  /* Chat */
+  --c2: #4ecdc4;  /* Projects */
+  --c3: #45b7d1;  /* Code */
+  --c4: #ffe66d;  /* Cowork */
+  --c5: #a8e6cf;  /* Skills */
+  --c6: #ff8b94;  /* Connectors */
+  --c7: #c3a6ff;  /* Plugins */
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+  padding: 40px 0 60px;
+}
+
+/* ── NOISE ── */
+body::before {
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:1000;
+}
+
+/* ── HEADER ── */
+.header {
+  text-align:center;
+  margin-bottom:56px;
+  position:relative;z-index:10;
+}
+.header-eyebrow {
+  font-family:'DM Mono',monospace;
+  font-size:11px;letter-spacing:4px;
+  text-transform:uppercase;
+  color:rgba(245,240,232,.35);
+  margin-bottom:16px;
+}
+.header-title {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(48px,7vw,88px);
+  font-weight:900;
+  color:var(--white);
+  line-height:.95;
+  letter-spacing:-1px;
+}
+.header-title em {
+  font-style:italic;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(245,240,232,.5);
+}
+.header-sub {
+  margin-top:18px;
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:rgba(245,240,232,.3);
+}
+
+/* ── TRACK ── */
+.track-outer {
+  position:relative;z-index:10;
+  width:100%;
+  overflow:hidden;
+  padding:48px 0 56px;
+  cursor:grab;
+}
+.track-outer.dragging{cursor:grabbing;}
+.track-outer::before,.track-outer::after{
+  content:'';position:absolute;top:0;bottom:0;width:200px;z-index:20;pointer-events:none;
+}
+.track-outer::before{left:0;background:linear-gradient(to right,var(--bg),transparent);}
+.track-outer::after{right:0;background:linear-gradient(to left,var(--bg),transparent);}
+
+.track {
+  display:flex;
+  gap:var(--gap);
+  padding:0 calc((100vw - var(--slide-w))/2);
+  transition:transform .75s cubic-bezier(.16,1,.3,1);
+  will-change:transform;
+}
+
+/* ── SLIDE ── */
+.slide {
+  flex:0 0 var(--slide-w);
+  height:var(--slide-h);
+  border-radius:24px;
+  position:relative;
+  overflow:hidden;
+  cursor:pointer;
+  transition:transform .6s cubic-bezier(.16,1,.3,1), opacity .6s ease, box-shadow .6s ease;
+  opacity:.45;
+  transform:scale(.88) translateY(16px);
+  user-select:none;
+}
+.slide.active {
+  opacity:1;
+  transform:scale(1) translateY(0);
+}
+.slide:not(.active):hover{opacity:.65;transform:scale(.9) translateY(10px);}
+
+/* slide bg patterns */
+.slide-bg {
+  position:absolute;inset:0;
+  transition:transform .7s ease;
+}
+.slide:hover .slide-bg{transform:scale(1.03);}
+
+/* unique pattern per slide */
+.slide:nth-child(1) .slide-bg {
+  background: linear-gradient(145deg,#1a0d00 0%,#2d1500 60%,#0f0800 100%);
+}
+.slide:nth-child(2) .slide-bg {
+  background: linear-gradient(145deg,#001a1a 0%,#002d2a 60%,#00100f 100%);
+}
+.slide:nth-child(3) .slide-bg {
+  background: linear-gradient(145deg,#001520 0%,#002535 60%,#000d18 100%);
+}
+.slide:nth-child(4) .slide-bg {
+  background: linear-gradient(145deg,#1a1600 0%,#2d2500 60%,#0f0e00 100%);
+}
+.slide:nth-child(5) .slide-bg {
+  background: linear-gradient(145deg,#0a1a12 0%,#122b1f 60%,#051009 100%);
+}
+.slide:nth-child(6) .slide-bg {
+  background: linear-gradient(145deg,#1a0008 0%,#2d0010 60%,#0f0007 100%);
+}
+.slide:nth-child(7) .slide-bg {
+  background: linear-gradient(145deg,#0f0a1a 0%,#1c1230 60%,#07050f 100%);
+}
+
+/* glow orb inside each card */
+.slide-glow {
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  pointer-events:none;
+  animation:orbFloat 7s ease-in-out infinite alternate;
+}
+@keyframes orbFloat{
+  from{transform:translate(0,0) scale(1);}
+  to{transform:translate(15px,-20px) scale(1.1);}
+}
+
+/* geometric accent shape */
+.slide-shape {
+  position:absolute;
+  pointer-events:none;
+  animation:shapeFloat 9s ease-in-out infinite alternate;
+}
+@keyframes shapeFloat{
+  from{transform:rotate(0deg) scale(1);}
+  to{transform:rotate(25deg) scale(1.08);}
+}
+
+.slide-border {
+  position:absolute;inset:0;border-radius:24px;
+  border:1px solid rgba(245,240,232,.08);pointer-events:none;
+  transition:border-color .4s;
+}
+.slide.active .slide-border{border-color:rgba(245,240,232,.18);}
+
+/* number badge — now inside content block */
+.slide-num {
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:3px;
+  color:rgba(245,240,232,.3);
+  transition:color .4s;
+  display:block;
+  margin-bottom:6px;
+}
+.slide.active .slide-num{color:rgba(245,240,232,.55);}
+
+/* accent icon — hidden */
+.slide-icon { display:none; }
+
+/* tag */
+.slide-tag {
+  display:inline-block;
+  font-family:'DM Mono',monospace;
+  font-size:9px;letter-spacing:4px;text-transform:uppercase;
+  padding:4px 12px;border-radius:100px;
+  backdrop-filter:blur(12px);
+  border:1px solid;
+  margin-bottom:0;
+  opacity:0;transform:translateY(8px);
+  transition:opacity .4s .1s, transform .4s .1s;
+}
+.slide.active .slide-tag{opacity:1;transform:translateY(0);}
+
+/* overlay — lighter at top so title reads */
+.slide-overlay {
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,rgba(0,0,0,.2) 40%,rgba(0,0,0,.75) 100%);
+}
+
+/* content — full card, spread top to bottom */
+.slide-content {
+  position:absolute;inset:0;
+  padding:32px 28px 28px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.slide-label { display:none; }
+
+.slide-title {
+  font-family:'Playfair Display',serif;
+  font-size:28px;font-weight:900;line-height:1.15;
+  color:var(--white);letter-spacing:-0.5px;
+  margin-bottom:0;
+}
+.slide-title span{font-style:italic;}
+
+.slide-checks {
+  display:flex;flex-direction:column;gap:16px;
+  opacity:0;transform:translateY(12px);
+  transition:opacity .4s .15s, transform .4s .15s;
+  flex:1;
+  justify-content:center;
+}
+.slide.active .slide-checks{opacity:1;transform:translateY(0);}
+
+.check-item {
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:22px;font-weight:600;
+  color:rgba(245,240,232,.85);
+  line-height:1.35;
+}
+.check-mark {
+  flex-shrink:0;
+  width:26px;height:26px;
+  border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;
+  margin-top:3px;
+}
+
+/* scan line on active */
+.slide.active::after {
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+  opacity:.6;
+  animation:scanLine 3.5s linear infinite;
+  border-radius:24px 24px 0 0;
+}
+@keyframes scanLine{
+  from{transform:scaleX(0);transform-origin:left;}
+  to{transform:scaleX(1);transform-origin:left;}
+}
+
+/* per-slide accent colors */
+.slide:nth-child(1){--accent:var(--c1);}
+.slide:nth-child(2){--accent:var(--c2);}
+.slide:nth-child(3){--accent:var(--c3);}
+.slide:nth-child(4){--accent:var(--c4);}
+.slide:nth-child(5){--accent:var(--c5);}
+.slide:nth-child(6){--accent:var(--c6);}
+.slide:nth-child(7){--accent:var(--c7);}
+
+.slide .slide-glow{background:var(--accent);}
+.slide .slide-icon{color:var(--accent);}
+.slide .slide-tag{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 40%,transparent);}
+.slide .slide-label{color:var(--accent);}
+.slide .check-mark{background:color-mix(in srgb,var(--accent) 20%,transparent);color:var(--accent);}
+.slide.active::after{background:var(--accent);}
+
+/* ── CONTROLS ── */
+.controls {
+  display:flex;align-items:center;gap:28px;
+  position:relative;z-index:10;
+  margin-top:36px;
+}
+.ctrl {
+  width:50px;height:50px;border-radius:50%;
+  border:1px solid rgba(245,240,232,.12);
+  background:rgba(245,240,232,.04);
+  color:var(--white);font-size:18px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all .3s;backdrop-filter:blur(10px);
+}
+.ctrl:hover{border-color:rgba(245,240,232,.3);background:rgba(245,240,232,.1);transform:scale(1.08);}
+.ctrl:active{transform:scale(.95);}
+
+.dots{display:flex;gap:7px;align-items:center;}
+.dot{
+  height:3px;width:8px;border-radius:100px;
+  background:rgba(245,240,232,.18);
+  cursor:pointer;transition:all .4s cubic-bezier(.16,1,.3,1);
+}
+.dot.active{width:26px;background:var(--white);}
+
+/* ── FOOTER TAG ── */
+.footer-label {
+  margin-top:28px;
+  font-family:'DM Mono',monospace;
+  font-size:10px;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(245,240,232,.2);
+  position:relative;z-index:10;
+}
+.footer-label span{color:rgba(245,240,232,.5);}
+
+/* responsive */
+@media(max-width:620px){
+  :root{--slide-w:88vw;--slide-h:640px;}
+  .header-title{font-size:42px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <p class="header-eyebrow">The Complete Guide</p>
+  <h1 class="header-title">What is<br><em>Claude?</em></h1>
+  <p class="header-sub">7 features · Swipe to explore</p>
+</header>
+
+<!-- CAROUSEL -->
+<div class="track-outer" id="outer">
+  <div class="track" id="track">
+
+    <!-- 1. CHAT -->
+    <div class="slide active" data-index="0">
+      <div class="slide-bg"></div>
+      <div class="slide-glow" style="width:350px;height:350px;top:-80px;right:-60px;opacity:.22;animation-delay:0s;"></div>
+      <div class="slide-shape" style="width:180px;height:180px;border:1px solid rgba(255,107,53,.12);border-radius:40% 60% 60% 40%/60% 30% 70% 40%;top:60px;right:40px;animation-delay:0s;"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-border"></div>
+      <div class="slide-content">
+        <div>
+          <span class="slide-num">01 / 07</span>
+          <div class="slide-tag">Core Feature</div>
+          <h2 class="slide-title">Chat<br><span>Interface</span></h2>
+        </div>
+        <div class="slide-checks">
+          <div class="check-item"><span class="check-mark">✓</span><span>Just like ChatGPT — natural conversation</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Use <strong>Opus 4.6</strong> for max intelligence</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Always enable <strong>extended thinking</strong></span></div>
+          <div class="check-item"><span class="check-mark">✦</span><span style="opacity:.5;font-style:italic;font-size:16px;">I barely use Chat now — Cowork replaced it.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. PROJECTS -->
+    <div class="slide" data-index="1">
+      <div class="slide-bg"></div>
+      <div class="slide-glow" style="width:320px;height:320px;top:-40px;left:-40px;opacity:.2;animation-delay:-2s;"></div>
+      <div class="slide-shape" style="width:200px;height:200px;border:1px solid rgba(78,205,196,.1);border-radius:50%;bottom:180px;right:-30px;animation-delay:-2s;"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-border"></div>
+      <div class="slide-content">
+        <div>
+          <span class="slide-num">02 / 07</span>
+          <div class="slide-tag">Organization</div>
+          <h2 class="slide-title">Pro<span>jects</span></h2>
+        </div>
+        <div class="slide-checks">
+          <div class="check-item"><span class="check-mark">✓</span><span>Chat separated by client or topic</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>One project per client — drop files inside</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Keeps Claude focused on your context</span></div>
+          <div class="check-item"><span class="check-mark">✦</span><span style="opacity:.5;font-style:italic;font-size:16px;">I replaced Projects with Cowork. It does more.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. CODE -->
+    <div class="slide" data-index="2">
+      <div class="slide-bg"></div>
+      <div class="slide-glow" style="width:280px;height:280px;top:100px;right:-50px;opacity:.22;animation-delay:-4s;"></div>
+      <div class="slide-shape" style="width:160px;height:160px;border:1px solid rgba(69,183,209,.12);border-radius:20px;top:40px;left:40px;transform:rotate(20deg);animation-delay:-4s;"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-border"></div>
+      <div class="slide-content">
+        <div>
+          <span class="slide-num">03 / 07</span>
+          <div class="slide-tag">Developer Tool</div>
+          <h2 class="slide-title">Claude<br><span>Code</span></h2>
+        </div>
+        <div class="slide-checks">
+          <div class="check-item"><span class="check-mark">✓</span><span>A revolution for developers — write & ship</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Writes, debugs & deploys. No copy-pasting</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Works directly inside your codebase</span></div>
+          <div class="check-item"><span class="check-mark">✦</span><span style="opacity:.5;font-style:italic;font-size:16px;">Skip if you don't code — use Cowork instead.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. COWORK ★ -->
+    <div class="slide" data-index="3">
+      <div class="slide-bg"></div>
+      <div class="slide-glow" style="width:400px;height:400px;top:-100px;left:50%;transform:translateX(-50%);opacity:.25;animation-delay:-1s;"></div>
+      <div class="slide-shape" style="width:220px;height:220px;border:2px solid rgba(255,230,109,.15);border-radius:50% 50% 30% 70%/50% 30% 70% 50%;top:30px;right:-20px;animation-delay:-1s;"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-border"></div>
+      <div class="slide-content">
+        <div>
+          <span class="slide-num">04 / 07</span>
+          <div class="slide-tag">★ Most Important</div>
+          <h2 class="slide-title">Co<span>work</span></h2>
+        </div>
+        <div class="slide-checks">
+          <div class="check-item"><span class="check-mark">✓</span><span>Create folder <strong>'Cowork'</strong> → 4 subfolders</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>About me · Templates · Projects · Output.md</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Download free at <strong>how-to-ai.guide</strong></span></div>
+          <div class="check-item"><span class="check-mark">✦</span><span style="opacity:.5;font-style:italic;font-size:16px;">Your Claude Code if you don't code.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. SKILLS -->
+    <div class="slide" data-index="4">
+      <div class="slide-bg"></div>
+      <div class="slide-glow" style="width:300px;height:300px;bottom:50px;right:-30px;opacity:.2;animation-delay:-3s;"></div>
+      <div class="slide-shape" style="width:140px;height:140px;border:1px solid rgba(168,230,207,.12);border-radius:60% 40% 70% 30%/30% 70% 40% 60%;top:80px;left:30px;animation-delay:-3s;"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-border"></div>
+      <div class="slide-content">
+        <div>
+          <span class="slide-num">05 / 07</span>
+          <div class="slide-tag">Automation</div>
+          <h2 class="slide-title">Skills<br><span>System</span></h2>
+        </div>
+        <div class="slide-checks">
+          <div class="check-item"><span class="check-mark">✓</span><span>Teach Claude once — reuse forever</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Build a Skill for every weekly repeated task</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Like a Project with permanent instructions</span></div>
+          <div class="check-item"><span class="check-mark">✦</span><span style="opacity:.5;font-style:italic;font-size:16px;">One Skill replaces an entire SOP document.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. CONNECTORS -->
+    <div class="slide" data-index="5">
+      <div class="slide-bg"></div>
+      <div class="slide-glow" style="width:350px;height:350px;top:0;left:-60px;opacity:.2;animation-delay:-5s;"></div>
+      <div class="slide-shape" style="width:190px;height:190px;border:1px solid rgba(255,139,148,.12);border-radius:30% 70% 50% 50%/30% 30% 70% 70%;bottom:200px;right:20px;animation-delay:-5s;"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-border"></div>
+      <div class="slide-content">
+        <div>
+          <span class="slide-num">06 / 07</span>
+          <div class="slide-tag">Integrations</div>
+          <h2 class="slide-title">Con<span>nectors</span></h2>
+        </div>
+        <div class="slide-checks">
+          <div class="check-item"><span class="check-mark">✓</span><span>Settings → Connectors → Browse → Add</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Slack, Drive, Notion, Figma — 50+ tools</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Claude reads, writes & acts inside them</span></div>
+          <div class="check-item"><span class="check-mark">✦</span><span style="opacity:.5;font-style:italic;font-size:16px;">It's completely free. No excuses.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. PLUGINS -->
+    <div class="slide" data-index="6">
+      <div class="slide-bg"></div>
+      <div class="slide-glow" style="width:320px;height:320px;top:80px;right:-40px;opacity:.22;animation-delay:-6s;"></div>
+      <div class="slide-shape" style="width:170px;height:170px;border:1px solid rgba(195,166,255,.12);border-radius:70% 30% 50% 50%/50% 60% 40% 50%;top:50px;left:50px;animation-delay:-6s;"></div>
+      <div class="slide-overlay"></div>
+      <div class="slide-border"></div>
+      <div class="slide-content">
+        <div>
+          <span class="slide-num">07 / 07</span>
+          <div class="slide-tag">Workflows</div>
+          <h2 class="slide-title">Plug<span>ins</span></h2>
+        </div>
+        <div class="slide-checks">
+          <div class="check-item"><span class="check-mark">✓</span><span>Customize → Browse plugins → Install</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Type <strong>/</strong> to trigger commands like /marketing</span></div>
+          <div class="check-item"><span class="check-mark">✓</span><span>Pre-built workflows tailored to your role</span></div>
+          <div class="check-item"><span class="check-mark">✦</span><span style="opacity:.5;font-style:italic;font-size:16px;">Customize each plugin to your company.</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /track -->
+</div><!-- /outer -->
+
+<!-- CONTROLS -->
+<div class="controls">
+  <button class="ctrl" id="prev" aria-label="Previous">&#8592;</button>
+  <div class="dots" id="dots">
+    <div class="dot active" data-i="0"></div>
+    <div class="dot" data-i="1"></div>
+    <div class="dot" data-i="2"></div>
+    <div class="dot" data-i="3"></div>
+    <div class="dot" data-i="4"></div>
+    <div class="dot" data-i="5"></div>
+    <div class="dot" data-i="6"></div>
+  </div>
+  <button class="ctrl" id="next" aria-label="Next">&#8594;</button>
+</div>
+
+<p class="footer-label">Swipe · Click · Keys ← → &nbsp;|&nbsp; <span>claude.ai</span></p>
+
+<script>
+const track = document.getElementById('track');
+const outer = document.getElementById('outer');
+const slides = Array.from(document.querySelectorAll('.slide'));
+const dotsEl = Array.from(document.querySelectorAll('.dot'));
+let current = 0;
+let autoT;
+
+function getW() {
+  return slides[0].getBoundingClientRect().width + parseInt(getComputedStyle(document.documentElement).getPropertyValue('--gap'));
+}
+
+function goTo(idx, smooth = true) {
+  current = ((idx % slides.length) + slides.length) % slides.length;
+  slides.forEach((s,i) => s.classList.toggle('active', i === current));
+  dotsEl.forEach((d,i) => d.classList.toggle('active', i === current));
+  track.style.transition = smooth ? 'transform .75s cubic-bezier(.16,1,.3,1)' : 'none';
+  track.style.transform = `translateX(-${current * getW()}px)`;
+}
+
+document.getElementById('prev').onclick = () => { resetAuto(); goTo(current - 1); };
+document.getElementById('next').onclick = () => { resetAuto(); goTo(current + 1); };
+dotsEl.forEach(d => d.onclick = () => { resetAuto(); goTo(+d.dataset.i); });
+slides.forEach(s => s.onclick = () => { resetAuto(); goTo(+s.dataset.index); });
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'ArrowLeft') { resetAuto(); goTo(current - 1); }
+  if(e.key === 'ArrowRight') { resetAuto(); goTo(current + 1); }
+});
+
+// drag/swipe
+let sx = 0, drag = false, moved = false;
+outer.addEventListener('pointerdown', e => { sx = e.clientX; drag = true; moved = false; outer.classList.add('dragging'); outer.setPointerCapture(e.pointerId); });
+outer.addEventListener('pointermove', e => { if(!drag) return; if(Math.abs(e.clientX-sx)>6) moved=true; });
+outer.addEventListener('pointerup', e => {
+  if(!drag) return; drag=false; outer.classList.remove('dragging');
+  const dx = sx - e.clientX;
+  if(moved && Math.abs(dx)>40) { resetAuto(); goTo(current + (dx>0?1:-1)); }
+});
+
+function startAuto() { autoT = setInterval(() => goTo(current + 1), 5000); }
+function resetAuto() { clearInterval(autoT); startAuto(); }
+
+// init
+goTo(0, false);
+startAuto();
+
+// handle resize
+window.addEventListener('resize', () => goTo(current, false));
+</script>
+</body>
+</html>
