@@ -68,8 +68,18 @@ body::before {
 }
 .header-title em {
   font-style:italic;
-  color:transparent;
-  -webkit-text-stroke:1px rgba(245,240,232,.5);
+  background: linear-gradient(90deg, #00f5ff, #a855f7, #ff6b35, #00f5ff);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: title-flow 3s linear infinite;
+  text-shadow: none;
+  filter: drop-shadow(0 0 18px rgba(0,245,255,.45));
+}
+@keyframes title-flow {
+  0%{background-position:0% 50%}
+  100%{background-position:300% 50%}
 }
 .header-sub {
   margin-top:18px;
@@ -78,6 +88,21 @@ body::before {
   letter-spacing:2px;
   text-transform:uppercase;
   color:rgba(245,240,232,.3);
+}
+.header-author {
+  margin-top:20px;
+  font-family:'DM Mono', monospace;
+  font-size:13px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  font-weight:700;
+  background: linear-gradient(90deg, #00f5ff, #a855f7, #ff6b35, #00f5ff);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: title-flow 4s linear infinite;
+  filter: drop-shadow(0 0 8px rgba(168,85,247,.6));
 }
 
 /* ── TRACK ── */
@@ -338,6 +363,7 @@ body::before {
   <p class="header-eyebrow">The Complete Guide</p>
   <h1 class="header-title">What is<br><em>Claude?</em></h1>
   <p class="header-sub">7 features · Swipe to explore</p>
+  <p class="header-author">Dr. Muhammad Farooq</p>
 </header>
 
 <!-- CAROUSEL -->
