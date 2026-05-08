@@ -467,9 +467,7 @@
     box-shadow: 0 6px 20px rgba(0,0,0,0.08);
   }
 
-  /* Bar animation — start at 0, JS drives to target */
-  .bar-fill { width: 0 !important; }
-  .bar-fill.animated { transition: width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important; }
+  /* Bar animation handled entirely by JS */
 
   .chapter { scroll-margin-top: 56px; }
 
@@ -813,12 +811,16 @@
 
   // Animate bar charts when they scroll into view
   const bars = document.querySelectorAll('.bar-fill[data-width]');
+  bars.forEach(bar => { bar.style.width = '0'; });
+
   const barObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const el = entry.target;
-        el.classList.add('animated');
-        el.style.width = el.dataset.width;
+        requestAnimationFrame(() => {
+          el.style.transition = 'width 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+          el.style.width = el.dataset.width;
+        });
         barObserver.unobserve(el);
       }
     });
