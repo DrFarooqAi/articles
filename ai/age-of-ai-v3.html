@@ -1,0 +1,689 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head><script>(function(){
+  function makeStore(){
+    var data = {};
+    var api = {
+      getItem: function(k){ return Object.prototype.hasOwnProperty.call(data, k) ? data[k] : null; },
+      setItem: function(k, v){ data[k] = String(v); },
+      removeItem: function(k){ delete data[k]; },
+      clear: function(){ data = {}; },
+      key: function(i){ return Object.keys(data)[i] || null; }
+    };
+    Object.defineProperty(api, 'length', { get: function(){ return Object.keys(data).length; } });
+    return api;
+  }
+  function tryShim(name){
+    var works = false;
+    try { works = !!window[name] && typeof window[name].getItem === 'function'; void window[name].length; }
+    catch (_) { works = false; }
+    if (works) return;
+    try { Object.defineProperty(window, name, { configurable: true, value: makeStore() }); }
+    catch (_) { try { window[name] = makeStore(); } catch (__) {} }
+  }
+  tryShim('localStorage');
+  tryShim('sessionStorage');
+})();</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Age of Artificial Intelligence — Dr. Muhammad Farooq</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:         #0e0e0e;
+  --bg-alt:     #131313;
+  --surface:    #191919;
+  --surface-2:  #202020;
+  --surface-3:  #282828;
+  --fg:         #ffffff;
+  --fg-body:    rgba(255,255,255,0.70);
+  --fg-muted:   rgba(255,255,255,0.42);
+  --fg-faint:   rgba(255,255,255,0.24);
+  --border:     rgba(255,255,255,0.07);
+  --border-md:  rgba(255,255,255,0.12);
+  --border-lg:  rgba(255,255,255,0.20);
+  --accent:     #c4f000;
+  --accent-dim: rgba(196,240,0,0.09);
+  --accent-txt: #000000;
+  --teal:       #00c896;
+  --blue:       #4d8af0;
+  --amber:      #f5a623;
+  --font: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--bg); color: var(--fg); line-height: 1.75; font-size: 17px; padding-top: 52px; -webkit-font-smoothing: antialiased; }
+
+#rp { position: fixed; top: 52px; left: 0; width: 0%; height: 2px; background: var(--accent); z-index: 9998; transition: width 0.08s linear; }
+
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  background: rgba(14,14,14,0.96);
+  backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 52px;
+}
+.nav-logo { font-size: 15px; font-weight: 700; color: var(--fg); text-decoration: none; letter-spacing: -0.025em; display: flex; align-items: center; gap: 8px; }
+.nav-logo-icon { width: 26px; height: 26px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; color: #000; }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { font-size: 13.5px; color: var(--fg-muted); text-decoration: none; transition: color .2s; font-weight: 500; }
+.nav-links a:hover { color: var(--fg); }
+.nav-cta { background: var(--accent); color: var(--accent-txt); font-size: 13px; font-weight: 600; padding: 7px 16px; border-radius: 6px; text-decoration: none; transition: opacity .2s; }
+.nav-cta:hover { opacity: 0.88; }
+
+.hero {
+  background: var(--bg); padding: 80px 48px;
+  position: relative; overflow: hidden;
+  min-height: calc(100vh - 52px);
+  display: flex; align-items: center;
+}
+.hero::before {
+  content: ''; position: absolute; top: -80px; right: -80px;
+  width: 720px; height: 720px;
+  background: radial-gradient(circle, rgba(196,240,0,0.07) 0%, transparent 62%);
+  pointer-events: none;
+}
+.hero-inner {
+  display: grid; grid-template-columns: 1.1fr 0.9fr;
+  gap: 64px; align-items: center;
+  max-width: 1180px; margin: 0 auto; width: 100%; position: relative; z-index: 1;
+}
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--fg-muted); margin-bottom: 28px;
+  animation: slideUp 0.6s ease 0.1s both;
+}
+.hero-badge .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); box-shadow: 0 0 8px var(--accent);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+@keyframes slideUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+.hero h1 {
+  font-size: clamp(2.8rem, 6.5vw, 5.2rem);
+  font-weight: 700; line-height: 1.03; letter-spacing: -0.035em; margin-bottom: 1.5rem;
+  animation: slideUp 0.6s ease 0.25s both;
+}
+.hero h1 .dim { color: var(--fg-muted); display: block; }
+.hero h1 .bright { color: var(--fg); display: block; }
+
+.hero-deck {
+  font-size: 16.5px; color: var(--fg-muted); max-width: 480px;
+  line-height: 1.65; margin-bottom: 2.5rem;
+  animation: slideUp 0.6s ease 0.4s both;
+}
+
+.hero-stats-strip {
+  display: flex; gap: 0; border: 1px solid var(--border-md);
+  border-radius: 10px; overflow: hidden; margin-bottom: 2.5rem;
+  background: var(--surface); animation: slideUp 0.6s ease 0.55s both;
+}
+.hs { padding: 14px 18px; flex: 1; border-right: 1px solid var(--border); }
+.hs:last-child { border-right: none; }
+.hs-num { font-size: 1.4rem; font-weight: 700; color: var(--accent); letter-spacing: -0.03em; display: block; margin-bottom: 2px; font-variant-numeric: tabular-nums; }
+.hs-lbl { font-size: 10.5px; color: var(--fg-faint); line-height: 1.3; }
+
+.hero-byline {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12.5px; color: var(--fg-faint);
+  animation: slideUp 0.6s ease 0.7s both;
+}
+.hero-byline strong { color: var(--fg-muted); font-weight: 500; }
+.hero-byline .sep { color: var(--border-lg); }
+
+.hero-card {
+  background: var(--surface); border: 1px solid var(--border-md);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,0.04);
+  animation: slideUp 0.6s ease 0.45s both;
+}
+.hc-titlebar {
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 7px;
+}
+.hc-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+.hc-dot.r { background: #ff5f57; } .hc-dot.y { background: #febc2e; } .hc-dot.g { background: #28c840; }
+.hc-title { font-size: 11.5px; color: var(--fg-faint); margin-left: 6px; }
+.hc-body { padding: 20px 22px; }
+.hc-label { font-size: 9.5px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-faint); margin-bottom: 16px; }
+.hc-metric { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid var(--border); opacity: 0; animation: fadeIn 0.5s ease forwards; }
+.hc-metric:nth-child(2) { animation-delay: 0.5s; }
+.hc-metric:nth-child(3) { animation-delay: 1.0s; }
+.hc-metric:nth-child(4) { animation-delay: 1.5s; border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+@keyframes fadeIn { to { opacity:1; } }
+.hc-metric-row { display: flex; align-items: baseline; gap: 10px; margin-bottom: 3px; }
+.hc-num { font-size: 1.9rem; font-weight: 700; color: var(--fg); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.hc-change { font-size: 12px; font-weight: 600; color: var(--accent); }
+.hc-desc { font-size: 12px; color: var(--fg-faint); line-height: 1.35; }
+.hc-status {
+  background: var(--surface-2); border-top: 1px solid var(--border);
+  padding: 11px 22px; display: flex; align-items: center; justify-content: space-between;
+}
+.hc-status-left {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 10.5px; font-weight: 600; color: var(--accent);
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.hc-status-left::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); animation: pulse 1.4s ease-in-out infinite;
+}
+.hc-dots { display: flex; gap: 4px; }
+.hc-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--fg-faint); animation: blink 1.4s ease-in-out infinite; }
+.hc-dots span:nth-child(2) { animation-delay: 0.3s; }
+.hc-dots span:nth-child(3) { animation-delay: 0.6s; }
+@keyframes blink { 0%,100% { opacity:.2; } 50% { opacity:1; } }
+
+.layout {
+  display: grid; grid-template-columns: 1fr min(700px, 100%) 220px;
+  max-width: 1280px; margin: 0 auto; padding: 0 24px;
+}
+
+.toc-sidebar {
+  position: sticky; top: 80px; height: fit-content;
+  padding: 3.5rem 0 3.5rem 2.5rem; grid-column: 3; grid-row: 1 / 20;
+}
+.toc-label { font-size: 9px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-faint); margin-bottom: 1rem; }
+.toc-sidebar ol { list-style: none; counter-reset: toc; }
+.toc-sidebar li { counter-increment: toc; margin-bottom: 0.6rem; }
+.toc-sidebar a { font-size: 12px; color: var(--fg-faint); text-decoration: none; line-height: 1.35; display: flex; gap: 8px; transition: color .2s; align-items: flex-start; }
+.toc-sidebar a::before { content: counter(toc, upper-roman); font-size: 9px; color: var(--accent); opacity:.55; min-width: 22px; padding-top: 2px; font-weight: 700; }
+.toc-sidebar a:hover { color: var(--fg-muted); }
+.toc-sidebar a.active { color: var(--fg); }
+
+.article { grid-column: 2; padding: 4.5rem 2rem; }
+
+.lead { font-size: 1.2rem; line-height: 1.7; color: var(--fg-body); padding-top: 2.5rem; border-top: 1px solid var(--border-md); margin-bottom: 3rem; }
+.lead strong { color: var(--fg); font-weight: 600; }
+
+.stat-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--border); border: 1px solid var(--border);
+  border-radius: 10px; overflow: hidden; margin-bottom: 4rem;
+}
+.stat-card { background: var(--surface); padding: 1.4rem 1rem; text-align: center; transition: background .15s; }
+.stat-card:hover { background: var(--surface-2); }
+.stat-card .num { font-size: 1.9rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: 4px; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.stat-card .label { font-size: 10.5px; color: var(--fg-faint); text-transform: uppercase; letter-spacing: 0.1em; line-height: 1.4; }
+
+.chapter { padding: 3.5rem 0; border-top: 1px solid var(--border); scroll-margin-top: 68px; }
+.chapter-label { font-size: 9px; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.6rem; }
+h2 { font-size: clamp(1.5rem, 3.2vw, 2rem); font-weight: 700; line-height: 1.2; color: var(--fg); margin-bottom: 1.4rem; letter-spacing: -0.025em; }
+p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height: 1.78; }
+.source-note { font-size: 11.5px; color: var(--fg-faint); line-height: 1.5; margin-top: -0.6rem; font-style: italic; }
+
+.pullquote { margin: 2.5rem 0; padding: 1.6rem 2rem; border-left: 2px solid var(--accent); background: rgba(196,240,0,0.04); border-radius: 0 8px 8px 0; }
+.pullquote p { font-size: clamp(1.05rem, 2.4vw, 1.35rem); font-weight: 500; color: var(--fg); margin: 0; line-height: 1.48; letter-spacing: -0.01em; }
+.pullquote cite { display: block; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-top: 0.8rem; font-style: normal; font-weight: 700; opacity: 0.7; }
+
+.bar-chart { margin: 2rem 0; }
+.bar-chart-title { font-size: 10.5px; color: var(--fg-faint); font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 1.2rem; }
+.bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+.bar-label { font-size: 12px; color: var(--fg-muted); min-width: 130px; text-align: right; font-variant-numeric: tabular-nums; }
+.bar-track { flex: 1; height: 28px; background: var(--surface-2); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; display: flex; align-items: center; padding-left: 10px; font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; border-radius: 4px; }
+.bar-fill.lime  { background: var(--accent); color: #000; }
+.bar-fill.teal  { background: var(--teal);   color: #000; }
+.bar-fill.blue  { background: var(--blue);   color: #fff; }
+.bar-fill.amber { background: var(--amber);  color: #000; }
+.bar-fill.muted { background: var(--surface-3); color: var(--fg-muted); }
+
+.data-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 2rem 0; }
+.data-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; }
+.data-block .title { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; color: var(--fg-faint); margin-bottom: 0.5rem; }
+.data-block .value { font-size: 2.1rem; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.data-block p { font-size: 13px; color: var(--fg-muted); margin: 0; line-height: 1.5; }
+
+.timeline { position: relative; padding-left: 2rem; margin: 2rem 0; }
+.timeline::before { content: ''; position: absolute; left: 7px; top: 10px; bottom: 10px; width: 1px; background: var(--border-md); }
+.timeline-item { position: relative; margin-bottom: 1.5rem; }
+.timeline-item::before { content: ''; position: absolute; left: -1.6rem; top: 5px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--accent); }
+.timeline-item .year { font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+.timeline-item .event { font-size: 15px; color: var(--fg); font-weight: 600; line-height: 1.3; margin-bottom: 2px; }
+.timeline-item .detail { font-size: 13.5px; color: var(--fg-muted); line-height: 1.5; }
+
+.callout-box { border-left: 2px solid var(--accent); padding: 1.4rem 1.6rem; margin: 2.5rem 0; background: var(--accent-dim); border-radius: 0 10px 10px 0; }
+.callout-head { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 0.6rem; }
+.callout-box p { color: var(--fg-body); font-size: 15px; margin: 0; line-height: 1.65; }
+
+.sector-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 2rem 0; }
+.sector-card { border: 1px solid var(--border); border-radius: 10px; padding: 1.3rem; background: var(--surface); transition: border-color .2s, background .15s; position: relative; overflow: hidden; }
+.sector-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); opacity: 0; transition: opacity .2s; }
+.sector-card:hover { border-color: var(--border-md); background: var(--surface-2); }
+.sector-card:hover::before { opacity: 1; }
+.sector-name { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--fg-faint); margin-bottom: 0.5rem; }
+.sector-stat { font-size: 2rem; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.sector-desc { font-size: 12.5px; color: var(--fg-muted); line-height: 1.5; }
+
+.separator { display: flex; align-items: center; gap: 1rem; padding: 0.5rem 0; }
+.separator::before, .separator::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.separator span { font-size: 10px; color: var(--accent); opacity: 0.4; letter-spacing: 0.2em; }
+
+.synthesis-dark {
+  background: var(--bg-alt); padding: 4rem 2rem;
+  margin: 4rem -2rem 0; border-top: 1px solid var(--border-md);
+  border-radius: 12px 12px 0 0; scroll-margin-top: 68px; position: relative;
+}
+.synthesis-dark::before {
+  content: ''; position: absolute; top: -1px; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.synthesis-dark .chapter-label { color: var(--accent); }
+.synthesis-dark h2 { color: var(--fg); font-size: clamp(1.7rem, 3.5vw, 2.4rem); }
+.synthesis-dark p { color: var(--fg-body); font-size: 16px; }
+.synthesis-dark p strong { color: var(--fg); font-weight: 600; }
+.synthesis-dark .pullquote { background: rgba(196,240,0,0.05); }
+
+.tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2rem; }
+.tag { font-size: 10px; font-weight: 700; padding: 5px 12px; letter-spacing: 0.1em; text-transform: uppercase; background: var(--accent-dim); color: rgba(196,240,0,0.75); border: 1px solid rgba(196,240,0,0.18); border-radius: 6px; }
+
+.author-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin: 2rem -2rem 0; }
+.author-inner { display: flex; gap: 1.6rem; align-items: flex-start; }
+.author-avatar { width: 56px; height: 56px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; color: #000; flex-shrink: 0; }
+.author-name { font-size: 1.05rem; font-weight: 700; color: var(--fg); margin-bottom: 2px; letter-spacing: -0.02em; }
+.author-role { font-size: 9.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.7rem; opacity: 0.8; }
+.author-bio { font-size: 14px; color: var(--fg-muted); margin: 0; line-height: 1.65; max-width: 500px; }
+
+.related-section { padding: 3rem 2rem; margin: 0 -2rem; }
+.related-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-faint); margin-bottom: 1.6rem; }
+.related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; text-decoration: none; display: block; transition: border-color .2s, background .15s; position: relative; overflow: hidden; }
+.related-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); opacity: 0; transition: opacity .2s; }
+.related-card:hover { border-color: var(--border-md); background: var(--surface-2); }
+.related-card:hover::before { opacity: 1; }
+.rc-date { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-faint); margin-bottom: 0.5rem; }
+.rc-title { font-size: 0.95rem; font-weight: 600; color: var(--fg); line-height: 1.35; margin-bottom: 0.4rem; letter-spacing: -0.01em; }
+.rc-excerpt { font-size: 12.5px; color: var(--fg-muted); line-height: 1.5; }
+
+#scroll-top { position: fixed; bottom: 28px; right: 28px; width: 42px; height: 42px; background: var(--accent); color: #000; border: none; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 800; opacity: 0; transform: translateY(10px); transition: opacity .25s, transform .25s; z-index: 800; }
+#scroll-top.visible { opacity: 1; transform: translateY(0); }
+#scroll-top:hover { opacity: 0.85; }
+
+@media (max-width: 1100px) { .layout { grid-template-columns: 1fr min(700px, 100%); } .toc-sidebar { display: none; } }
+@media (max-width: 900px) { .hero { padding: 60px 28px; min-height: auto; } .hero-inner { grid-template-columns: 1fr; gap: 40px; } .hero-card { display: none; } }
+@media (max-width: 700px) {
+  .layout { grid-template-columns: 1fr; padding: 0; } .article { padding: 2.5rem 1.25rem; }
+  .stat-grid { grid-template-columns: repeat(2, 1fr); } .data-row { grid-template-columns: 1fr; }
+  .sector-grid { grid-template-columns: 1fr; } .related-grid { grid-template-columns: 1fr; }
+  .author-inner { flex-direction: column; gap: 1rem; }
+  .author-section, .related-section { margin: 0 -1.25rem; border-radius: 0; }
+  .synthesis-dark { margin: 4rem -1.25rem 0; padding: 3rem 1.25rem; border-radius: 0; }
+  .bar-label { min-width: 90px; font-size: 11.5px; } h2 { font-size: 1.4rem; }
+  .hero-stats-strip { display: grid; grid-template-columns: 1fr 1fr; }
+  .hs { border-right: none; border-bottom: 1px solid var(--border); }
+  .hs:nth-child(odd) { border-right: 1px solid var(--border); }
+  .hs:nth-last-child(-n+2) { border-bottom: none; }
+  .nav-links { display: none; }
+}
+
+/* ── CYBERPUNK OVERRIDES ── */
+@keyframes cpBorder {
+  0%   { border-color:#ff00ff; box-shadow:0 0 22px #ff00ff; }
+  16%  { border-color:#ff6600; box-shadow:0 0 22px #ff6600; }
+  33%  { border-color:#ffff00; box-shadow:0 0 22px #ffff00; }
+  50%  { border-color:#00ff88; box-shadow:0 0 22px #00ff88; }
+  66%  { border-color:#00ffff; box-shadow:0 0 22px #00ffff; }
+  83%  { border-color:#aa00ff; box-shadow:0 0 22px #aa00ff; }
+  100% { border-color:#ff00ff; box-shadow:0 0 22px #ff00ff; }
+}
+@keyframes cpMove  { 0%{background-position:0% center} 100%{background-position:200% center} }
+@keyframes cpGlitch {
+  0%,88%,100%{opacity:1;transform:none;filter:none}
+  89%{opacity:.9;transform:skewX(3deg);filter:hue-rotate(90deg)}
+  90%{opacity:1;transform:skewX(-2deg);filter:none}
+  91%{opacity:.8;filter:hue-rotate(180deg) brightness(1.4)}
+  92%{opacity:1;filter:none}
+}
+#__cpb {
+  position:fixed; inset:4px; z-index:9997; pointer-events:none;
+  border:3px solid #ff00ff;
+  animation:cpBorder 2.5s linear infinite;
+}
+.__cpname {
+  font-weight:800 !important;
+  background:linear-gradient(90deg,#ff00ff 0%,#00ffff 40%,#ff6600 70%,#ff00ff 100%) !important;
+  background-size:200% auto !important;
+  -webkit-background-clip:text !important;
+  -webkit-text-fill-color:transparent !important;
+  background-clip:text !important;
+  animation:cpMove 3s linear infinite, cpGlitch 5s infinite !important;
+  letter-spacing:.04em !important;
+}
+.nav {
+  background:rgba(4,4,14,.94) !important;
+  backdrop-filter:blur(16px) !important;
+  border-bottom:1px solid rgba(0,255,255,.25) !important;
+  font-family:'Space Mono','Courier New',monospace !important;
+}
+.nav-logo {
+  color:#ff00ff !important;
+  font-family:'Space Mono','Courier New',monospace !important;
+  letter-spacing:.05em !important;
+}
+.nav-logo-icon { background:#ff00ff !important; color:#000 !important; }
+.nav-links a { color:#00ffff !important; letter-spacing:.05em !important; font-size:11px !important; }
+.nav-links a:hover { color:#fff !important; text-shadow:0 0 8px #00ffff !important; }
+.nav-cta {
+  background:transparent !important;
+  color:#00ffff !important;
+  border:1px solid rgba(0,255,255,.4) !important;
+  font-family:'Space Mono','Courier New',monospace !important;
+  font-size:11px !important;
+  letter-spacing:.06em !important;
+}
+.nav-cta:hover { background:rgba(0,255,255,.12) !important; border-color:#00ffff !important; box-shadow:0 0 8px rgba(0,255,255,.4) !important; opacity:1 !important; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-logo" href="https://drfarooqai.github.io/dr-farooq-cv/">
+    <span class="nav-logo-icon">F</span>
+    Dr. Farooq AI
+  </a>
+  <div class="nav-links">
+    <a href="https://drfarooqai.github.io/articles/">All Articles</a>
+    <a href="https://drfarooqai.github.io/articles/ai/CLI-vs-MCP-vs-API.html">CLI vs MCP vs API</a>
+    <a href="https://drfarooqai.github.io/articles/ai/ai-agent-field-manual.html">Agent Manual</a>
+    <a href="https://drfarooqai.github.io/articles/ai/claude-code-33-hacks.html">Claude Hacks</a>
+    <a href="https://drfarooqai.github.io/articles/ai/webmcp.html">WebMCP</a>
+  </div>
+  <a class="nav-cta" href="https://drfarooqai.github.io/dr-farooq-cv/">Portfolio ↗</a>
+</nav>
+
+<div id="__cpb"></div>
+<div id="rp"></div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        Now published &nbsp;·&nbsp; Data Analysis &nbsp;·&nbsp; April 2026
+      </div>
+      <h1>
+        <span class="dim">The Age of</span>
+        <span class="bright">Artificial<br>Intelligence</span>
+      </h1>
+      <p class="hero-deck">From a $391 billion market to 97 million new jobs — a data-driven deep-dive into what the numbers actually mean for humanity's next chapter.</p>
+      <div class="hero-stats-strip">
+        <div class="hs"><span class="hs-num">$391B</span><span class="hs-lbl">AI market 2025</span></div>
+        <div class="hs"><span class="hs-num">$3.5T</span><span class="hs-lbl">Projected by 2033</span></div>
+        <div class="hs"><span class="hs-num">78%</span><span class="hs-lbl">Companies using AI</span></div>
+        <div class="hs"><span class="hs-num">1B+</span><span class="hs-lbl">Monthly AI users</span></div>
+      </div>
+      <div class="hero-byline">
+        <strong class="__cpname">Dr. Muhammad Farooq</strong>
+        <span class="sep">·</span>
+        <span>AI Top Voice &amp; AI Doctor</span>
+        <span class="sep">·</span>
+        <span>April 2026</span>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="hc-titlebar">
+        <span class="hc-dot r"></span><span class="hc-dot y"></span><span class="hc-dot g"></span>
+        <span class="hc-title">ai-market-intelligence.json</span>
+      </div>
+      <div class="hc-body">
+        <p class="hc-label">Live market data · Q2 2026</p>
+        <div class="hc-metric">
+          <div class="hc-metric-row"><span class="hc-num">$391B</span><span class="hc-change">↑ 40% YoY</span></div>
+          <p class="hc-desc">Global AI market size in 2025</p>
+        </div>
+        <div class="hc-metric">
+          <div class="hc-metric-row"><span class="hc-num">800M</span><span class="hc-change">↑ 2× since Feb</span></div>
+          <p class="hc-desc">ChatGPT weekly active users</p>
+        </div>
+        <div class="hc-metric">
+          <div class="hc-metric-row"><span class="hc-num">97M</span><span class="hc-change">net new</span></div>
+          <p class="hc-desc">Jobs created by AI by 2030</p>
+        </div>
+      </div>
+      <div class="hc-status">
+        <span class="hc-status-left">Analyzing</span>
+        <div class="hc-dots"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="toc-sidebar">
+    <p class="toc-label">Contents</p>
+    <ol>
+      <li><a href="#ch1">The Market Has Decided</a></li>
+      <li><a href="#ch2">Velocity of Adoption</a></li>
+      <li><a href="#ch3">Enterprise Infrastructure</a></li>
+      <li><a href="#ch4">The Work Question</a></li>
+      <li><a href="#ch5">Sector Transformation</a></li>
+      <li><a href="#ch6">The Trust Deficit</a></li>
+      <li><a href="#synthesis">Synthesis</a></li>
+    </ol>
+  </aside>
+
+  <article class="article" data-od-id="article-body">
+
+    <p class="lead">We are not witnessing a technology trend. We are witnessing a <strong>civilizational inflection point.</strong> The statistics below are not just numbers — they are signals from the future arriving early.</p>
+
+    <div class="stat-grid">
+      <div class="stat-card"><span class="num">$391B</span><span class="label">AI market value<br>in 2025</span></div>
+      <div class="stat-card"><span class="num">$3.5T</span><span class="label">Projected size<br>by 2033</span></div>
+      <div class="stat-card"><span class="num">78%</span><span class="label">Companies already<br>using AI</span></div>
+      <div class="stat-card"><span class="num">1B+</span><span class="label">Global monthly<br>AI users</span></div>
+    </div>
+
+    <div class="chapter" id="ch1">
+      <p class="chapter-label">Chapter I</p>
+      <h2>The Market Has Already Decided</h2>
+      <p>Debates about whether AI is "real" or merely hype ended somewhere around 2023. The capital markets gave their verdict before the pundits did. The global AI market, valued at $391 billion in 2025, is tracking toward a nearly ninefold expansion to $3.5 trillion by 2033 — a compound annual growth rate of 31.5%. To put that in perspective: this is faster than the internet's growth curve in the late 1990s, and with vastly more infrastructure already in place.</p>
+      <p>What is remarkable is not the size, but the acceleration. AI spending surged over 40% in 2024 alone, reaching $130 billion, fueled by a convergence of enterprise adoption, sovereign investment, and consumer behavior shift. Generative AI — the segment most visible to the public — now accounts for $63 billion of that total, surpassing the entire US video gaming market.</p>
+      <div class="pullquote">
+        <p>"The question is no longer whether AI will reshape your industry. The question is whether you will be the one doing the reshaping — or the one being reshaped."</p>
+        <cite>— Dr. Muhammad Farooq</cite>
+      </div>
+      <div class="bar-chart">
+        <p class="bar-chart-title">Global AI market size trajectory</p>
+        <div class="bar-row"><span class="bar-label">2022</span><div class="bar-track"><div class="bar-fill muted" data-width="16%">$142B</div></div></div>
+        <div class="bar-row"><span class="bar-label">2023</span><div class="bar-track"><div class="bar-fill muted" data-width="22%">$208B</div></div></div>
+        <div class="bar-row"><span class="bar-label">2024</span><div class="bar-track"><div class="bar-fill amber" data-width="32%">$298B</div></div></div>
+        <div class="bar-row"><span class="bar-label">2025</span><div class="bar-track"><div class="bar-fill lime" data-width="45%">$391–421B</div></div></div>
+        <div class="bar-row"><span class="bar-label">2030 (proj.)</span><div class="bar-track"><div class="bar-fill teal" data-width="100%">$1.85T+</div></div></div>
+      </div>
+      <p class="source-note">Sources: Grand View Research, Statista, Exploding Topics.</p>
+    </div>
+
+    <div class="separator"><span>✦</span></div>
+
+    <div class="chapter" id="ch2">
+      <p class="chapter-label">Chapter II</p>
+      <h2>ChatGPT and the Velocity of Mass Adoption</h2>
+      <p>ChatGPT reached one million users in five days. Facebook took ten months. Netflix took three and a half years. This single data point encapsulates everything about the cultural moment we occupy: AI did not need to convince anyone. It arrived already fluent in human need.</p>
+      <p>By mid-2025, ChatGPT had surpassed 800 million weekly active users — nearly double what it had in February of the same year. Monthly traffic to ChatGPT.com exceeded 5.4 billion visits, ranking it fifth globally among all websites. OpenAI's annual revenue is projected at $11 billion in 2025. The chatbot market as a whole — worth $2.47 billion in 2021 — is now at $15.57 billion and heading toward $46.64 billion by 2029.</p>
+      <div class="timeline">
+        <div class="timeline-item"><p class="year">November 2022</p><p class="event">ChatGPT launches publicly</p><p class="detail">Reaches 1 million users in 5 days — fastest in internet history.</p></div>
+        <div class="timeline-item"><p class="year">January 2023</p><p class="event">100 million monthly users</p><p class="detail">Sets record as fastest consumer application to reach this milestone.</p></div>
+        <div class="timeline-item"><p class="year">February 2025</p><p class="event">400 million weekly active users</p><p class="detail">Enterprise adoption and API integrations drive explosive growth.</p></div>
+        <div class="timeline-item"><p class="year">Mid-2025</p><p class="event">800 million weekly active users</p><p class="detail">User base doubled in under six months; 2.5 billion daily prompts processed.</p></div>
+        <div class="timeline-item"><p class="year">2026 (now)</p><p class="event">1B+ global AI tool users</p><p class="detail">AI platforms collectively surpass 1 billion monthly active users worldwide.</p></div>
+      </div>
+      <div class="callout-box">
+        <p class="callout-head">Healthcare Insight</p>
+        <p>Healthcare AI adoption surpassed 80% of providers in 2025, up from just 54% in 2019. AI-assisted diagnostics, clinical documentation, and patient triage are no longer experimental — they are the standard of care in leading institutions. As a physician, I see this not as displacement but as delegation: AI handles cognitive burden, freeing clinicians for the irreplaceable human act of care.</p>
+      </div>
+    </div>
+
+    <div class="separator"><span>✦</span></div>
+
+    <div class="chapter" id="ch3">
+      <p class="chapter-label">Chapter III</p>
+      <h2>Enterprise Adoption: From Experiment to Infrastructure</h2>
+      <p>Seventy-eight percent of companies globally now employ AI in their operations. Eighty-three percent list AI as a top strategic priority. These are not vanity metrics — they represent a structural shift in how organizations understand competitive advantage in the 21st century.</p>
+      <p>Among small and medium businesses, 89% have already integrated AI tools to automate routine tasks. Among technology workers specifically, 90% now use AI tools — a staggering leap from just 14% in 2024. The adoption curve compressed six years of projected growth into a single calendar year.</p>
+      <div class="data-row">
+        <div class="data-block"><p class="title">SMB AI Adoption</p><p class="value">89%</p><p>of small businesses deploy AI agents for routine tasks, saving 10+ staff-hours per week.</p></div>
+        <div class="data-block"><p class="title">Tech Worker Usage</p><p class="value">90%</p><p>of technology professionals now use AI tools — up from 14% just one year prior.</p></div>
+      </div>
+      <div class="data-row">
+        <div class="data-block"><p class="title">AI as Priority</p><p class="value">83%</p><p>of companies list AI as a top business priority in current strategic plans.</p></div>
+        <div class="data-block"><p class="title">Daily AI Users</p><p class="value" style="color:var(--blue)">35%</p><p>of global users now engage with AI tools every single day; 84% increased use this year.</p></div>
+      </div>
+      <p>What is driving this? The answer is compounding value. Companies using AI are 2.5 times more likely to outperform competitors on customer satisfaction and operational efficiency. Once a firm experiences this delta, retreat becomes irrational. AI is no longer a tool — it is infrastructure, like electricity or broadband.</p>
+    </div>
+
+    <div class="separator"><span>✦</span></div>
+
+    <div class="chapter" id="ch4">
+      <p class="chapter-label">Chapter IV</p>
+      <h2>The Work Question: Displacement and Creation</h2>
+      <p>No statistic generates more anxiety than the jobs figure. By 2030, AI is projected to displace 92 million roles while creating 170 million new ones — a net gain of roughly 78 million positions. The World Economic Forum's earlier estimate suggested 85 million displaced but 97 million created, yielding a similar net positive conclusion.</p>
+      <p>But the anxiety is not irrational. The problem is not the aggregate — it is the gap between what is displaced and what is created, and the retraining infrastructure required to bridge it. Routine cognitive work, data entry, basic customer service, and template-based creation face the highest substitution risk. What expands is everything that requires embodied judgment, emotional intelligence, systemic thinking, and novel synthesis.</p>
+      <div class="pullquote">
+        <p>"AI will not take your job. But someone using AI — and understanding it deeply — probably will. The differential is not the tool. It is the mind wielding it."</p>
+        <cite>— Dr. Muhammad Farooq</cite>
+      </div>
+      <div class="bar-chart">
+        <p class="bar-chart-title">AI adoption by use case (global users)</p>
+        <div class="bar-row"><span class="bar-label">Q&amp;A / Explain</span><div class="bar-track"><div class="bar-fill lime" data-width="42%">42%</div></div></div>
+        <div class="bar-row"><span class="bar-label">Learning</span><div class="bar-track"><div class="bar-fill teal" data-width="33%">33%</div></div></div>
+        <div class="bar-row"><span class="bar-label">Writing / Drafting</span><div class="bar-track"><div class="bar-fill blue" data-width="31%">31%</div></div></div>
+        <div class="bar-row"><span class="bar-label">Coding</span><div class="bar-track"><div class="bar-fill amber" data-width="26%">26%</div></div></div>
+      </div>
+    </div>
+
+    <div class="separator"><span>✦</span></div>
+
+    <div class="chapter" id="ch5">
+      <p class="chapter-label">Chapter V</p>
+      <h2>Sector Transformation: Where AI Hits Hardest</h2>
+      <p>AI's impact is not uniform. It is seismic in certain domains, incremental in others. The sectors experiencing structural transformation — not just efficiency gains — are healthcare, finance, manufacturing, and infrastructure. These are not pilot programs anymore.</p>
+      <div class="sector-grid">
+        <div class="sector-card"><p class="sector-name">Healthcare</p><p class="sector-stat">80%+</p><p class="sector-desc">Provider adoption rate in 2025. AI now assists diagnostics, documentation, and triage at scale.</p></div>
+        <div class="sector-card"><p class="sector-name">Finance</p><p class="sector-stat">$130B</p><p class="sector-desc">AI investment surge in 2024 alone. Fraud detection, algorithmic trading, risk modeling accelerated.</p></div>
+        <div class="sector-card"><p class="sector-name">Wearables</p><p class="sector-stat">$303B</p><p class="sector-desc">Wearable AI market projected by 2035, growing 17.6% annually from $23.56B today.</p></div>
+        <div class="sector-card"><p class="sector-name">Government</p><p class="sector-stat">63%</p><p class="sector-desc">Of governments now invest in AI for national security — a geopolitical arms race in intelligence.</p></div>
+      </div>
+      <div class="callout-box">
+        <p class="callout-head">The GDP Wager</p>
+        <p>PwC projects AI will add $15.7 trillion to global GDP by 2030 — a 26% increase over baseline. For context, that is larger than the current combined economies of China and India. The countries that lead in AI deployment, not just AI research, will capture a disproportionate share of that wealth. Saudi Arabia and the broader Gulf region are positioning aggressively; Vision 2030 is, at its core, an AI strategy with an oil-funded runway.</p>
+      </div>
+    </div>
+
+    <div class="separator"><span>✦</span></div>
+
+    <div class="chapter" id="ch6">
+      <p class="chapter-label">Chapter VI</p>
+      <h2>The Trust Deficit: Adoption Without Acceptance</h2>
+      <p>Here lies the great contradiction of the AI age: widespread adoption coexisting with widespread distrust. Eighty-two percent of consumers report distrusting AI-generated content. Yet those same consumers use AI tools daily. This is not hypocrisy — it is cognitive dissonance in real time, a gap between behavior and belief that society has not yet closed.</p>
+      <p>For healthcare professionals, this tension is acutely familiar. Patients Google their symptoms, distrust the results, and then ask their physician to validate what the algorithm told them. AI in medicine will follow a similar trajectory: initial resistance, quiet adoption, eventual normalization — with the inflection point determined by a handful of highly visible successes and failures.</p>
+      <p>The ethical scaffolding around AI — transparency, explainability, accountability — is not catching up with the deployment curve. Regulators are writing guidelines in pen while AI capabilities advance in marker. This gap is not merely a compliance problem; it is a public health problem, an epistemological problem, and ultimately a political problem.</p>
+      <div class="data-row">
+        <div class="data-block"><p class="title">Consumer AI Distrust</p><p class="value">82%</p><p>of consumers report distrust of AI-generated content — while simultaneously using AI tools daily.</p></div>
+        <div class="data-block"><p class="title">AI Search Premium</p><p class="value" style="color:var(--teal)">4.4×</p><p>Traffic from AI-powered search is 4.4× more commercially valuable than traditional organic search.</p></div>
+      </div>
+    </div>
+
+    <div class="synthesis-dark" id="synthesis">
+      <p class="chapter-label">Synthesis</p>
+      <h2>What the Numbers Are Really Saying</h2>
+      <p>Read together, these statistics do not describe a technology — they describe a civilizational transition. The velocity is unprecedented. The breadth is total. The reversibility is near zero.</p>
+      <p>For physicians and healthcare leaders: <strong>the 80% provider adoption figure is not a prediction.</strong> It is your current reality. The question now is not whether to engage with AI, but how to engage wisely — preserving what is irreplaceable about human clinical judgment while off-loading what machines demonstrably do faster and more consistently.</p>
+      <p>For business leaders: <strong>the competitive gap between AI-native organizations and laggards is widening every quarter.</strong> The 2.5× performance differential on customer outcomes is not a bonus — it will become the price of survival.</p>
+      <p>For everyone: <strong>the 82% distrust figure is the most important number in this article.</strong> Technology that advances faster than social trust is fragile technology. The real work of the next decade is not building better models. It is building the institutional, regulatory, and cultural frameworks that allow those models to be trusted.</p>
+      <div class="pullquote">
+        <p>"The data does not predict the future. It describes the present — which arrived from the future while we were still debating whether to prepare."</p>
+        <cite>— Dr. Muhammad Farooq, April 2026</cite>
+      </div>
+      <div class="tags">
+        <span class="tag">Market Intelligence</span>
+        <span class="tag">Healthcare AI</span>
+        <span class="tag">Workforce Futures</span>
+        <span class="tag">AI Ethics</span>
+        <span class="tag">GenAI</span>
+        <span class="tag">Digital Transformation</span>
+      </div>
+    </div>
+
+    <section class="author-section">
+      <div class="author-inner">
+        <div class="author-avatar">MF</div>
+        <div>
+          <p class="author-name __cpname">Dr. Muhammad Farooq</p>
+          <p class="author-role">AI Top Voice · AI Doctor · LinkedIn Top Voice</p>
+          <p class="author-bio">Physician, researcher, and AI strategist at the intersection of medicine and emerging technology. Dr. Farooq writes on AI adoption, digital health transformation, and the societal implications of intelligent systems. His analysis draws on clinical practice, data science, and a decade of observing technology reshape healthcare delivery.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="related-section">
+      <p class="related-label">More from Dr. Farooq</p>
+      <div class="related-grid">
+        <a class="related-card" href="#">
+          <p class="rc-date">March 2026</p>
+          <p class="rc-title">AI in the Clinic: Five Lessons From the Frontline</p>
+          <p class="rc-excerpt">What 18 months of daily AI-assisted practice taught me about trust, error, and the limits of automation.</p>
+        </a>
+        <a class="related-card" href="#">
+          <p class="rc-date">February 2026</p>
+          <p class="rc-title">The $15 Trillion Question: Who Captures the AI GDP Dividend?</p>
+          <p class="rc-excerpt">PwC's projection is staggering. Understanding which nations and industries are positioned to benefit.</p>
+        </a>
+        <a class="related-card" href="#">
+          <p class="rc-date">January 2026</p>
+          <p class="rc-title">Regulating the Unregulatable: AI Governance in 2026</p>
+          <p class="rc-excerpt">Why the current pace of AI deployment has fundamentally outrun the world's regulatory capacity — and what to do about it.</p>
+        </a>
+      </div>
+    </section>
+
+  </article>
+</div>
+
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
+
+<script>
+const rp = document.getElementById('rp');
+window.addEventListener('scroll', () => {
+  rp.style.width = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100) + '%';
+}, { passive: true });
+
+const bars = document.querySelectorAll('.bar-fill[data-width]');
+bars.forEach(b => { b.style.width = '0'; });
+const barObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const el = e.target;
+      requestAnimationFrame(() => {
+        el.style.transition = 'width 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        el.style.width = el.dataset.width;
+      });
+      barObs.unobserve(el);
+    }
+  });
+}, { threshold: 0.2 });
+bars.forEach(b => barObs.observe(b));
+
+const stBtn = document.getElementById('scroll-top');
+window.addEventListener('scroll', () => { stBtn.classList.toggle('visible', window.scrollY > 600); }, { passive: true });
+
+const chapters = document.querySelectorAll('[id^="ch"], [id="synthesis"]');
+const tocLinks = document.querySelectorAll('.toc-sidebar a');
+const tocObs = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) tocLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+  });
+}, { threshold: 0.3, rootMargin: '-60px 0px -60% 0px' });
+chapters.forEach(c => tocObs.observe(c));
+</script>
+</body>
+</html>
