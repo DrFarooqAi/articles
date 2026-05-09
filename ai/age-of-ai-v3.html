@@ -53,6 +53,7 @@
   --blue:       #4d8af0;
   --amber:      #f5a623;
   --font: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --lx-bg: #0e0e0e;
 }
 
 html { scroll-behavior: smooth; }
@@ -75,6 +76,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--fg); line-h
 .nav-links a:hover { color: var(--fg); }
 .nav-cta { background: var(--accent); color: var(--accent-txt); font-size: 13px; font-weight: 600; padding: 7px 16px; border-radius: 6px; text-decoration: none; transition: opacity .2s; }
 .nav-cta:hover { opacity: 0.88; }
+
+.lightning-wrap { position: relative; padding: 1.5px; }
+.lightning-wrap.hero-lx  { border-radius: 15px; }
+.lightning-wrap.stat-lx  { border-radius: 11.5px; margin-bottom: 4rem; }
 
 .hero {
   background: var(--bg); padding: 80px 48px;
@@ -113,8 +118,13 @@ body { font-family: var(--font); background: var(--bg); color: var(--fg); line-h
   font-weight: 700; line-height: 1.03; letter-spacing: -0.035em; margin-bottom: 1.5rem;
   animation: slideUp 0.6s ease 0.25s both;
 }
-.hero h1 .dim { color: var(--fg-muted); display: block; }
-.hero h1 .bright { color: var(--fg); display: block; }
+.hero h1 .dim   { color: var(--fg-muted); display: block; animation: titleBlink 1.6s ease-in-out infinite; }
+.hero h1 .bright { display: block; animation: titleBlink 1.6s ease-in-out infinite reverse; }
+@keyframes titleBlink {
+  0%   { color: #00e5ff; text-shadow: 0 0 28px rgba(0,229,255,0.55), 0 0 60px rgba(0,229,255,0.25); }
+  50%  { color: #cc44ff; text-shadow: 0 0 28px rgba(204,68,255,0.55), 0 0 60px rgba(204,68,255,0.25); }
+  100% { color: #00e5ff; text-shadow: 0 0 28px rgba(0,229,255,0.55), 0 0 60px rgba(0,229,255,0.25); }
+}
 
 .hero-deck {
   font-size: 16.5px; color: var(--fg-muted); max-width: 480px;
@@ -141,15 +151,11 @@ body { font-family: var(--font); background: var(--bg); color: var(--fg); line-h
 .hero-byline .sep { color: var(--border-lg); }
 
 .hero-card {
-  background: var(--surface); border: 1px solid var(--border-md);
-  border-radius: 14px; overflow: hidden;
-  box-shadow: 0 32px 80px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,0.04);
+  background: var(--surface); border-radius: 13px; overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7);
   animation: slideUp 0.6s ease 0.45s both;
 }
-.hc-titlebar {
-  padding: 13px 16px; border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 7px;
-}
+.hc-titlebar { padding: 13px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 7px; }
 .hc-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
 .hc-dot.r { background: #ff5f57; } .hc-dot.y { background: #febc2e; } .hc-dot.g { background: #28c840; }
 .hc-title { font-size: 11.5px; color: var(--fg-faint); margin-left: 6px; }
@@ -164,34 +170,17 @@ body { font-family: var(--font); background: var(--bg); color: var(--fg); line-h
 .hc-num { font-size: 1.9rem; font-weight: 700; color: var(--fg); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .hc-change { font-size: 12px; font-weight: 600; color: var(--accent); }
 .hc-desc { font-size: 12px; color: var(--fg-faint); line-height: 1.35; }
-.hc-status {
-  background: var(--surface-2); border-top: 1px solid var(--border);
-  padding: 11px 22px; display: flex; align-items: center; justify-content: space-between;
-}
-.hc-status-left {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 10.5px; font-weight: 600; color: var(--accent);
-  letter-spacing: 0.12em; text-transform: uppercase;
-}
-.hc-status-left::before {
-  content: ''; width: 7px; height: 7px; border-radius: 50%;
-  background: var(--accent); animation: pulse 1.4s ease-in-out infinite;
-}
+.hc-status { background: var(--surface-2); border-top: 1px solid var(--border); padding: 11px 22px; display: flex; align-items: center; justify-content: space-between; }
+.hc-status-left { display: flex; align-items: center; gap: 8px; font-size: 10.5px; font-weight: 600; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; }
+.hc-status-left::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse 1.4s ease-in-out infinite; }
 .hc-dots { display: flex; gap: 4px; }
 .hc-dots span { width: 5px; height: 5px; border-radius: 50%; background: var(--fg-faint); animation: blink 1.4s ease-in-out infinite; }
 .hc-dots span:nth-child(2) { animation-delay: 0.3s; }
 .hc-dots span:nth-child(3) { animation-delay: 0.6s; }
 @keyframes blink { 0%,100% { opacity:.2; } 50% { opacity:1; } }
 
-.layout {
-  display: grid; grid-template-columns: 1fr min(700px, 100%) 220px;
-  max-width: 1280px; margin: 0 auto; padding: 0 24px;
-}
-
-.toc-sidebar {
-  position: sticky; top: 80px; height: fit-content;
-  padding: 3.5rem 0 3.5rem 2.5rem; grid-column: 3; grid-row: 1 / 20;
-}
+.layout { display: grid; grid-template-columns: 1fr min(700px, 100%) 220px; max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+.toc-sidebar { position: sticky; top: 80px; height: fit-content; padding: 3.5rem 0 3.5rem 2.5rem; grid-column: 3; grid-row: 1 / 20; }
 .toc-label { font-size: 9px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-faint); margin-bottom: 1rem; }
 .toc-sidebar ol { list-style: none; counter-reset: toc; }
 .toc-sidebar li { counter-increment: toc; margin-bottom: 0.6rem; }
@@ -201,15 +190,10 @@ body { font-family: var(--font); background: var(--bg); color: var(--fg); line-h
 .toc-sidebar a.active { color: var(--fg); }
 
 .article { grid-column: 2; padding: 4.5rem 2rem; }
-
 .lead { font-size: 1.2rem; line-height: 1.7; color: var(--fg-body); padding-top: 2.5rem; border-top: 1px solid var(--border-md); margin-bottom: 3rem; }
 .lead strong { color: var(--fg); font-weight: 600; }
 
-.stat-grid {
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  gap: 1px; background: var(--border); border: 1px solid var(--border);
-  border-radius: 10px; overflow: hidden; margin-bottom: 4rem;
-}
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border-radius: 10px; overflow: hidden; }
 .stat-card { background: var(--surface); padding: 1.4rem 1rem; text-align: center; transition: background .15s; }
 .stat-card:hover { background: var(--surface-2); }
 .stat-card .num { font-size: 1.9rem; font-weight: 700; color: var(--accent); display: block; margin-bottom: 4px; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
@@ -238,7 +222,7 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
 .bar-fill.muted { background: var(--surface-3); color: var(--fg-muted); }
 
 .data-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 2rem 0; }
-.data-block { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem 1.4rem; }
+.data-block { background: var(--surface); border-radius: 10px; padding: 1.2rem 1.4rem; }
 .data-block .title { font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; color: var(--fg-faint); margin-bottom: 0.5rem; }
 .data-block .value { font-size: 2.1rem; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .data-block p { font-size: 13px; color: var(--fg-muted); margin: 0; line-height: 1.5; }
@@ -251,15 +235,13 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
 .timeline-item .event { font-size: 15px; color: var(--fg); font-weight: 600; line-height: 1.3; margin-bottom: 2px; }
 .timeline-item .detail { font-size: 13.5px; color: var(--fg-muted); line-height: 1.5; }
 
-.callout-box { border-left: 2px solid var(--accent); padding: 1.4rem 1.6rem; margin: 2.5rem 0; background: var(--accent-dim); border-radius: 0 10px 10px 0; }
+.callout-box { padding: 1.4rem 1.6rem; margin: 2.5rem 0; background: var(--accent-dim); border-radius: 0 10px 10px 0; }
 .callout-head { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent); margin-bottom: 0.6rem; }
 .callout-box p { color: var(--fg-body); font-size: 15px; margin: 0; line-height: 1.65; }
 
 .sector-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 2rem 0; }
-.sector-card { border: 1px solid var(--border); border-radius: 10px; padding: 1.3rem; background: var(--surface); transition: border-color .2s, background .15s; position: relative; overflow: hidden; }
-.sector-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); opacity: 0; transition: opacity .2s; }
-.sector-card:hover { border-color: var(--border-md); background: var(--surface-2); }
-.sector-card:hover::before { opacity: 1; }
+.sector-card { border-radius: 10px; padding: 1.3rem; background: var(--surface); transition: background .15s; position: relative; overflow: hidden; }
+.sector-card:hover { background: var(--surface-2); }
 .sector-name { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.14em; color: var(--fg-faint); margin-bottom: 0.5rem; }
 .sector-stat { font-size: 2rem; font-weight: 700; color: var(--accent); line-height: 1; margin-bottom: 0.5rem; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
 .sector-desc { font-size: 12.5px; color: var(--fg-muted); line-height: 1.5; }
@@ -268,15 +250,8 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
 .separator::before, .separator::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .separator span { font-size: 10px; color: var(--accent); opacity: 0.4; letter-spacing: 0.2em; }
 
-.synthesis-dark {
-  background: var(--bg-alt); padding: 4rem 2rem;
-  margin: 4rem -2rem 0; border-top: 1px solid var(--border-md);
-  border-radius: 12px 12px 0 0; scroll-margin-top: 68px; position: relative;
-}
-.synthesis-dark::before {
-  content: ''; position: absolute; top: -1px; left: 10%; right: 10%; height: 1px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-}
+.synthesis-dark { background: var(--bg-alt); padding: 4rem 2rem; margin: 4rem -2rem 0; border-top: 1px solid var(--border-md); border-radius: 12px 12px 0 0; scroll-margin-top: 68px; position: relative; }
+.synthesis-dark::before { content: ''; position: absolute; top: -1px; left: 10%; right: 10%; height: 1px; background: linear-gradient(90deg, transparent, var(--accent), transparent); }
 .synthesis-dark .chapter-label { color: var(--accent); }
 .synthesis-dark h2 { color: var(--fg); font-size: clamp(1.7rem, 3.5vw, 2.4rem); }
 .synthesis-dark p { color: var(--fg-body); font-size: 16px; }
@@ -286,7 +261,7 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
 .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2rem; }
 .tag { font-size: 10px; font-weight: 700; padding: 5px 12px; letter-spacing: 0.1em; text-transform: uppercase; background: var(--accent-dim); color: rgba(196,240,0,0.75); border: 1px solid rgba(196,240,0,0.18); border-radius: 6px; }
 
-.author-section { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; margin: 2rem -2rem 0; }
+.author-section { background: var(--surface); border-radius: 12px; padding: 2rem; margin: 2rem -2rem 0; }
 .author-inner { display: flex; gap: 1.6rem; align-items: flex-start; }
 .author-avatar { width: 56px; height: 56px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: 800; color: #000; flex-shrink: 0; }
 .author-name { font-size: 1.05rem; font-weight: 700; color: var(--fg); margin-bottom: 2px; letter-spacing: -0.02em; }
@@ -296,10 +271,8 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
 .related-section { padding: 3rem 2rem; margin: 0 -2rem; }
 .related-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--fg-faint); margin-bottom: 1.6rem; }
 .related-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.related-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.2rem; text-decoration: none; display: block; transition: border-color .2s, background .15s; position: relative; overflow: hidden; }
-.related-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); opacity: 0; transition: opacity .2s; }
-.related-card:hover { border-color: var(--border-md); background: var(--surface-2); }
-.related-card:hover::before { opacity: 1; }
+.related-card { background: var(--surface); border-radius: 10px; padding: 1.2rem; text-decoration: none; display: block; transition: background .15s; }
+.related-card:hover { background: var(--surface-2); }
 .rc-date { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--fg-faint); margin-bottom: 0.5rem; }
 .rc-title { font-size: 0.95rem; font-weight: 600; color: var(--fg); line-height: 1.35; margin-bottom: 0.4rem; letter-spacing: -0.01em; }
 .rc-excerpt { font-size: 12.5px; color: var(--fg-muted); line-height: 1.5; }
@@ -309,7 +282,7 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
 #scroll-top:hover { opacity: 0.85; }
 
 @media (max-width: 1100px) { .layout { grid-template-columns: 1fr min(700px, 100%); } .toc-sidebar { display: none; } }
-@media (max-width: 900px) { .hero { padding: 60px 28px; min-height: auto; } .hero-inner { grid-template-columns: 1fr; gap: 40px; } .hero-card { display: none; } }
+@media (max-width: 900px) { .hero { padding: 60px 28px; min-height: auto; } .hero-inner { grid-template-columns: 1fr; gap: 40px; } .lightning-wrap.hero-lx { display: none; } }
 @media (max-width: 700px) {
   .layout { grid-template-columns: 1fr; padding: 0; } .article { padding: 2.5rem 1.25rem; }
   .stat-grid { grid-template-columns: repeat(2, 1fr); } .data-row { grid-template-columns: 1fr; }
@@ -323,64 +296,8 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
   .hs:nth-child(odd) { border-right: 1px solid var(--border); }
   .hs:nth-last-child(-n+2) { border-bottom: none; }
   .nav-links { display: none; }
+  .lightning-wrap.stat-lx { border-radius: 8px; }
 }
-
-/* ── CYBERPUNK OVERRIDES ── */
-@keyframes cpBorder {
-  0%   { border-color:#ff00ff; box-shadow:0 0 22px #ff00ff; }
-  16%  { border-color:#ff6600; box-shadow:0 0 22px #ff6600; }
-  33%  { border-color:#ffff00; box-shadow:0 0 22px #ffff00; }
-  50%  { border-color:#00ff88; box-shadow:0 0 22px #00ff88; }
-  66%  { border-color:#00ffff; box-shadow:0 0 22px #00ffff; }
-  83%  { border-color:#aa00ff; box-shadow:0 0 22px #aa00ff; }
-  100% { border-color:#ff00ff; box-shadow:0 0 22px #ff00ff; }
-}
-@keyframes cpMove  { 0%{background-position:0% center} 100%{background-position:200% center} }
-@keyframes cpGlitch {
-  0%,88%,100%{opacity:1;transform:none;filter:none}
-  89%{opacity:.9;transform:skewX(3deg);filter:hue-rotate(90deg)}
-  90%{opacity:1;transform:skewX(-2deg);filter:none}
-  91%{opacity:.8;filter:hue-rotate(180deg) brightness(1.4)}
-  92%{opacity:1;filter:none}
-}
-#__cpb {
-  position:fixed; inset:4px; z-index:9997; pointer-events:none;
-  border:3px solid #ff00ff;
-  animation:cpBorder 2.5s linear infinite;
-}
-.__cpname {
-  font-weight:800 !important;
-  background:linear-gradient(90deg,#ff00ff 0%,#00ffff 40%,#ff6600 70%,#ff00ff 100%) !important;
-  background-size:200% auto !important;
-  -webkit-background-clip:text !important;
-  -webkit-text-fill-color:transparent !important;
-  background-clip:text !important;
-  animation:cpMove 3s linear infinite, cpGlitch 5s infinite !important;
-  letter-spacing:.04em !important;
-}
-.nav {
-  background:rgba(4,4,14,.94) !important;
-  backdrop-filter:blur(16px) !important;
-  border-bottom:1px solid rgba(0,255,255,.25) !important;
-  font-family:'Space Mono','Courier New',monospace !important;
-}
-.nav-logo {
-  color:#ff00ff !important;
-  font-family:'Space Mono','Courier New',monospace !important;
-  letter-spacing:.05em !important;
-}
-.nav-logo-icon { background:#ff00ff !important; color:#000 !important; }
-.nav-links a { color:#00ffff !important; letter-spacing:.05em !important; font-size:11px !important; }
-.nav-links a:hover { color:#fff !important; text-shadow:0 0 8px #00ffff !important; }
-.nav-cta {
-  background:transparent !important;
-  color:#00ffff !important;
-  border:1px solid rgba(0,255,255,.4) !important;
-  font-family:'Space Mono','Courier New',monospace !important;
-  font-size:11px !important;
-  letter-spacing:.06em !important;
-}
-.nav-cta:hover { background:rgba(0,255,255,.12) !important; border-color:#00ffff !important; box-shadow:0 0 8px rgba(0,255,255,.4) !important; opacity:1 !important; }
 </style>
 </head>
 <body>
@@ -391,16 +308,13 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
     Dr. Farooq AI
   </a>
   <div class="nav-links">
-    <a href="https://drfarooqai.github.io/articles/">All Articles</a>
-    <a href="https://drfarooqai.github.io/articles/ai/CLI-vs-MCP-vs-API.html">CLI vs MCP vs API</a>
-    <a href="https://drfarooqai.github.io/articles/ai/ai-agent-field-manual.html">Agent Manual</a>
-    <a href="https://drfarooqai.github.io/articles/ai/claude-code-33-hacks.html">Claude Hacks</a>
-    <a href="https://drfarooqai.github.io/articles/ai/webmcp.html">WebMCP</a>
+    <a href="https://drfarooqai.github.io/articles/">Articles</a>
+    <a href="https://drfarooqai.github.io/dr-farooq-cv/">Portfolio</a>
+    <a href="#">About</a>
   </div>
-  <a class="nav-cta" href="https://drfarooqai.github.io/dr-farooq-cv/">Portfolio ↗</a>
+  <a class="nav-cta" href="https://drfarooqai.github.io/articles/">View all articles ↗</a>
 </nav>
 
-<div id="__cpb"></div>
 <div id="rp"></div>
 
 <header class="hero">
@@ -422,7 +336,7 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
         <div class="hs"><span class="hs-num">1B+</span><span class="hs-lbl">Monthly AI users</span></div>
       </div>
       <div class="hero-byline">
-        <strong class="__cpname">Dr. Muhammad Farooq</strong>
+        <strong>Dr. Muhammad Farooq</strong>
         <span class="sep">·</span>
         <span>AI Top Voice &amp; AI Doctor</span>
         <span class="sep">·</span>
@@ -430,29 +344,31 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
       </div>
     </div>
 
-    <div class="hero-card">
-      <div class="hc-titlebar">
-        <span class="hc-dot r"></span><span class="hc-dot y"></span><span class="hc-dot g"></span>
-        <span class="hc-title">ai-market-intelligence.json</span>
-      </div>
-      <div class="hc-body">
-        <p class="hc-label">Live market data · Q2 2026</p>
-        <div class="hc-metric">
-          <div class="hc-metric-row"><span class="hc-num">$391B</span><span class="hc-change">↑ 40% YoY</span></div>
-          <p class="hc-desc">Global AI market size in 2025</p>
+    <div class="lightning-wrap hero-lx" id="lx-hero">
+      <div class="hero-card">
+        <div class="hc-titlebar">
+          <span class="hc-dot r"></span><span class="hc-dot y"></span><span class="hc-dot g"></span>
+          <span class="hc-title">ai-market-intelligence.json</span>
         </div>
-        <div class="hc-metric">
-          <div class="hc-metric-row"><span class="hc-num">800M</span><span class="hc-change">↑ 2× since Feb</span></div>
-          <p class="hc-desc">ChatGPT weekly active users</p>
+        <div class="hc-body">
+          <p class="hc-label">Live market data · Q2 2026</p>
+          <div class="hc-metric">
+            <div class="hc-metric-row"><span class="hc-num">$391B</span><span class="hc-change">↑ 40% YoY</span></div>
+            <p class="hc-desc">Global AI market size in 2025</p>
+          </div>
+          <div class="hc-metric">
+            <div class="hc-metric-row"><span class="hc-num">800M</span><span class="hc-change">↑ 2× since Feb</span></div>
+            <p class="hc-desc">ChatGPT weekly active users</p>
+          </div>
+          <div class="hc-metric">
+            <div class="hc-metric-row"><span class="hc-num">97M</span><span class="hc-change">net new</span></div>
+            <p class="hc-desc">Jobs created by AI by 2030</p>
+          </div>
         </div>
-        <div class="hc-metric">
-          <div class="hc-metric-row"><span class="hc-num">97M</span><span class="hc-change">net new</span></div>
-          <p class="hc-desc">Jobs created by AI by 2030</p>
+        <div class="hc-status">
+          <span class="hc-status-left">Analyzing</span>
+          <div class="hc-dots"><span></span><span></span><span></span></div>
         </div>
-      </div>
-      <div class="hc-status">
-        <span class="hc-status-left">Analyzing</span>
-        <div class="hc-dots"><span></span><span></span><span></span></div>
       </div>
     </div>
   </div>
@@ -476,11 +392,13 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
 
     <p class="lead">We are not witnessing a technology trend. We are witnessing a <strong>civilizational inflection point.</strong> The statistics below are not just numbers — they are signals from the future arriving early.</p>
 
-    <div class="stat-grid">
-      <div class="stat-card"><span class="num">$391B</span><span class="label">AI market value<br>in 2025</span></div>
-      <div class="stat-card"><span class="num">$3.5T</span><span class="label">Projected size<br>by 2033</span></div>
-      <div class="stat-card"><span class="num">78%</span><span class="label">Companies already<br>using AI</span></div>
-      <div class="stat-card"><span class="num">1B+</span><span class="label">Global monthly<br>AI users</span></div>
+    <div class="lightning-wrap stat-lx" id="lx-stat">
+      <div class="stat-grid">
+        <div class="stat-card"><span class="num">$391B</span><span class="label">AI market value<br>in 2025</span></div>
+        <div class="stat-card"><span class="num">$3.5T</span><span class="label">Projected size<br>by 2033</span></div>
+        <div class="stat-card"><span class="num">78%</span><span class="label">Companies already<br>using AI</span></div>
+        <div class="stat-card"><span class="num">1B+</span><span class="label">Global monthly<br>AI users</span></div>
+      </div>
     </div>
 
     <div class="chapter" id="ch1">
@@ -618,7 +536,7 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
       <div class="author-inner">
         <div class="author-avatar">MF</div>
         <div>
-          <p class="author-name __cpname">Dr. Muhammad Farooq</p>
+          <p class="author-name">Dr. Muhammad Farooq</p>
           <p class="author-role">AI Top Voice · AI Doctor · LinkedIn Top Voice</p>
           <p class="author-bio">Physician, researcher, and AI strategist at the intersection of medicine and emerging technology. Dr. Farooq writes on AI adoption, digital health transformation, and the societal implications of intelligent systems. His analysis draws on clinical practice, data science, and a decade of observing technology reshape healthcare delivery.</p>
         </div>
@@ -652,11 +570,85 @@ p { color: var(--fg-body); margin-bottom: 1.2rem; font-size: 16.5px; line-height
 <button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">↑</button>
 
 <script>
+/* ─── Reading progress ─── */
 const rp = document.getElementById('rp');
 window.addEventListener('scroll', () => {
   rp.style.width = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight) * 100) + '%';
 }, { passive: true });
 
+/* ─── Lightning border engine ─── */
+function buildGradient(deg) {
+  const a = ((deg % 360) + 360) % 360;
+  return `conic-gradient(from ${a}deg,
+    #0e0e0e 0deg,
+    #0e0e0e 268deg,
+    #cc1133 280deg,
+    #ff3355 292deg,
+    #00e5ff 322deg,
+    #00ff88 346deg,
+    #0e0e0e 360deg)`;
+}
+
+const lxItems = []; // { el, angle, speed }
+
+function registerLX(el, startAngle, speed) {
+  lxItems.push({ el, angle: startAngle, speed });
+}
+
+/* Pre-existing hero card + stat grid */
+const lxHero = document.getElementById('lx-hero');
+const lxStat = document.getElementById('lx-stat');
+if (lxHero) registerLX(lxHero,   0, 1.3);
+if (lxStat)  registerLX(lxStat, 120, 0.9);
+
+/* Wrap all card types */
+const CARD_CONFIGS = [
+  { sel: '.data-block',     outerR: '11.5px', margin: null,              speed: 0.85 },
+  { sel: '.sector-card',    outerR: '11.5px', margin: null,              speed: 0.75 },
+  { sel: '.related-card',   outerR: '11.5px', margin: null,              speed: 0.70 },
+  { sel: '.callout-box',    outerR: '0 11.5px 11.5px 0', margin: '2.5rem 0', speed: 0.95 },
+  { sel: '.author-section', outerR: '13.5px', margin: '2rem -2rem 0',   speed: 1.0  },
+];
+
+let offsetAngle = 200;
+CARD_CONFIGS.forEach(({ sel, outerR, margin, speed }) => {
+  document.querySelectorAll(sel).forEach(card => {
+    if (card.closest('.lightning-wrap') || card.closest('[data-lx]')) return;
+
+    const wrap = document.createElement('div');
+    wrap.setAttribute('data-lx', '1');
+    wrap.style.cssText = `padding:1.5px; border-radius:${outerR}; display:block;`;
+
+    if (margin) {
+      wrap.style.margin = margin;
+      card.style.margin = '0';
+    } else {
+      const cs = window.getComputedStyle(card);
+      wrap.style.marginTop    = cs.marginTop;
+      wrap.style.marginBottom = cs.marginBottom;
+      wrap.style.marginLeft   = cs.marginLeft;
+      wrap.style.marginRight  = cs.marginRight;
+      card.style.margin = '0';
+    }
+
+    card.parentNode.insertBefore(wrap, card);
+    wrap.appendChild(card);
+
+    offsetAngle = (offsetAngle + 47) % 360;
+    registerLX(wrap, offsetAngle, speed);
+  });
+});
+
+/* Animation loop */
+(function tick() {
+  lxItems.forEach(item => {
+    item.angle = (item.angle + item.speed) % 360;
+    item.el.style.background = buildGradient(item.angle);
+  });
+  requestAnimationFrame(tick);
+})();
+
+/* ─── Bar chart entrance ─── */
 const bars = document.querySelectorAll('.bar-fill[data-width]');
 bars.forEach(b => { b.style.width = '0'; });
 const barObs = new IntersectionObserver(entries => {
@@ -664,7 +656,7 @@ const barObs = new IntersectionObserver(entries => {
     if (e.isIntersecting) {
       const el = e.target;
       requestAnimationFrame(() => {
-        el.style.transition = 'width 1.1s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+        el.style.transition = 'width 1.1s cubic-bezier(0.25,0.46,0.45,0.94)';
         el.style.width = el.dataset.width;
       });
       barObs.unobserve(el);
@@ -673,9 +665,11 @@ const barObs = new IntersectionObserver(entries => {
 }, { threshold: 0.2 });
 bars.forEach(b => barObs.observe(b));
 
+/* ─── Scroll-to-top ─── */
 const stBtn = document.getElementById('scroll-top');
 window.addEventListener('scroll', () => { stBtn.classList.toggle('visible', window.scrollY > 600); }, { passive: true });
 
+/* ─── TOC active highlight ─── */
 const chapters = document.querySelectorAll('[id^="ch"], [id="synthesis"]');
 const tocLinks = document.querySelectorAll('.toc-sidebar a');
 const tocObs = new IntersectionObserver(entries => {
