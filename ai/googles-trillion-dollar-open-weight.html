@@ -154,21 +154,195 @@ nav {
 }
 .nav-substack:hover { color: var(--tv-text); border-color: var(--tv-blue-lt); }
 
-/* ── HERO ── */
+/* ── HERO OUTER (iPad stage) ── */
 .hero {
-  padding: 120px 0 0;
-  max-width: 1180px;
-  margin: 0 auto;
-  padding-top: 108px;
-  padding-left: 24px;
-  padding-right: 24px;
+  padding: 110px 24px 70px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(41,98,255,0.07) 0%, transparent 70%),
+              var(--tv-bg);
 }
 
+/* ── iPAD DEVICE ── */
+.ipad-device {
+  position: relative;
+  width: min(920px, 100%);
+  background: linear-gradient(160deg, #2a2a2c 0%, #1c1c1e 40%, #1a1a1c 100%);
+  border-radius: 36px;
+  padding: 20px 44px 20px 20px; /* extra right for camera side */
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.09),
+    0 0 0 3px rgba(0,0,0,0.9),
+    0 60px 120px rgba(0,0,0,0.75),
+    0 24px 48px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.07),
+    inset 0 -1px 0 rgba(0,0,0,0.4);
+  margin: 0 auto;
+}
+
+/* Power button — top right */
+.ipad-hw-power {
+  position: absolute;
+  top: -3px;
+  right: 110px;
+  width: 52px; height: 4px;
+  background: linear-gradient(to bottom, #4a4a4c, #2c2c2e 50%, #222224);
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.06);
+}
+/* Volume buttons — top */
+.ipad-hw-vol1 {
+  position: absolute;
+  top: -3px;
+  right: 180px;
+  width: 38px; height: 4px;
+  background: linear-gradient(to bottom, #4a4a4c, #2c2c2e 50%, #222224);
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.06);
+}
+.ipad-hw-vol2 {
+  position: absolute;
+  top: -3px;
+  right: 228px;
+  width: 38px; height: 4px;
+  background: linear-gradient(to bottom, #4a4a4c, #2c2c2e 50%, #222224);
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.06);
+}
+/* Camera dot — right side center (landscape) */
+.ipad-hw-camera {
+  position: absolute;
+  right: 17px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #555, #111);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow:
+    inset 0 0 4px rgba(0,0,0,0.95),
+    0 0 0 2px rgba(0,0,0,0.6),
+    0 0 0 3px rgba(255,255,255,0.04);
+}
+/* Microphone above camera */
+.ipad-hw-mic {
+  position: absolute;
+  right: 18px;
+  top: calc(50% - 20px);
+  transform: translateY(-50%);
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #1a1a1c;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ── iPAD SCREEN ── */
+.ipad-screen {
+  background: var(--tv-bg);
+  border-radius: 22px;
+  overflow: hidden;
+  position: relative;
+  /* subtle glass shine overlay */
+}
+.ipad-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 22px;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0.01) 30%,
+    transparent 60%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* iPAD STATUS BAR */
+.ipad-status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 18px 6px;
+  background: rgba(0,0,0,0.35);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  position: relative;
+  z-index: 5;
+}
+.ipad-time {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.06em;
+}
+.ipad-status-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ipad-wifi {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5px;
+  height: 10px;
+}
+.ipad-wifi span {
+  display: block;
+  width: 3px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 1px;
+}
+.ipad-wifi span:nth-child(1) { height: 4px; }
+.ipad-wifi span:nth-child(2) { height: 7px; }
+.ipad-wifi span:nth-child(3) { height: 10px; }
+.ipad-battery-wrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.ipad-bat-pct {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: rgba(255,255,255,0.7);
+  font-weight: 500;
+}
+.ipad-bat-icon {
+  width: 24px; height: 12px;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  border-radius: 2.5px;
+  padding: 2px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.ipad-bat-icon::after {
+  content: '';
+  position: absolute;
+  right: -6px; top: 50%;
+  transform: translateY(-50%);
+  width: 3px; height: 6px;
+  background: rgba(255,255,255,0.45);
+  border-radius: 0 1.5px 1.5px 0;
+}
+.ipad-bat-fill {
+  width: 72%; height: 100%;
+  background: var(--tv-green);
+  border-radius: 1px;
+}
+
+/* iPAD CONTENT AREA */
+.ipad-content {
+  padding: 22px 28px 26px;
+}
+
+/* ── HERO CONTENT (inside iPad screen) ── */
 .hero-top {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 .hero-sector {
   font-family: var(--mono);
@@ -189,21 +363,22 @@ nav {
 }
 
 .hero-title {
-  font-size: clamp(26px, 4.5vw, 52px);
+  font-size: clamp(24px, 4vw, 46px);
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1.08;
   letter-spacing: -0.025em;
   color: #ffffff;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 .hero-title .accent { color: var(--tv-green); }
 
 .hero-subtitle {
-  font-size: clamp(15px, 2vw, 19px);
+  font-size: clamp(13px, 1.6vw, 16px);
   font-weight: 400;
   color: var(--tv-text2);
-  margin-bottom: 28px;
-  line-height: 1.5;
+  margin-bottom: 22px;
+  line-height: 1.55;
+  max-width: 700px;
 }
 
 /* ── KEY METRICS ROW ── */
@@ -215,18 +390,18 @@ nav {
   border: 1px solid var(--tv-border);
   border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 .metric-cell {
   background: var(--tv-bg2);
-  padding: 16px 20px;
+  padding: 14px 18px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 .metric-label {
   font-family: var(--mono);
-  font-size: 9.5px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -234,7 +409,7 @@ nav {
 }
 .metric-value {
   font-family: var(--mono);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.02em;
@@ -244,7 +419,7 @@ nav {
 .metric-value.yellow { color: var(--tv-yellow); }
 .metric-value.red { color: var(--tv-red); }
 .metric-sub {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--tv-text3);
 }
 
@@ -253,8 +428,9 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0 28px;
+  padding: 14px 0 0;
   border-top: 1px solid var(--tv-border);
+  margin-top: 18px;
   flex-wrap: wrap;
   gap: 12px;
 }
@@ -264,14 +440,14 @@ nav {
   gap: 12px;
 }
 .author-avatar {
-  width: 36px; height: 36px;
+  width: 34px; height: 34px;
   border-radius: 6px;
   background: linear-gradient(135deg, var(--tv-green), var(--tv-blue));
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 12px;
   color: #fff;
   flex-shrink: 0;
 }
@@ -286,7 +462,7 @@ nav {
 .author-right { display: flex; gap: 8px; flex-wrap: wrap; }
 .tag {
   font-family: var(--mono);
-  font-size: 9.5px;
+  font-size: 9px;
   font-weight: 600;
   letter-spacing: 0.08em;
   padding: 3px 9px;
@@ -895,14 +1071,20 @@ footer a:hover { color: #fff; }
 }
 @media (max-width: 600px) {
   nav { padding: 0 16px; }
-  .hero { padding: 108px 16px 0; }
-  .page-layout { padding: 0 16px 60px; }
+  .hero { padding: 90px 12px 40px; }
+  .ipad-device { border-radius: 24px; padding: 14px 30px 14px 14px; }
+  .ipad-screen { border-radius: 14px; }
+  .ipad-content { padding: 14px 16px 18px; }
   .metrics-row { grid-template-columns: 1fr 1fr; }
+  .hero-title { font-size: 22px; }
+  .hero-subtitle { font-size: 12px; }
+  .page-layout { padding: 0 16px 60px; }
   .mw-cols { grid-template-columns: 1fr 80px; }
   .mw-row { grid-template-columns: 1fr 80px; }
   .mw-cols > *:nth-child(3),
   .mw-row > *:nth-child(3) { display: none; }
   footer { padding: 16px; }
+  .ipad-hw-power, .ipad-hw-vol1, .ipad-hw-vol2 { display: none; }
 }
 </style>
 </head>
@@ -953,56 +1135,94 @@ footer a:hover { color: #fff; }
 
 <!-- HERO -->
 <div class="hero">
-  <div class="hero-top">
-    <span class="hero-sector">AI Market</span>
-    <div class="hero-dot"></div>
-    <span class="hero-category">Deep Analysis</span>
-  </div>
 
-  <h1 class="hero-title">Google's <span class="accent">Trillion-Dollar</span><br>Open Weight Strategy</h1>
-  <p class="hero-subtitle">Why did Google give away a billion-dollar AI model for free? Three stacked strategies, one structural market split — and what it means for every organization choosing their AI tier.</p>
+  <!-- ══ iPAD DEVICE ══ -->
+  <div class="ipad-device">
 
-  <!-- KEY METRICS -->
-  <div class="metrics-row">
-    <div class="metric-cell">
-      <span class="metric-label">Google Cloud Revenue</span>
-      <span class="metric-value green">$17.7B</span>
-      <span class="metric-sub">Q1 2026 · +48% YoY</span>
-    </div>
-    <div class="metric-cell">
-      <span class="metric-label">Committed Contracts</span>
-      <span class="metric-value">$240B</span>
-      <span class="metric-sub">Cloud backlog · the real moat</span>
-    </div>
-    <div class="metric-cell">
-      <span class="metric-label">DeepSeek Training Cost</span>
-      <span class="metric-value yellow">$6M</span>
-      <span class="metric-sub">Vs. GPT-4 class model</span>
-    </div>
-    <div class="metric-cell">
-      <span class="metric-label">Nvidia Market Cap Lost</span>
-      <span class="metric-value red">−$600B</span>
-      <span class="metric-sub">1 day · DeepSeek R1 shock</span>
-    </div>
-  </div>
+    <!-- Hardware chrome -->
+    <div class="ipad-hw-power"></div>
+    <div class="ipad-hw-vol1"></div>
+    <div class="ipad-hw-vol2"></div>
+    <div class="ipad-hw-mic"></div>
+    <div class="ipad-hw-camera"></div>
 
-  <!-- AUTHOR BAR -->
-  <div class="author-bar">
-    <div class="author-left">
-      <div class="author-avatar">MF</div>
-      <div class="author-info">
-        <span class="author-name">Dr. Muhammad Farooq</span>
-        <span class="author-meta">Published May 03, 2026 · drfarooq.substack.com</span>
+    <!-- Screen -->
+    <div class="ipad-screen">
+
+      <!-- iOS-style status bar -->
+      <div class="ipad-status-bar">
+        <span class="ipad-time">09:41</span>
+        <div class="ipad-status-icons">
+          <div class="ipad-wifi">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="ipad-battery-wrap">
+            <span class="ipad-bat-pct">87%</span>
+            <div class="ipad-bat-icon">
+              <div class="ipad-bat-fill"></div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="author-right">
-      <span class="tag">Enterprise AI</span>
-      <span class="tag">Open Weights</span>
-      <span class="tag">Market Strategy</span>
-      <span class="tag">Geopolitics</span>
-    </div>
-  </div>
-</div>
+
+      <!-- Content -->
+      <div class="ipad-content">
+
+        <div class="hero-top">
+          <span class="hero-sector">AI Market</span>
+          <div class="hero-dot"></div>
+          <span class="hero-category">Deep Analysis</span>
+        </div>
+
+        <h1 class="hero-title">Google's <span class="accent">Trillion-Dollar</span><br>Open Weight Strategy</h1>
+        <p class="hero-subtitle">Why did Google give away a billion-dollar AI model for free? Three stacked strategies, one structural market split — and what it means for every organization choosing their AI tier.</p>
+
+        <!-- KEY METRICS -->
+        <div class="metrics-row">
+          <div class="metric-cell">
+            <span class="metric-label">Google Cloud Revenue</span>
+            <span class="metric-value green">$17.7B</span>
+            <span class="metric-sub">Q1 2026 · +48% YoY</span>
+          </div>
+          <div class="metric-cell">
+            <span class="metric-label">Committed Contracts</span>
+            <span class="metric-value">$240B</span>
+            <span class="metric-sub">Cloud backlog · the real moat</span>
+          </div>
+          <div class="metric-cell">
+            <span class="metric-label">DeepSeek Training Cost</span>
+            <span class="metric-value yellow">$6M</span>
+            <span class="metric-sub">Vs. GPT-4 class model</span>
+          </div>
+          <div class="metric-cell">
+            <span class="metric-label">Nvidia Market Cap Lost</span>
+            <span class="metric-value red">−$600B</span>
+            <span class="metric-sub">1 day · DeepSeek R1 shock</span>
+          </div>
+        </div>
+
+        <!-- AUTHOR BAR -->
+        <div class="author-bar">
+          <div class="author-left">
+            <div class="author-avatar">MF</div>
+            <div class="author-info">
+              <span class="author-name">Dr. Muhammad Farooq</span>
+              <span class="author-meta">Published May 03, 2026 · drfarooq.substack.com</span>
+            </div>
+          </div>
+          <div class="author-right">
+            <span class="tag">Enterprise AI</span>
+            <span class="tag">Open Weights</span>
+            <span class="tag">Market Strategy</span>
+            <span class="tag">Geopolitics</span>
+          </div>
+        </div>
+
+      </div><!-- /ipad-content -->
+    </div><!-- /ipad-screen -->
+  </div><!-- /ipad-device -->
+
+</div><!-- /hero -->
 
 <!-- MAIN LAYOUT -->
 <div class="page-layout">
