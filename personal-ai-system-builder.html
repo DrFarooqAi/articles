@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal AI System Builder — Dr. Muhammad Farooq</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cyan: #00f5ff;
+    --yellow: #ffd700;
+    --red: #ff3366;
+    --green: #00ff88;
+    --orange: #ff6b00;
+    --bg: #020b14;
+    --bg2: #040f1c;
+    --bg3: #071828;
+    --panel: #0a1f33;
+    --panel2: #0d2440;
+    --border: rgba(0,245,255,0.2);
+    --text: #ffffff;
+    --text-dim: #b0d4e8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Scanlines */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.15) 2px,
+      rgba(0,0,0,0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* HEADER */
+  header {
+    padding: 30px 0 20px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    animation: scanH 3s ease-in-out infinite;
+  }
+
+  @keyframes scanH {
+    0%,100% { opacity: 0.3; transform: scaleX(0.5); }
+    50% { opacity: 1; transform: scaleX(1); }
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .logo-block h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(16px, 2.8vw, 26px);
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: 0 0 20px rgba(0,245,255,0.5);
+    letter-spacing: 2px;
+  }
+
+  .logo-block .sub {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--yellow);
+    letter-spacing: 4px;
+    margin-top: 4px;
+  }
+
+  .author-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .author-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 2px;
+  }
+
+  .author-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--yellow);
+    letter-spacing: 1px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .nav-link {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 7px 16px;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    text-decoration: none;
+    transition: all 0.3s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    background: rgba(0,245,255,0.05);
+  }
+
+  .nav-link:hover {
+    background: var(--cyan);
+    color: #000;
+    box-shadow: 0 0 18px rgba(0,245,255,0.4);
+  }
+
+  .nav-link.articles {
+    border-color: var(--yellow);
+    color: var(--yellow);
+    background: rgba(255,215,0,0.05);
+  }
+
+  .nav-link.articles:hover {
+    background: var(--yellow);
+    color: #000;
+    box-shadow: 0 0 18px rgba(255,215,0,0.4);
+  }
+
+  .status-bar {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .status-text {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    padding: 20px 0 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 12px 20px;
+    border: 1px solid rgba(0,245,255,0.4);
+    background: var(--panel2);
+    color: #ffffff;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    position: relative;
+  }
+
+  .tab:hover {
+    color: var(--cyan);
+    border-color: var(--cyan);
+    background: rgba(0,245,255,0.1);
+  }
+
+  .tab.active {
+    color: #000000;
+    background: var(--cyan);
+    border-color: var(--cyan);
+    box-shadow: 0 0 25px rgba(0,245,255,0.5);
+    font-weight: 900;
+  }
+
+  /* PANELS */
+  .panel { display: none; padding: 30px 0; }
+  .panel.active { display: block; animation: fadeIn 0.4s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 3px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--cyan), transparent);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: linear-gradient(180deg, var(--cyan), transparent);
+  }
+
+  .card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--yellow);
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+  }
+
+  /* FORM ELEMENTS */
+  .form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+
+  select, input[type="range"], input[type="number"] {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.3s;
+    appearance: none;
+  }
+
+  select:focus, input:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 10px rgba(0,245,255,0.2);
+  }
+
+  select option { background: var(--bg3); }
+
+  input[type="range"] {
+    padding: 5px 0;
+    accent-color: var(--cyan);
+  }
+
+  /* BUTTON */
+  .btn {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 12px 28px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary {
+    background: var(--cyan);
+    color: var(--bg);
+  }
+
+  .btn-primary:hover {
+    background: var(--yellow);
+    box-shadow: 0 0 25px rgba(255,215,0,0.4);
+    transform: translateY(-2px);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+  }
+
+  /* RESULT DISPLAY */
+  .result-box {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  .vram-meter {
+    margin: 15px 0;
+  }
+
+  .meter-label {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .meter-bar {
+    height: 20px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .meter-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 8px,
+      rgba(255,255,255,0.1) 8px,
+      rgba(255,255,255,0.1) 10px
+    );
+  }
+
+  .fit-badge {
+    display: inline-block;
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 5px 14px;
+    margin-top: 10px;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .fit-green { background: var(--green); color: var(--bg); }
+  .fit-yellow { background: var(--yellow); color: var(--bg); }
+  .fit-red { background: var(--red); color: white; }
+
+  /* GPU GRID */
+  .gpu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .gpu-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .gpu-card:hover {
+    border-color: var(--cyan);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0,245,255,0.1);
+  }
+
+  .gpu-card.recommended {
+    border-color: var(--yellow);
+  }
+
+  .gpu-card.recommended::after {
+    content: 'BEST VALUE';
+    position: absolute;
+    top: -1px; right: 15px;
+    background: var(--yellow);
+    color: var(--bg);
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 3px 10px;
+    letter-spacing: 1px;
+  }
+
+  .gpu-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 12px;
+  }
+
+  .gpu-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .gpu-stat {
+    background: var(--bg3);
+    padding: 8px;
+    text-align: center;
+  }
+
+  .gpu-stat .val {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--yellow);
+  }
+
+  .gpu-stat .lbl {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  .gpu-price {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    font-weight: 900;
+    color: var(--green);
+    margin-top: 15px;
+  }
+
+  /* TABLE */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .data-table th {
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--cyan);
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--panel2);
+    white-space: nowrap;
+  }
+
+  .data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(0,245,255,0.05);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--text);
+    vertical-align: middle;
+  }
+
+  .data-table tr:hover td {
+    background: rgba(0,245,255,0.04);
+  }
+
+  .tier-badge {
+    display: inline-block;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 3px 8px;
+    letter-spacing: 1px;
+  }
+
+  .tier-1 { background: rgba(255,51,102,0.2); color: var(--red); border: 1px solid var(--red); }
+  .tier-2 { background: rgba(255,215,0,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
+  .tier-3 { background: rgba(0,245,255,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
+  .tier-4 { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid var(--green); }
+
+  /* SEARCH */
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .search-bar input {
+    flex: 1;
+    padding: 12px 16px;
+  }
+
+  /* BUDGET SLIDER */
+  .budget-display {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--yellow);
+    text-align: center;
+    margin: 10px 0;
+    text-shadow: 0 0 15px rgba(255,215,0,0.4);
+  }
+
+  /* BUILD RESULT */
+  .build-result {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+  }
+
+  .build-component {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 16px;
+    position: relative;
+  }
+
+  .build-component .comp-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .build-component .comp-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--cyan);
+  }
+
+  .build-component .comp-note {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* MULTI GPU */
+  .gpu-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .gpu-slot {
+    background: var(--bg3);
+    border: 2px dashed var(--border);
+    padding: 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .gpu-slot:hover {
+    border-color: var(--cyan);
+    background: rgba(0,245,255,0.03);
+  }
+
+  .gpu-slot.filled {
+    border-style: solid;
+    border-color: var(--cyan);
+    background: var(--panel);
+  }
+
+  .slot-number {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--border);
+  }
+
+  .slot-add {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .slot-gpu-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--cyan);
+  }
+
+  .slot-vram {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 900;
+    color: var(--yellow);
+  }
+
+  .slot-remove {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--red);
+    cursor: pointer;
+    margin-top: 5px;
+  }
+
+  .multi-summary {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-top: 20px;
+  }
+
+  .total-vram {
+    font-family: 'Orbitron', monospace;
+    font-size: 42px;
+    font-weight: 900;
+    color: var(--cyan);
+    text-shadow: 0 0 30px rgba(0,245,255,0.5);
+    text-align: center;
+    margin: 10px 0;
+  }
+
+  .nvlink-warning {
+    background: rgba(255,107,0,0.1);
+    border: 1px solid var(--orange);
+    padding: 12px 16px;
+    margin-top: 15px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--orange);
+  }
+
+  .nvlink-ok {
+    background: rgba(0,255,136,0.08);
+    border: 1px solid var(--green);
+    padding: 12px 16px;
+    margin-top: 15px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+  }
+
+  .models-unlocked {
+    margin-top: 20px;
+  }
+
+  .model-chip {
+    display: inline-block;
+    background: rgba(0,245,255,0.08);
+    border: 1px solid rgba(0,245,255,0.3);
+    padding: 5px 12px;
+    margin: 4px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+  }
+
+  .model-chip.locked {
+    background: rgba(255,255,255,0.03);
+    border-color: rgba(255,255,255,0.1);
+    color: var(--text-dim);
+    opacity: 0.5;
+  }
+
+  /* SCROLLABLE TABLE WRAPPER */
+  .table-wrap {
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyan) var(--bg3);
+  }
+
+  .table-wrap::-webkit-scrollbar { height: 4px; }
+  .table-wrap::-webkit-scrollbar-track { background: var(--bg3); }
+  .table-wrap::-webkit-scrollbar-thumb { background: var(--cyan); }
+
+  /* STAT HIGHLIGHT */
+  .highlight {
+    color: var(--yellow);
+    font-weight: 700;
+  }
+
+  .cyan { color: var(--cyan); }
+  .green { color: var(--green); }
+  .red-text { color: var(--red); }
+
+  /* FILTER PILLS */
+  .filter-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .pill {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 1px;
+  }
+
+  .pill:hover, .pill.active {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(0,245,255,0.05);
+  }
+
+  /* PERFORMANCE ESTIMATOR */
+  .perf-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 15px;
+  }
+
+  .perf-stat {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .perf-val {
+    font-family: 'Orbitron', monospace;
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--yellow);
+  }
+
+  .perf-unit {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 0;
+    margin-top: 40px;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 2px;
+  }
+
+  .footer-brand {
+    color: var(--cyan);
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .gpu-grid { grid-template-columns: 1fr; }
+    .build-result { grid-template-columns: 1fr; }
+    .tab { padding: 8px 12px; font-size: 9px; }
+  }
+  .author-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+
+  .author-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(255,255,255,0.3);
+  }
+
+  .author-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--yellow);
+    letter-spacing: 1px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .nav-link {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    padding: 8px 18px;
+    border: 1px solid var(--cyan);
+    color: var(--cyan);
+    text-decoration: none;
+    transition: all 0.3s;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    background: rgba(0,245,255,0.07);
+    display: inline-block;
+  }
+
+  .nav-link:hover {
+    background: var(--cyan);
+    color: #000;
+    box-shadow: 0 0 18px rgba(0,245,255,0.5);
+    transform: translateY(-1px);
+  }
+
+  .nav-link.articles {
+    border-color: var(--yellow);
+    color: var(--yellow);
+    background: rgba(255,215,0,0.07);
+  }
+
+  .nav-link.articles:hover {
+    background: var(--yellow);
+    color: #000;
+    box-shadow: 0 0 18px rgba(255,215,0,0.5);
+  }
+
+  /* Improve label readability */
+  .form-group label {
+    display: block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: #ffffff;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--yellow);
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+  }
+
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="header-inner">
+      <div class="logo-block">
+        <h1>⚡ PERSONAL AI SYSTEM BUILDER</h1>
+        <div class="sub">2026 EDITION · LOCAL LLM HARDWARE GUIDE</div>
+        <div class="author-bar">
+          <span class="author-name">DR. MUHAMMAD FAROOQ</span>
+          <span class="author-title">AI in Healthcare · LinkedIn Top Voice</span>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px">
+        <div class="nav-links">
+          <a href="https://drfarooqai.github.io/dr-farooq-cv/" target="_blank" class="nav-link">🧑‍💼 PORTFOLIO</a>
+          <a href="https://drfarooqai.github.io/articles/" target="_blank" class="nav-link articles">📚 ARTICLES</a>
+        </div>
+        <div class="status-bar">
+          <div class="status-dot"></div>
+          <span class="status-text">DATA LOADED · ALL SYSTEMS ONLINE</span>
+        </div>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('vram')">🧮 VRAM CALC</div>
+      <div class="tab" onclick="switchTab('gpu')">🎮 GPU PICKER</div>
+      <div class="tab" onclick="switchTab('build')">🏗 BUILD RECOMMENDER</div>
+      <div class="tab" onclick="switchTab('models')">📊 MODEL LIBRARY</div>
+      <div class="tab" onclick="switchTab('multi')">⚡ MULTI-GPU</div>
+    </div>
+  </header>
+
+  <!-- PANEL 1: VRAM CALCULATOR -->
+  <div id="panel-vram" class="panel active">
+    <div class="section-title">VRAM REQUIREMENTS CALCULATOR</div>
+
+    <div class="card">
+      <div class="card-title">MODEL CONFIGURATION</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>SELECT MODEL</label>
+          <select id="vram-model" onchange="calcVRAM()">
+            <option value="">— Custom —</option>
+            <optgroup label="FLAGSHIP (70B+)">
+              <option value="235,moe">Qwen3-235B-A22B (MoE · 22B active)</option>
+              <option value="70,dense">DeepSeek R1 70B</option>
+              <option value="70,dense">Llama 4 70B</option>
+            </optgroup>
+            <optgroup label="PROFESSIONAL (30-70B)">
+              <option value="32,dense">Qwen3-32B</option>
+              <option value="32,dense">DeepSeek R1 Distill 32B</option>
+              <option value="27,dense">Gemma 3 27B</option>
+            </optgroup>
+            <optgroup label="CONSUMER (8-20B)">
+              <option value="14,dense">Qwen3-14B</option>
+              <option value="14,dense">Phi-4 14B</option>
+              <option value="14,dense">DeepSeek R1 Distill 14B</option>
+              <option value="8,dense">Qwen3-8B</option>
+              <option value="8,dense">Llama 4 8B</option>
+            </optgroup>
+            <optgroup label="EDGE">
+              <option value="4,dense">Qwen3-4B</option>
+              <option value="0.6,dense">Qwen3-0.6B</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>PARAMETERS (BILLIONS)</label>
+          <input type="number" id="vram-params" value="14" min="0.1" max="500" step="0.1" oninput="calcVRAM()">
+        </div>
+        <div class="form-group">
+          <label>QUANTIZATION</label>
+          <select id="vram-quant" onchange="calcVRAM()">
+            <option value="2">FP16 (2 bytes · full quality)</option>
+            <option value="1">Q8_0 (1 byte · ~99% quality)</option>
+            <option value="0.625">Q5_K_M (0.625 bytes · ~97%)</option>
+            <option value="0.5" selected>Q4_K_M (0.5 bytes · ~95%) ★ SWEET SPOT</option>
+            <option value="0.375">Q3_K_M (0.375 bytes · ~90%)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>TARGET GPU</label>
+          <select id="vram-gpu" onchange="calcVRAM()">
+            <option value="32">RTX 5090 · 32GB</option>
+            <option value="16" selected>RTX 5080 / 5070 Ti · 16GB</option>
+            <option value="12">RTX 5070 · 12GB</option>
+            <option value="24">RTX 4090 / 3090 · 24GB</option>
+            <option value="8">RTX 4070 · 8GB</option>
+            <option value="6">RTX 4060 Ti · 6GB</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="calcVRAM()">CALCULATE</button>
+
+      <div id="vram-result" class="result-box" style="display:none">
+        <div class="vram-meter">
+          <div class="meter-label">
+            <span id="vram-needed-label">REQUIRED VRAM</span>
+            <span id="vram-headroom"></span>
+          </div>
+          <div class="meter-bar">
+            <div id="vram-bar" class="meter-fill" style="width:0%"></div>
+          </div>
+          <div class="meter-label" style="margin-top:5px">
+            <span style="font-size:10px;color:var(--text-dim)">0 GB</span>
+            <span id="vram-gpu-max" style="font-size:10px;color:var(--text-dim)">GPU MAX</span>
+          </div>
+        </div>
+        <div id="vram-verdict"></div>
+        <div id="vram-detail" style="margin-top:15px;font-family:'Share Tech Mono',monospace;font-size:12px;line-height:1.8;color:var(--text-dim)"></div>
+      </div>
+    </div>
+
+    <!-- Quick reference -->
+    <div class="card">
+      <div class="card-title">QUICK REFERENCE · Q4_K_M SWEET SPOT</div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>MODEL</th><th>PARAMS</th><th>VRAM @ Q4</th><th>MIN GPU</th><th>STATUS</th></tr></thead>
+          <tbody>
+            <tr><td>Qwen3-0.6B</td><td>0.6B</td><td class="cyan">~0.5 GB</td><td>Any GPU</td><td><span class="tier-badge tier-4">RUNS ANYWHERE</span></td></tr>
+            <tr><td>Qwen3-4B</td><td>4B</td><td class="cyan">~2.4 GB</td><td>GTX 1650</td><td><span class="tier-badge tier-4">EDGE</span></td></tr>
+            <tr><td>Qwen3-8B</td><td>8B</td><td class="cyan">~4.8 GB</td><td>RTX 3060</td><td><span class="tier-badge tier-3">CONSUMER</span></td></tr>
+            <tr><td>Qwen3-14B</td><td>14B</td><td class="cyan">~8.4 GB</td><td>RTX 4070</td><td><span class="tier-badge tier-3">CONSUMER</span></td></tr>
+            <tr><td>Gemma 3 27B</td><td>27B</td><td class="cyan">~16 GB</td><td>RTX 5080</td><td><span class="tier-badge tier-2">PRO</span></td></tr>
+            <tr><td>Qwen3-32B</td><td>32B</td><td class="cyan">~19 GB</td><td>RTX 4090</td><td><span class="tier-badge tier-2">PRO</span></td></tr>
+            <tr><td>Qwen3-235B-A22B</td><td>22B active</td><td class="cyan">~28 GB</td><td>RTX 5090</td><td><span class="tier-badge tier-1">FLAGSHIP</span></td></tr>
+            <tr><td>DeepSeek R1 70B</td><td>70B</td><td class="cyan">~42 GB</td><td>2× RTX 5090</td><td><span class="tier-badge tier-1">MULTI-GPU</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL 2: GPU PICKER -->
+  <div id="panel-gpu" class="panel">
+    <div class="section-title">GPU SELECTION GUIDE</div>
+
+    <div class="card">
+      <div class="card-title">FILTER BY BUDGET</div>
+      <div class="form-group">
+        <label>MAX BUDGET: <span id="budget-val" class="highlight">$2,000</span></label>
+        <input type="range" id="budget-slider" min="500" max="4500" value="2000" step="50" oninput="filterGPUs()">
+      </div>
+      <div style="margin-top:15px">
+        <div class="filter-pills" id="use-filter">
+          <span class="pill active" onclick="setUseFilter('all', this)">ALL</span>
+          <span class="pill" onclick="setUseFilter('new', this)">NEW ONLY</span>
+          <span class="pill" onclick="setUseFilter('used', this)">USED/VALUE</span>
+          <span class="pill" onclick="setUseFilter('16gb', this)">16GB+</span>
+          <span class="pill" onclick="setUseFilter('24gb', this)">24GB+</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="gpu-grid" class="gpu-grid"></div>
+  </div>
+
+  <!-- PANEL 3: BUILD RECOMMENDER -->
+  <div id="panel-build" class="panel">
+    <div class="section-title">COMPLETE SYSTEM BUILD RECOMMENDER</div>
+
+    <div class="card">
+      <div class="card-title">YOUR REQUIREMENTS</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>USE CASE</label>
+          <select id="build-usecase" onchange="generateBuild()">
+            <option value="personal">Personal AI Assistant / Chat</option>
+            <option value="coding">Coding & Development</option>
+            <option value="research">Research & Analysis</option>
+            <option value="server">Local AI Server / Team</option>
+            <option value="mobile">Portable / Mobile Work</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>TOTAL BUDGET</label>
+          <select id="build-budget" onchange="generateBuild()">
+            <option value="1200">$1,200 – $1,500 (Entry)</option>
+            <option value="3500" selected>$3,500 – $4,500 (Prosumer)</option>
+            <option value="7000">$7,000 – $10,000 (Server)</option>
+            <option value="2000">$2,000 – $2,500 (Budget Used)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>PRIORITY</label>
+          <select id="build-priority" onchange="generateBuild()">
+            <option value="vram">Max VRAM (Model Size)</option>
+            <option value="speed">Max Speed (Token Rate)</option>
+            <option value="value">Best Value ($/GB)</option>
+            <option value="power">Low Power Draw</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="build-output"></div>
+  </div>
+
+  <!-- PANEL 4: MODEL LIBRARY -->
+  <div id="panel-models" class="panel">
+    <div class="section-title">OPEN-SOURCE MODEL LIBRARY 2026</div>
+
+    <div class="search-bar">
+      <input type="text" id="model-search" placeholder="SEARCH MODELS..." oninput="filterModels()" style="font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:1px;">
+      <div class="filter-pills" style="margin:0">
+        <span class="pill active" id="tier-all" onclick="setTier('all', this)">ALL</span>
+        <span class="pill" id="tier-1" onclick="setTier('1', this)">T1</span>
+        <span class="pill" id="tier-2" onclick="setTier('2', this)">T2</span>
+        <span class="pill" id="tier-3" onclick="setTier('3', this)">T3</span>
+        <span class="pill" id="tier-4" onclick="setTier('4', this)">T4</span>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>MODEL</th>
+            <th>TIER</th>
+            <th>PARAMS</th>
+            <th>VRAM @ Q4</th>
+            <th>VRAM @ FP16</th>
+            <th>CONTEXT</th>
+            <th>MIN GPU</th>
+            <th>BEST FOR</th>
+          </tr>
+        </thead>
+        <tbody id="model-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PANEL 5: MULTI-GPU -->
+  <div id="panel-multi" class="panel">
+    <div class="section-title">MULTI-GPU VRAM POOLING ANALYZER</div>
+
+    <div class="card">
+      <div class="card-title">CONFIGURE YOUR GPU ARRAY (UP TO 4 GPUs)</div>
+      <div class="gpu-slots" id="gpu-slots">
+        <div class="gpu-slot" id="slot-0" onclick="openSlotPicker(0)">
+          <div class="slot-number">①</div>
+          <select class="slot-select" id="slot-select-0" onchange="updateSlot(0)" onclick="event.stopPropagation()" style="background:transparent;border:none;color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:12px;text-align:center">
+            <option value="">— Add GPU —</option>
+          </select>
+        </div>
+        <div class="gpu-slot" id="slot-1" onclick="document.getElementById('slot-select-1').click()">
+          <div class="slot-number">②</div>
+          <select class="slot-select" id="slot-select-1" onchange="updateSlot(1)" onclick="event.stopPropagation()" style="background:transparent;border:none;color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:12px;text-align:center">
+            <option value="">— Add GPU —</option>
+          </select>
+        </div>
+        <div class="gpu-slot" id="slot-2" onclick="document.getElementById('slot-select-2').click()">
+          <div class="slot-number">③</div>
+          <select class="slot-select" id="slot-select-2" onchange="updateSlot(2)" onclick="event.stopPropagation()" style="background:transparent;border:none;color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:12px;text-align:center">
+            <option value="">— Add GPU —</option>
+          </select>
+        </div>
+        <div class="gpu-slot" id="slot-3" onclick="document.getElementById('slot-select-3').click()">
+          <div class="slot-number">④</div>
+          <select class="slot-select" id="slot-select-3" onchange="updateSlot(3)" onclick="event.stopPropagation()" style="background:transparent;border:none;color:var(--cyan);font-family:'Share Tech Mono',monospace;font-size:12px;text-align:center">
+            <option value="">— Add GPU —</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div id="multi-summary" style="display:none" class="multi-summary">
+      <div style="text-align:center;font-family:'Orbitron',monospace;font-size:11px;letter-spacing:3px;color:var(--text-dim)">TOTAL POOLED VRAM</div>
+      <div class="total-vram" id="total-vram-display">0 GB</div>
+      <div id="nvlink-status"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px" id="multi-stats"></div>
+      <div class="models-unlocked" id="models-unlocked"></div>
+    </div>
+
+    <!-- NVLink Info -->
+    <div class="card" style="margin-top:20px">
+      <div class="card-title">NVLink vs PCIe — THE HARD TRUTH</div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>CONNECTION</th><th>BANDWIDTH</th><th>GPU-TO-GPU</th><th>VRAM POOL</th><th>CONSUMER SUPPORT</th></tr></thead>
+          <tbody>
+            <tr>
+              <td class="green">NVLink 3.0</td>
+              <td class="green">112.5 GB/s</td>
+              <td class="green">Direct</td>
+              <td class="green">True Pool</td>
+              <td class="green">RTX 3090 / 3090 Ti ONLY</td>
+            </tr>
+            <tr>
+              <td class="red-text">PCIe 4.0 x16</td>
+              <td class="red-text">~32 GB/s</td>
+              <td class="red-text">Via CPU</td>
+              <td class="red-text">Logical Pool</td>
+              <td class="red-text">All RTX 40/50 Series</td>
+            </tr>
+            <tr>
+              <td style="color:var(--orange)">PCIe 5.0 x16</td>
+              <td style="color:var(--orange)">~64 GB/s</td>
+              <td style="color:var(--orange)">Via CPU</td>
+              <td style="color:var(--orange)">Logical Pool</td>
+              <td style="color:var(--orange)">HEDT Platforms Only</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:15px;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);line-height:1.8">
+        ⚠ Without NVLink, dual GPU gives ~1.6–1.8× performance instead of 2×<br>
+        ★ The RTX 3090 + NVLink bridge (~$80 used) is the only consumer config with true VRAM pooling
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-brand">PERSONAL AI SYSTEM BUILDER 2026</div>
+    <div style="margin:10px 0;font-family:'Orbitron',monospace;font-size:13px;color:#ffffff;letter-spacing:2px">
+      Built by <span style="color:var(--cyan)">Dr. Muhammad Farooq</span> · AI in Healthcare · LinkedIn Top Voice
+    </div>
+    <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin:14px 0">
+      <a href="https://drfarooqai.github.io/dr-farooq-cv/" target="_blank" class="nav-link" style="font-size:10px">🧑‍💼 PORTFOLIO</a>
+      <a href="https://drfarooqai.github.io/articles/" target="_blank" class="nav-link articles" style="font-size:10px">📚 ARTICLES</a>
+    </div>
+    <div style="margin-top:8px;color:var(--text-dim)">Data source: Kentino.com Technical Guide · Jan 2026 · Built for the AI hobbyist community</div>
+  </footer>
+</div>
+
+<script>
+// ===== DATA =====
+const GPUS = [
+  { name:'RTX 5090', vram:32, bandwidth:1792, tops:3400, tdp:575, price:1999, gen:'RTX 50', used:false, pcie:'5.0', nvlink:false, recommended:false },
+  { name:'RTX 5080', vram:16, bandwidth:960,  tops:1801, tdp:360, price:999,  gen:'RTX 50', used:false, pcie:'5.0', nvlink:false, recommended:false },
+  { name:'RTX 5070 Ti', vram:16, bandwidth:896, tops:1406, tdp:300, price:749, gen:'RTX 50', used:false, pcie:'5.0', nvlink:false, recommended:true },
+  { name:'RTX 5070', vram:12, bandwidth:672,  tops:988,  tdp:250, price:549,  gen:'RTX 50', used:false, pcie:'5.0', nvlink:false, recommended:false },
+  { name:'RTX 4090', vram:24, bandwidth:1008, tops:1300, tdp:450, price:1599, gen:'RTX 40', used:false, pcie:'4.0', nvlink:false, recommended:false },
+  { name:'RTX 3090', vram:24, bandwidth:936,  tops:285,  tdp:350, price:800,  gen:'RTX 30', used:true,  pcie:'3.0', nvlink:true,  recommended:false },
+  { name:'RTX 3090 Ti', vram:24, bandwidth:1008, tops:320, tdp:450, price:850, gen:'RTX 30', used:true, pcie:'3.0', nvlink:true, recommended:false },
+];
+
+const MODELS = [
+  { name:'Qwen3-235B-A22B', tier:1, params:22, totalParams:235, vramQ4:28, vramFP16:470, context:'128K', minGpu:'RTX 5090', bestFor:'General · Coding · Multilingual', moe:true },
+  { name:'DeepSeek R1 70B', tier:1, params:70, totalParams:70, vramQ4:42, vramFP16:168, context:'128K', minGpu:'2× RTX 5090', bestFor:'Reasoning · Research', moe:false },
+  { name:'Llama 4 70B', tier:1, params:70, totalParams:70, vramQ4:42, vramFP16:168, context:'128K', minGpu:'2× RTX 5090', bestFor:'General · Versatile', moe:false },
+  { name:'Qwen3-32B', tier:2, params:32, totalParams:32, vramQ4:19, vramFP16:77, context:'128K', minGpu:'RTX 4090', bestFor:'Coding · Reasoning', moe:false },
+  { name:'DeepSeek R1 Distill 32B', tier:2, params:32, totalParams:32, vramQ4:19, vramFP16:77, context:'128K', minGpu:'RTX 4090', bestFor:'Reasoning · Cost-effective', moe:false },
+  { name:'Gemma 3 27B', tier:2, params:27, totalParams:27, vramQ4:16, vramFP16:65, context:'128K', minGpu:'RTX 5080', bestFor:'Multimodal · Google quality', moe:false },
+  { name:'Qwen3-14B', tier:3, params:14, totalParams:14, vramQ4:8.4, vramFP16:34, context:'128K', minGpu:'RTX 4070', bestFor:'General · Fast', moe:false },
+  { name:'Phi-4', tier:3, params:14, totalParams:14, vramQ4:8.4, vramFP16:34, context:'16K', minGpu:'RTX 4070', bestFor:'STEM · Education', moe:false },
+  { name:'DeepSeek R1 Distill 14B', tier:3, params:14, totalParams:14, vramQ4:8.4, vramFP16:34, context:'128K', minGpu:'RTX 4070', bestFor:'Coding · Problem solving', moe:false },
+  { name:'Qwen3-8B', tier:3, params:8, totalParams:8, vramQ4:4.8, vramFP16:19, context:'131K', minGpu:'RTX 3060', bestFor:'Real-time · Fast chat', moe:false },
+  { name:'Llama 4 8B', tier:3, params:8, totalParams:8, vramQ4:4.8, vramFP16:19, context:'128K', minGpu:'RTX 3060', bestFor:'Everyday tasks · Chat', moe:false },
+  { name:'Qwen3-4B', tier:4, params:4, totalParams:4, vramQ4:2.4, vramFP16:9.6, context:'128K', minGpu:'GTX 1650', bestFor:'Laptops · Edge devices', moe:false },
+  { name:'Qwen3-0.6B', tier:4, params:0.6, totalParams:0.6, vramQ4:0.5, vramFP16:1.4, context:'32K', minGpu:'Any GPU', bestFor:'IoT · Mobile · Ultra-low', moe:false },
+];
+
+const BUILDS = {
+  '1200': {
+    label: 'ENTRY POINT', color: 'var(--cyan)',
+    gpu: 'RTX 5070 Ti (16GB)', cpu: 'AMD Ryzen 7 9700X', ram: '32GB DDR5-6000',
+    storage: '2TB NVMe PCIe 4.0', psu: '750W 80+ Gold', mobo: 'B650 PCIe 5.0',
+    cost: '$1,200 – $1,500', perf: '35–50 tok/s', models: 'Qwen3-14B @ Q4 · DeepSeek R1 14B',
+    note: 'Best value for 16GB VRAM. Excellent for personal use and coding assistants.'
+  },
+  '3500': {
+    label: 'PROSUMER', color: 'var(--yellow)',
+    gpu: 'RTX 5090 (32GB)', cpu: 'AMD Ryzen 9 9950X', ram: '64GB DDR5-6400',
+    storage: '4TB NVMe Gen4', psu: '1000W 80+ Gold', mobo: 'X670E Full Feature',
+    cost: '$3,500 – $4,500', perf: '50–80 tok/s', models: 'Qwen3-32B @ Q4 · DeepSeek R1 32B @ Q6',
+    note: 'Maximum single-GPU VRAM. Handles all sub-32B models with headroom.'
+  },
+  '7000': {
+    label: 'AI SERVER', color: 'var(--red)',
+    gpu: '2× RTX 5090 (64GB total)', cpu: 'AMD Threadripper 7960X', ram: '128GB DDR5-5600 ECC',
+    storage: '8TB NVMe RAID 0', psu: '1600W 80+ Titanium', mobo: 'TRX50 Full Lane Support',
+    cost: '$7,000 – $10,000', perf: '40–50 tok/s @ 70B', models: 'DeepSeek R1 70B · Qwen3-235B · Any sub-120B',
+    note: 'Team inference server. Full PCIe lane support for both GPUs. Production ready.'
+  },
+  '2000': {
+    label: 'BUDGET LAB', color: 'var(--green)',
+    gpu: '2× RTX 3090 (48GB + NVLink!)', cpu: 'AMD Ryzen 9 5950X', ram: '64GB DDR4-3600',
+    storage: '2TB NVMe', psu: '1200W 80+ Gold', mobo: 'X570 with 2× x16',
+    cost: '$2,000 – $2,500 (used market)', perf: '25–35 tok/s @ 32B', models: 'Qwen3-32B @ Q8 · DeepSeek R1 32B @ FP16',
+    note: 'ONLY consumer config with NVLink! True VRAM pooling at 112.5 GB/s vs PCIe 32 GB/s.'
+  },
+};
+
+let useFilter = 'all';
+let tierFilter = 'all';
+
+// ===== TAB SWITCHING =====
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+  if(id === 'gpu') renderGPUs();
+  if(id === 'models') renderModels();
+  if(id === 'build') generateBuild();
+  if(id === 'multi') initMultiGPU();
+}
+
+// ===== VRAM CALCULATOR =====
+function calcVRAM() {
+  const modelSel = document.getElementById('vram-model').value;
+  if(modelSel) {
+    const [p] = modelSel.split(',');
+    document.getElementById('vram-params').value = p;
+  }
+  const params = parseFloat(document.getElementById('vram-params').value) || 14;
+  const quant = parseFloat(document.getElementById('vram-quant').value);
+  const gpuVRAM = parseFloat(document.getElementById('vram-gpu').value);
+
+  const needed = params * quant * 1.2;
+  const pct = Math.min((needed / gpuVRAM) * 100, 100);
+  const headroom = gpuVRAM - needed;
+
+  const bar = document.getElementById('vram-bar');
+  bar.style.width = pct + '%';
+  bar.style.background = pct < 70 ? 'linear-gradient(90deg,var(--green),var(--cyan))' :
+                          pct < 90 ? 'linear-gradient(90deg,var(--yellow),var(--orange))' :
+                                     'linear-gradient(90deg,var(--red),#ff0055)';
+
+  document.getElementById('vram-needed-label').innerHTML =
+    `REQUIRED: <span style="color:var(--yellow);font-weight:700">${needed.toFixed(1)} GB</span>`;
+  document.getElementById('vram-gpu-max').textContent = gpuVRAM + ' GB MAX';
+  document.getElementById('vram-headroom').innerHTML =
+    headroom > 0 ? `<span style="color:var(--green)">+${headroom.toFixed(1)} GB headroom</span>` :
+                   `<span style="color:var(--red)">${Math.abs(headroom).toFixed(1)} GB OVER</span>`;
+
+  let verdict = '';
+  if(pct <= 70) {
+    verdict = '<span class="fit-badge fit-green">✓ FITS COMFORTABLY</span>';
+  } else if(pct <= 95) {
+    verdict = '<span class="fit-badge fit-yellow">⚠ FITS — TIGHT</span>';
+  } else {
+    verdict = '<span class="fit-badge fit-red">✗ DOES NOT FIT</span>';
+  }
+  document.getElementById('vram-verdict').innerHTML = verdict;
+
+  const tokSpeed = (
+    { '32': 1792, '16': 928, '12': 672, '24': 1008, '8': 448, '6': 288 }[String(gpuVRAM)] || 672
+  ) / needed;
+
+  document.getElementById('vram-detail').innerHTML =
+    `Formula: ${params}B × ${quant} bytes × 1.2 overhead = ${needed.toFixed(2)} GB<br>` +
+    `GPU VRAM: ${gpuVRAM} GB &nbsp;|&nbsp; Usage: ${pct.toFixed(1)}%<br>` +
+    `Est. token speed: <span style="color:var(--yellow)">${Math.round(tokSpeed)} tok/s</span> (bandwidth-limited estimate)<br>` +
+    `Tip: ${pct > 90 ? 'Try Q3_K_M quantization to reduce by ~25% more' : 'Q4_K_M is the sweet spot — good quality / size trade-off'}`;
+
+  document.getElementById('vram-result').style.display = 'block';
+}
+
+// ===== GPU PICKER =====
+function setUseFilter(f, el) {
+  useFilter = f;
+  document.querySelectorAll('#use-filter .pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderGPUs();
+}
+
+function filterGPUs() {
+  document.getElementById('budget-val').textContent = '$' + parseInt(document.getElementById('budget-slider').value).toLocaleString();
+  renderGPUs();
+}
+
+function renderGPUs() {
+  const budget = parseInt(document.getElementById('budget-slider')?.value || 2000);
+  const grid = document.getElementById('gpu-grid');
+  if(!grid) return;
+
+  let filtered = GPUS.filter(g => g.price <= budget);
+  if(useFilter === 'new') filtered = filtered.filter(g => !g.used);
+  if(useFilter === 'used') filtered = filtered.filter(g => g.used);
+  if(useFilter === '16gb') filtered = filtered.filter(g => g.vram >= 16);
+  if(useFilter === '24gb') filtered = filtered.filter(g => g.vram >= 24);
+
+  if(!filtered.length) {
+    grid.innerHTML = '<div style="color:var(--text-dim);font-family:\'Share Tech Mono\',monospace;padding:30px">No GPUs match your filters.</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(g => `
+    <div class="gpu-card ${g.recommended ? 'recommended' : ''}">
+      <div class="gpu-name">${g.name} ${g.nvlink ? '<span style="color:var(--green);font-size:9px">★ NVLINK</span>' : ''}</div>
+      <div class="gpu-stats">
+        <div class="gpu-stat"><div class="val">${g.vram}GB</div><div class="lbl">VRAM</div></div>
+        <div class="gpu-stat"><div class="val">${g.bandwidth}</div><div class="lbl">GB/s BW</div></div>
+        <div class="gpu-stat"><div class="val">${g.tops >= 1000 ? (g.tops/1000).toFixed(1)+'K' : g.tops}</div><div class="lbl">AI TOPS</div></div>
+        <div class="gpu-stat"><div class="val">${g.tdp}W</div><div class="lbl">TDP</div></div>
+      </div>
+      <div class="gpu-price">${g.used ? '~' : ''}$${g.price.toLocaleString()} ${g.used ? '<span style="font-size:11px;color:var(--text-dim)">(used)</span>' : ''}</div>
+      <div style="margin-top:10px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim)">
+        PCIe ${g.pcie} · ${g.gen} ${g.nvlink ? '· NVLink ✓' : '· No NVLink'}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== BUILD RECOMMENDER =====
+function generateBuild() {
+  const budget = document.getElementById('build-budget')?.value || '3500';
+  const usecase = document.getElementById('build-usecase')?.value || 'coding';
+  const priority = document.getElementById('build-priority')?.value || 'vram';
+  const b = BUILDS[budget];
+  if(!b) return;
+
+  const out = document.getElementById('build-output');
+  out.innerHTML = `
+    <div class="card" style="border-color:${b.color}">
+      <div class="card-title" style="color:${b.color}">RECOMMENDED BUILD · ${b.label}</div>
+      <div class="build-result">
+        <div class="build-component"><div class="comp-label">GPU</div><div class="comp-value">${b.gpu}</div></div>
+        <div class="build-component"><div class="comp-label">CPU</div><div class="comp-value">${b.cpu}</div></div>
+        <div class="build-component"><div class="comp-label">RAM</div><div class="comp-value">${b.ram}</div></div>
+        <div class="build-component"><div class="comp-label">STORAGE</div><div class="comp-value">${b.storage}</div></div>
+        <div class="build-component"><div class="comp-label">PSU</div><div class="comp-value">${b.psu}</div></div>
+        <div class="build-component"><div class="comp-label">MOTHERBOARD</div><div class="comp-value">${b.mobo}</div></div>
+      </div>
+      <div class="perf-grid" style="margin-top:20px">
+        <div class="perf-stat"><div class="perf-val">${b.cost.split('–')[0].trim()}</div><div class="perf-unit">STARTING COST</div></div>
+        <div class="perf-stat"><div class="perf-val">${b.perf.split(' ')[0]}</div><div class="perf-unit">TOKENS / SEC</div></div>
+      </div>
+      <div style="margin-top:16px;background:var(--bg3);border:1px solid var(--border);padding:14px">
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);letter-spacing:1px;margin-bottom:6px">RECOMMENDED MODELS</div>
+        <div style="font-family:'Orbitron',monospace;font-size:12px;color:${b.color}">${b.models}</div>
+      </div>
+      <div style="margin-top:12px;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);line-height:1.8">
+        ${b.note}
+      </div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <div class="card-title">SOFTWARE STACK</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+        ${[
+          {name:'Ollama', desc:'Easy setup · Auto multi-GPU · API serving', level:'BEGINNER'},
+          {name:'LM Studio', desc:'GUI · One-click downloads · Chat interface', level:'BEGINNER'},
+          {name:'llama.cpp', desc:'Max control · Layer splitting · GGUF native', level:'ADVANCED'},
+          {name:'vLLM', desc:'Production serving · Tensor parallel · High throughput', level:'EXPERT'},
+        ].map(s => `
+          <div style="background:var(--bg3);border:1px solid var(--border);padding:14px">
+            <div style="font-family:'Orbitron',monospace;font-size:12px;color:var(--cyan);margin-bottom:6px">${s.name}</div>
+            <div style="font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim)">${s.desc}</div>
+            <div style="margin-top:8px"><span class="tier-badge ${s.level==='BEGINNER'?'tier-4':s.level==='ADVANCED'?'tier-3':'tier-1'}">${s.level}</span></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ===== MODEL LIBRARY =====
+function setTier(t, el) {
+  tierFilter = t;
+  document.querySelectorAll('[id^="tier-"]').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  renderModels();
+}
+
+function filterModels() { renderModels(); }
+
+function renderModels() {
+  const search = (document.getElementById('model-search')?.value || '').toLowerCase();
+  const tbody = document.getElementById('model-tbody');
+  if(!tbody) return;
+
+  let filtered = MODELS;
+  if(tierFilter !== 'all') filtered = filtered.filter(m => m.tier === parseInt(tierFilter));
+  if(search) filtered = filtered.filter(m => m.name.toLowerCase().includes(search) || m.bestFor.toLowerCase().includes(search));
+
+  const tierLabels = {1:'FLAGSHIP',2:'PRO',3:'CONSUMER',4:'EDGE'};
+
+  tbody.innerHTML = filtered.map(m => `
+    <tr>
+      <td><span style="color:var(--cyan);font-family:'Orbitron',monospace;font-size:11px;font-weight:700">${m.name}</span>${m.moe ? ' <span style="color:var(--green);font-size:9px">MoE</span>':''}</td>
+      <td><span class="tier-badge tier-${m.tier}">${tierLabels[m.tier]}</span></td>
+      <td>${m.moe ? m.totalParams+'B ('+m.params+'B active)' : m.params+'B'}</td>
+      <td class="highlight">${m.vramQ4} GB</td>
+      <td style="color:var(--text-dim)">${m.vramFP16} GB</td>
+      <td>${m.context}</td>
+      <td style="color:#c8e8f5;font-size:12px">${m.minGpu}</td>
+      <td style="color:#c8e8f5;font-size:12px">${m.bestFor}</td>
+    </tr>
+  `).join('');
+}
+
+// ===== MULTI-GPU =====
+function initMultiGPU() {
+  const options = GPUS.map(g => `<option value="${g.name}|${g.vram}|${g.nvlink ? '1' : '0'}">${g.name} (${g.vram}GB${g.nvlink?' NVLink':''})</option>`).join('');
+  for(let i = 0; i < 4; i++) {
+    const sel = document.getElementById('slot-select-' + i);
+    if(sel && sel.options.length === 1) sel.innerHTML = '<option value="">— Add GPU —</option>' + options;
+  }
+}
+
+function updateSlot(i) {
+  const sel = document.getElementById('slot-select-' + i);
+  const slot = document.getElementById('slot-' + i);
+  if(sel.value) {
+    const [name, vram, nvl] = sel.value.split('|');
+    slot.classList.add('filled');
+    slot.querySelector('.slot-number').innerHTML =
+      `<div class="slot-gpu-name">${name}</div><div class="slot-vram">${vram}GB</div>`;
+  } else {
+    slot.classList.remove('filled');
+    const nums = ['①','②','③','④'];
+    slot.querySelector('.slot-number').innerHTML = nums[i];
+  }
+  updateMultiSummary();
+}
+
+function updateMultiSummary() {
+  const slots = [];
+  for(let i=0;i<4;i++) {
+    const v = document.getElementById('slot-select-'+i)?.value;
+    if(v) { const [name,vram,nvl] = v.split('|'); slots.push({name,vram:parseInt(vram),nvlink:nvl==='1'}); }
+  }
+
+  const summary = document.getElementById('multi-summary');
+  if(!slots.length) { summary.style.display='none'; return; }
+  summary.style.display = 'block';
+
+  const totalVRAM = slots.reduce((a,s) => a+s.vram, 0);
+  const hasNVLink = slots.length >= 2 && slots.every(s => s.nvlink);
+  const gpuCount = slots.length;
+
+  document.getElementById('total-vram-display').textContent = totalVRAM + ' GB';
+
+  const effMultiplier = hasNVLink ? 0.95 : (gpuCount === 2 ? 0.8 : 0.65);
+  const effectiveToks = Math.round(50 * gpuCount * effMultiplier);
+
+  document.getElementById('nvlink-status').innerHTML = hasNVLink
+    ? `<div class="nvlink-ok">★ NVLink DETECTED — True VRAM pooling at 112.5 GB/s · Expected scaling: ~1.9× per pair</div>`
+    : gpuCount > 1
+    ? `<div class="nvlink-warning">⚠ PCIe ONLY — No NVLink available on RTX 40/50 series · Expected scaling: ~${(effMultiplier * gpuCount).toFixed(1)}× (not ${gpuCount}×) · GPU→GPU at ~32-64 GB/s</div>`
+    : '';
+
+  document.getElementById('multi-stats').innerHTML = `
+    <div class="perf-stat"><div class="perf-val">${totalVRAM}</div><div class="perf-unit">TOTAL GB VRAM</div></div>
+    <div class="perf-stat"><div class="perf-val">${gpuCount}</div><div class="perf-unit">GPU COUNT</div></div>
+    <div class="perf-stat"><div class="perf-val">~${effectiveToks}</div><div class="perf-unit">EST. TOK/S (32B)</div></div>
+    <div class="perf-stat"><div class="perf-val">${hasNVLink ? '112.5' : '32-64'}</div><div class="perf-unit">GB/s GPU LINK</div></div>
+  `;
+
+  const unlocked = MODELS.map(m => {
+    const fits = m.vramQ4 <= totalVRAM;
+    return `<span class="model-chip ${fits?'':'locked'}">${fits?'✓':''} ${m.name} (${m.vramQ4}GB)</span>`;
+  }).join('');
+
+  document.getElementById('models-unlocked').innerHTML =
+    `<div style="font-family:'Orbitron',monospace;font-size:11px;letter-spacing:2px;color:var(--text-dim);margin-bottom:10px">MODELS UNLOCKED @ Q4_K_M</div>${unlocked}`;
+}
+
+// ===== INIT =====
+window.onload = () => {
+  calcVRAM();
+  renderModels();
+  renderGPUs();
+  generateBuild();
+  initMultiGPU();
+  document.getElementById('budget-val').textContent = '$2,000';
+};
+</script>
+</body>
+</html>
