@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<!-- saved from url=(0080)file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATLAS of Medical AI Models | Dr. Muhammad Farooq</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./ATLAS of Medical AI Models _ Dr. Muhammad Farooq_files/css2" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --bg2: #0d1224;
+    --bg3: #111827;
+    --surface: #151d2e;
+    --surface2: #1a2440;
+    --border: rgba(99,179,237,0.12);
+    --border2: rgba(99,179,237,0.22);
+
+    /* Plotly/Glaido palette */
+    --plotly-blue: #636efa;
+    --plotly-teal: #00cc96;
+    --plotly-orange: #ef553b;
+    --plotly-purple: #ab63fa;
+    --plotly-gold: #ffa15a;
+    --plotly-cyan: #19d3f3;
+    --plotly-pink: #ff6692;
+    --glaido-lime: #8cf58b;
+    --glaido-violet: #7c5cbf;
+    --glaido-electric: #4fc3f7;
+
+    /* UPGRADED TEXT — prominent & bright */
+    --text: #ffffff;
+    --text-muted: #c8d4e8;
+    --text-dim: #8fa3c0;
+
+    --nav-h: 68px;
+    --radius: 14px;
+    --radius-lg: 20px;
+
+    /* cyberpunk border colors */
+    --cyber-red: #ff1744;
+    --cyber-blue: #00e5ff;
+    --cyber-purple: #d500f9;
+    --cyber-green: #00e676;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── SCROLL PROGRESS ─── */
+  #prog {
+    position: fixed; top: 0; left: 0; height: 3px; z-index: 200;
+    background: linear-gradient(90deg, var(--plotly-blue), var(--plotly-teal), var(--plotly-purple));
+    width: 0%; transition: width 0.1s linear;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
+    z-index: 100;
+    background: rgba(10,14,26,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center;
+    padding: 0 clamp(16px, 4vw, 48px);
+    gap: 24px;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none; flex-shrink: 0;
+  }
+  .nav-logo-icon {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--plotly-blue), var(--plotly-purple));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .nav-logo-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px; font-weight: 800;
+    background: linear-gradient(90deg, var(--plotly-blue), var(--plotly-cyan));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .nav-logo-sub { font-size: 11px; color: var(--text-muted); margin-top: -2px; }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 4px;
+    list-style: none; flex: 1;
+    overflow-x: auto; padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+  .nav-links::-webkit-scrollbar { display: none; }
+  .nav-links a {
+    display: flex; align-items: center; gap: 6px;
+    padding: 6px 13px; border-radius: 8px;
+    font-size: 13px; font-weight: 500;
+    color: var(--text-muted); text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+  .nav-links a:hover, .nav-links a.active {
+    color: var(--text);
+    background: var(--surface2);
+    border-color: var(--border2);
+  }
+  .nav-links a .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .nav-badge {
+    margin-left: auto; flex-shrink: 0;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .badge-count {
+    font-size: 12px; font-weight: 600;
+    padding: 4px 10px; border-radius: 20px;
+    background: rgba(99,110,250,0.15);
+    border: 1px solid rgba(99,110,250,0.3);
+    color: var(--plotly-blue);
+  }
+  .btn-outline {
+    font-size: 13px; font-weight: 600;
+    padding: 7px 16px; border-radius: 8px;
+    border: 1px solid var(--border2);
+    background: transparent; color: var(--text);
+    cursor: pointer; text-decoration: none;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { background: var(--surface2); }
+
+  /* ─── NAV AUTHOR BADGE ─── */
+  .nav-author-link {
+    display: flex; align-items: center; gap: 9px;
+    padding: 6px 12px 6px 6px;
+    border-radius: 40px;
+    text-decoration: none;
+    background: var(--surface2);
+    border: 1px solid rgba(0,229,255,0.25);
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .nav-author-link::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(270deg, var(--cyber-red), var(--cyber-blue), var(--cyber-purple), var(--cyber-red));
+    background-size: 400% 400%;
+    animation: cyber-border-spin 3s ease infinite;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 0;
+  }
+  .nav-author-link:hover::before { opacity: 0.15; }
+  .nav-author-link:hover {
+    border-color: rgba(0,229,255,0.55);
+    box-shadow: 0 0 14px rgba(0,229,255,0.2);
+    transform: translateY(-1px);
+  }
+  .nav-author-link > * { position: relative; z-index: 1; }
+  .nav-author-avatar {
+    width: 28px; height: 28px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--plotly-blue), var(--cyber-blue));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800;
+    color: #fff; flex-shrink: 0;
+    box-shadow: 0 0 8px rgba(0,229,255,0.4);
+  }
+  .nav-author-info { display: flex; flex-direction: column; line-height: 1; }
+  .nav-author-by { font-size: 9px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; }
+  .nav-author-name { font-size: 12px; font-weight: 700; color: #fff; white-space: nowrap; margin-top: 2px; }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: calc(var(--nav-h) + 60px) clamp(16px, 5vw, 80px) 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 70% 55% at 65% 50%, rgba(99,110,250,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 20% 30%, rgba(0,204,150,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 35% at 80% 80%, rgba(171,99,250,0.05) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(99,110,250,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,110,250,0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  .hero-inner {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: center;
+    max-width: 1200px; margin: 0 auto; width: 100%;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 20px;
+    background: rgba(99,110,250,0.1);
+    border: 1px solid rgba(99,110,250,0.25);
+    font-size: 12px; font-weight: 600; color: var(--plotly-blue);
+    margin-bottom: 20px; letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .hero-eyebrow span { width: 6px; height: 6px; border-radius: 50%; background: var(--plotly-teal); animation: pulse 2s infinite; }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(38px, 5vw, 64px);
+    font-weight: 800; line-height: 1.08;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+  .hero h1 em { font-style: normal; }
+  .grad-blue { background: linear-gradient(90deg, var(--plotly-blue), var(--plotly-cyan)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .grad-green { background: linear-gradient(90deg, var(--plotly-teal), var(--glaido-lime)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero-desc {
+    font-size: 17px; color: var(--text-muted); line-height: 1.7;
+    max-width: 520px; margin-bottom: 32px;
+  }
+  .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-primary {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    padding: 12px 24px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--plotly-blue), var(--plotly-purple));
+    border: none; color: #fff; cursor: pointer;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(99,110,250,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(99,110,250,0.4); }
+  .hero-stats {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; margin-top: 40px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    text-align: center;
+    position: relative; padding: 2px;
+  }
+  /* Stat cards get cyber border too */
+  .stat-card {
+    position: relative; padding: 2px; border-radius: var(--radius);
+    background: linear-gradient(270deg, var(--cyber-red), var(--cyber-blue), var(--cyber-purple), var(--cyber-red));
+    background-size: 400% 400%;
+    animation: cyber-border-spin 5s ease infinite;
+  }
+  .stat-card:nth-child(2) { animation-delay: -1.5s; }
+  .stat-card:nth-child(3) { animation-delay: -3s; }
+  .stat-card-inner {
+    background: var(--surface); border-radius: calc(var(--radius) - 2px);
+    padding: 18px 16px; text-align: center;
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px; font-weight: 800;
+    line-height: 1;
+  }
+  .stat-lbl { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; }
+  .strip-count { font-size: 11px; padding: 2px 7px; border-radius: 10px; background: rgba(0,229,255,0.1); color: var(--plotly-cyan); border: 1px solid rgba(0,229,255,0.2); font-weight: 700; }
+  .part-desc { font-size: 15px; color: var(--text-muted); line-height: 1.75; }
+  .hero-desc { font-size: 17px; color: var(--text-muted); line-height: 1.7; max-width: 520px; margin-bottom: 32px; }
+  .part-sub { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text); }
+
+  /* Hero right — visual mockup */
+  .hero-visual {
+    position: relative;
+  }
+  .mockup-window {
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,110,250,0.1);
+    animation: floatY 6s ease-in-out infinite;
+  }
+  .mockup-bar {
+    display: flex; align-items: center; gap: 6px;
+    padding: 12px 16px;
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+  }
+  .dot-red { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; }
+  .dot-yellow { width: 10px; height: 10px; border-radius: 50%; background: #febb2d; }
+  .dot-green { width: 10px; height: 10px; border-radius: 50%; background: #28c840; }
+  .mockup-url {
+    flex: 1; text-align: center; font-size: 12px;
+    color: var(--text-muted); font-family: monospace;
+  }
+  .mockup-body { padding: 20px; }
+  .mockup-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .mockup-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; }
+  .mockup-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+  .mtab {
+    font-size: 11px; padding: 4px 10px; border-radius: 6px; cursor: pointer;
+    border: 1px solid var(--border); color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .mtab.active { background: rgba(99,110,250,0.15); color: var(--plotly-blue); border-color: rgba(99,110,250,0.3); }
+  .mockup-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px; margin-bottom: 8px;
+    background: var(--bg3); font-size: 12px;
+    border: 1px solid rgba(0,229,255,0.1);
+    transition: border-color 0.2s;
+    cursor: pointer;
+  }
+  .mockup-row:hover { border-color: rgba(0,229,255,0.3); }
+  .mr-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+  .mr-name { flex: 1; font-weight: 700; color: #fff; font-size: 13px; }
+  .mr-company { color: var(--text-muted); font-size: 11px; font-weight: 500; }
+  .mr-badge { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
+  .badge-e { background: rgba(255,161,90,0.2); color: #ffa15a; border: 1px solid rgba(255,161,90,0.4); }
+  .badge-o { background: rgba(0,204,150,0.15); color: var(--plotly-teal); border: 1px solid rgba(0,204,150,0.35); }
+  .badge-m { background: rgba(171,99,250,0.15); color: var(--plotly-purple); border: 1px solid rgba(171,99,250,0.35); }
+  .badge-n { background: rgba(255,102,146,0.15); color: var(--plotly-pink); border: 1px solid rgba(255,102,146,0.35); }
+
+  /* ─── CYBERPUNK MODEL TAB (visible full info) ─── */
+  .model-tab-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 14px;
+    margin-top: 48px;
+    margin-bottom: 56px;
+  }
+  .model-tab {
+    position: relative;
+    padding: 2px;
+    border-radius: 14px;
+    background: linear-gradient(
+      270deg,
+      var(--cyber-red) 0%,
+      var(--cyber-blue) 33%,
+      var(--cyber-purple) 66%,
+      var(--cyber-red) 100%
+    );
+    background-size: 400% 400%;
+    animation: cyber-border-spin 3s ease infinite;
+    box-shadow: 0 0 10px rgba(255,23,68,0.25), 0 0 20px rgba(0,229,255,0.15);
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .model-tab:nth-child(2n)   { animation-delay: -0.6s; }
+  .model-tab:nth-child(3n)   { animation-delay: -1.2s; }
+  .model-tab:nth-child(4n)   { animation-delay: -1.8s; }
+  .model-tab:nth-child(5n)   { animation-delay: -2.4s; }
+  .model-tab:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 20px rgba(255,23,68,0.45), 0 0 40px rgba(0,229,255,0.3);
+  }
+  .model-tab-inner {
+    background: var(--bg3);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .mt-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 800;
+    color: #fff; line-height: 1.2;
+  }
+  .mt-company {
+    font-size: 12px; font-weight: 600;
+    color: var(--plotly-cyan);
+  }
+  .mt-class {
+    font-size: 11px; color: var(--text-muted);
+    margin-top: 4px; line-height: 1.4;
+    font-weight: 500;
+  }
+  .mt-badge-row {
+    margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center;
+  }
+  .mt-num {
+    font-size: 10px; font-weight: 800;
+    color: var(--cyber-blue); font-family: 'Syne', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  /* floating badge */
+  .float-badge {
+    position: absolute;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    animation: floatY2 4s ease-in-out infinite;
+  }
+  .float-badge-tl { top: -20px; left: -30px; animation-delay: -1s; }
+  .float-badge-br { bottom: -16px; right: -20px; animation-delay: -2.5s; }
+  .fb-label { color: var(--text-muted); font-size: 10px; }
+  .fb-val { font-weight: 700; font-size: 15px; }
+
+  /* ─── SECTION STRIP (Monday.com style sections page) ─── */
+  .section-strip {
+    display: flex; overflow-x: auto;
+    padding: 0 clamp(16px, 5vw, 80px);
+    gap: 0; border-bottom: 1px solid var(--border);
+    background: var(--bg2); position: sticky; top: var(--nav-h); z-index: 90;
+    scrollbar-width: none;
+  }
+  .section-strip::-webkit-scrollbar { display: none; }
+  .strip-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 16px 22px;
+    font-size: 13px; font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer; white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s; text-decoration: none;
+  }
+  .strip-item:hover { color: var(--text); }
+  .strip-item.active { color: var(--text); border-bottom-color: var(--plotly-blue); }
+  .strip-item .si-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .strip-count { font-size: 11px; padding: 2px 6px; border-radius: 10px; background: var(--surface2); color: var(--text-muted); }
+
+  /* ─── MAIN CONTENT ─── */
+  main {
+    max-width: 1240px; margin: 0 auto;
+    padding: 0 clamp(16px, 4vw, 48px);
+  }
+
+  /* ─── PART SECTION (Monday.com "feature block" layout) ─── */
+  .part-section {
+    padding: 72px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .part-header {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: start;
+    margin-bottom: 56px;
+  }
+  .part-label {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 12px;
+  }
+  .part-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 3.5vw, 42px);
+    font-weight: 800; line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+  .part-sub {
+    font-size: 16px; font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .part-desc {
+    font-size: 15px; color: var(--text-muted); line-height: 1.75;
+  }
+  .part-meta {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  /* Wrapper for cyberpunk border on meta stat boxes */
+  .pms-cyber {
+    position: relative; padding: 2px; border-radius: var(--radius);
+    background: linear-gradient(270deg, var(--cyber-red), var(--cyber-blue), var(--cyber-purple), var(--cyber-red));
+    background-size: 400% 400%;
+    animation: cyber-border-spin 4s ease infinite;
+    box-shadow: 0 0 8px rgba(255,23,68,0.2), 0 0 16px rgba(0,229,255,0.1);
+  }
+  .pms-cyber:nth-child(2) { animation-delay: -1s; }
+  .pms-cyber:nth-child(3) { animation-delay: -2s; }
+  .pms-cyber:nth-child(4) { animation-delay: -3s; }
+  .part-meta-stat {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; border-radius: calc(var(--radius) - 2px);
+    background: var(--surface);
+  }
+  .pms-icon { width: 38px; height: 38px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .pms-info { flex: 1; }
+  .pms-lbl { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .pms-val { font-size: 15px; font-weight: 700; color: #fff; }
+
+  /* ─── ENTRY CARDS ─── */
+  .entries-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+  }
+  /* The outer cyber-border div wraps each card */
+  .entry-card {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+    cursor: pointer;
+    height: 100%;
+  }
+  .entry-card:hover {
+    transform: translateY(-6px);
+  }
+  .ec-top {
+    padding: 22px 22px 16px;
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .ec-num {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 800;
+    flex-shrink: 0; color: #fff;
+  }
+  .ec-header { flex: 1; }
+  .ec-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; line-height: 1.2; margin-bottom: 3px; color: #fff; }
+  .ec-company { font-size: 13px; color: var(--plotly-cyan); font-weight: 600; }
+  .ec-class-wrap { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .ec-class { font-size: 12px; color: var(--text-muted); flex: 1; font-weight: 500; }
+  .ec-access-badge {
+    font-size: 10px; padding: 3px 9px; border-radius: 10px; font-weight: 700; white-space: nowrap;
+  }
+  .ec-divider { height: 1px; background: rgba(0,229,255,0.15); margin: 0 22px; }
+  .ec-body { padding: 16px 22px 22px; }
+  .ec-section-lbl {
+    font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--plotly-cyan); margin-bottom: 6px; margin-top: 14px;
+  }
+  .ec-section-lbl:first-child { margin-top: 0; }
+  .ec-use { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+  .ec-why { font-size: 13px; color: var(--text); line-height: 1.65; font-weight: 400; }
+  .ec-features {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    margin-top: 8px;
+  }
+  .ec-feat {
+    font-size: 11px; padding: 4px 10px; border-radius: 8px;
+    background: rgba(0,229,255,0.07);
+    border: 1px solid rgba(0,229,255,0.2);
+    color: var(--plotly-cyan);
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .entry-card:hover .ec-feat {
+    background: rgba(0,229,255,0.12);
+    border-color: rgba(0,229,255,0.4);
+    color: #fff;
+  }
+
+  /* ─── PART COLOR THEMES ─── */
+  .theme-amber .part-label { color: var(--plotly-gold); }
+  .theme-amber .part-title em { background: linear-gradient(90deg, var(--plotly-gold), var(--plotly-orange)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .theme-amber .ec-num { background: linear-gradient(135deg, #f59e0b, #ef553b); }
+  .theme-amber .entry-card:hover { box-shadow: 0 20px 50px rgba(245,158,11,0.12); }
+
+  .theme-emerald .part-label { color: var(--plotly-teal); }
+  .theme-emerald .part-title em { background: linear-gradient(90deg, var(--plotly-teal), var(--glaido-lime)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .theme-emerald .ec-num { background: linear-gradient(135deg, #10b981, #00cc96); }
+  .theme-emerald .entry-card:hover { box-shadow: 0 20px 50px rgba(0,204,150,0.12); }
+
+  .theme-purple .part-label { color: var(--plotly-purple); }
+  .theme-purple .part-title em { background: linear-gradient(90deg, var(--plotly-purple), var(--plotly-blue)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .theme-purple .ec-num { background: linear-gradient(135deg, #ab63fa, #636efa); }
+  .theme-purple .entry-card:hover { box-shadow: 0 20px 50px rgba(171,99,250,0.12); }
+
+  .theme-pink .part-label { color: var(--plotly-pink); }
+  .theme-pink .part-title em { background: linear-gradient(90deg, var(--plotly-pink), var(--plotly-orange)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .theme-pink .ec-num { background: linear-gradient(135deg, #ff6692, #ef553b); }
+  .theme-pink .entry-card:hover { box-shadow: 0 20px 50px rgba(255,102,146,0.12); }
+
+  /* ─── COMPARISON TABLE SECTION ─── */
+  .compare-section {
+    padding: 72px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .compare-header { text-align: center; margin-bottom: 48px; }
+  .compare-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(24px, 3vw, 36px); font-weight: 800;
+    margin-bottom: 12px; letter-spacing: -0.02em;
+  }
+  .compare-desc { font-size: 15px; color: var(--text-muted); }
+  .table-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid rgba(0,229,255,0.15); }
+  table { width: 100%; border-collapse: collapse; }
+  thead { background: var(--surface2); }
+  th {
+    padding: 14px 18px; text-align: left;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--plotly-cyan); border-bottom: 1px solid rgba(0,229,255,0.15);
+    white-space: nowrap;
+  }
+  td {
+    padding: 14px 18px; font-size: 13px;
+    border-bottom: 1px solid rgba(0,229,255,0.07);
+    vertical-align: middle; color: var(--text);
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(0,229,255,0.03); }
+  .td-name { font-weight: 700; font-size: 14px; color: #fff; }
+  .td-company { color: var(--text-muted); font-weight: 500; }
+  .td-access { }
+
+  /* ─── QUICK STATS / FEATURE STRIP ─── */
+  .stats-strip {
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    display: grid; grid-template-columns: repeat(4, 1fr);
+  }
+  .ss-item {
+    padding: 28px 24px;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .ss-item:last-child { border-right: none; }
+  .ss-num { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; line-height: 1; }
+  .ss-lbl { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    padding: 48px clamp(16px, 5vw, 80px);
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-brand { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; }
+  .footer-brand span { color: var(--plotly-blue); }
+  .footer-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .footer-right { font-size: 12px; color: var(--text-dim); text-align: right; }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  @keyframes floatY2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  /* ─── CYBERPUNK MOVING BORDER ─── */
+  @keyframes cyber-border-spin {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes cyber-glow-pulse {
+    0%,100% { opacity: 0.7; }
+    50%      { opacity: 1; }
+  }
+  @keyframes border-travel {
+    0%   { background-position: 0% 0%; }
+    100% { background-position: 300% 300%; }
+  }
+
+  /* Cyberpunk border wrapper — applied to cards and big boxes */
+  .cyber-border {
+    position: relative;
+    border-radius: var(--radius-lg);
+    padding: 2px; /* the border thickness */
+    background: linear-gradient(
+      270deg,
+      var(--cyber-red),
+      var(--cyber-blue),
+      var(--cyber-purple),
+      var(--cyber-red),
+      var(--cyber-blue)
+    );
+    background-size: 400% 400%;
+    animation: cyber-border-spin 3s ease infinite;
+    box-shadow:
+      0 0 12px rgba(255,23,68,0.35),
+      0 0 24px rgba(0,229,255,0.2),
+      0 0 40px rgba(213,0,249,0.1);
+  }
+  .cyber-border-inner {
+    background: var(--surface);
+    border-radius: calc(var(--radius-lg) - 2px);
+    overflow: hidden;
+    height: 100%;
+  }
+
+  /* Small card cyberpunk border */
+  .cyber-border-sm {
+    position: relative;
+    border-radius: var(--radius);
+    padding: 2px;
+    background: linear-gradient(
+      270deg,
+      var(--cyber-red),
+      var(--cyber-blue),
+      var(--cyber-purple),
+      var(--cyber-green),
+      var(--cyber-red)
+    );
+    background-size: 500% 500%;
+    animation: cyber-border-spin 2.5s ease infinite;
+    box-shadow:
+      0 0 8px rgba(255,23,68,0.4),
+      0 0 16px rgba(0,229,255,0.25),
+      0 0 0 1px rgba(0,229,255,0.08);
+  }
+  .cyber-border-sm-inner {
+    background: var(--surface);
+    border-radius: calc(var(--radius) - 2px);
+    overflow: hidden;
+    height: 100%;
+  }
+
+  /* Corner sparks effect on cyber boxes */
+  .cyber-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: inherit;
+    filter: blur(8px);
+    opacity: 0.5;
+    z-index: -1;
+    animation: cyber-glow-pulse 2s ease infinite;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .part-header { grid-template-columns: 1fr; gap: 32px; }
+    .stats-strip { grid-template-columns: repeat(2, 1fr); }
+    .ss-item:nth-child(2) { border-right: none; }
+    .ss-item:nth-child(3) { border-right: 1px solid var(--border); }
+  }
+  @media (max-width: 600px) {
+    .entries-grid { grid-template-columns: 1fr; }
+    .stats-strip { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ─── SCROLL REVEAL ─── */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- Scroll progress -->
+<div id="prog" style="width: 0%;"></div>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#hero" class="nav-logo">
+    <div class="nav-logo-icon">🧬</div>
+    <div>
+      <div class="nav-logo-text">ATLAS</div>
+      <div class="nav-logo-sub">Medical AI Models 2026</div>
+    </div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#part1" data-section="frontier" class="">
+      <span class="dot" style="background:#ffa15a"></span> Part I · Frontier
+      <span class="strip-count">5</span>
+    </a></li>
+    <li><a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#part2" data-section="opensource" class="">
+      <span class="dot" style="background:#00cc96"></span> Part II · Open-Source
+      <span class="strip-count">6</span>
+    </a></li>
+    <li><a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#part3" data-section="multimodal" class="">
+      <span class="dot" style="background:#ab63fa"></span> Part III · Multimodal
+      <span class="strip-count">6</span>
+    </a></li>
+    <li><a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#part4" data-section="niche" class="">
+      <span class="dot" style="background:#ff6692"></span> Part IV · Task-Masters
+      <span class="strip-count">3</span>
+    </a></li>
+    <li><a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#compare" data-section="compare" class="">
+      ⚖️ Compare All
+    </a></li>
+  </ul>
+
+  <div class="nav-badge">
+    <span class="badge-count">20 Models</span>
+    <a href="https://drfarooqai.github.io/dr-farooq-cv/" target="_blank" class="nav-author-link">
+      <div class="nav-author-avatar">F</div>
+      <div class="nav-author-info">
+        <div class="nav-author-by">By</div>
+        <div class="nav-author-name">Dr. Muhammad Farooq</div>
+      </div>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--plotly-cyan);flex-shrink:0"><path d="M7 17L17 7M17 7H7M17 7v10"></path></svg>
+    </a>
+  </div>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero" class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-eyebrow"><span></span> Updated for 2026 Clinical AI Landscape</div>
+      <h1>The Complete<br><em class="grad-blue">Medical AI</em><br><em class="grad-green">Model Atlas</em></h1>
+      <p class="hero-desc">
+        A definitive, single-page guide to 20 AI models reshaping clinical medicine — from proprietary enterprise giants to open-source community engines and precision niche specialists.
+      </p>
+      <div class="hero-ctas">
+        <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#part1" class="btn-primary">
+          Explore All Models →
+        </a>
+        <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#compare" class="btn-outline">Compare Table</a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-card-inner">
+            <div class="stat-num" style="color:var(--plotly-gold)">5</div>
+            <div class="stat-lbl">Frontier / Enterprise</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-inner">
+            <div class="stat-num" style="color:var(--plotly-teal)">6</div>
+            <div class="stat-lbl">Open-Source / Free</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-inner">
+            <div class="stat-num" style="color:var(--plotly-purple)">9</div>
+            <div class="stat-lbl">Imaging + Niche</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hero Visual Mockup -->
+    <div class="hero-visual">
+      <div class="float-badge float-badge-tl">
+        <div class="fb-label">Top Model 2026</div>
+        <div class="fb-val" style="color:var(--plotly-teal)">MedGemma 1.5</div>
+      </div>
+      <div class="mockup-window">
+        <div class="mockup-bar">
+          <div class="dot-red"></div>
+          <div class="dot-yellow"></div>
+          <div class="dot-green"></div>
+          <div class="mockup-url">atlas.medai.dev · Clinical AI Landscape 2026</div>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-header">
+            <span style="font-size:20px">🧬</span>
+            <div class="mockup-title">ATLAS of Medical AI Models</div>
+          </div>
+          <div class="mockup-tabs">
+            <div class="mtab active">All Models</div>
+            <div class="mtab">Frontier</div>
+            <div class="mtab">Open-Source</div>
+            <div class="mtab">Imaging</div>
+          </div>
+          <div class="mockup-row">
+            <div class="mr-icon" style="background:rgba(255,161,90,0.15)">🔬</div>
+            <div>
+              <div class="mr-name">Med-Gemini</div>
+              <div class="mr-company">Google</div>
+            </div>
+            <div class="mr-badge badge-e">Enterprise</div>
+          </div>
+          <div class="mockup-row">
+            <div class="mr-icon" style="background:rgba(0,204,150,0.15)">🌐</div>
+            <div>
+              <div class="mr-name">DeepSeek-R1</div>
+              <div class="mr-company">DeepSeek AI</div>
+            </div>
+            <div class="mr-badge badge-o">Open</div>
+          </div>
+          <div class="mockup-row">
+            <div class="mr-icon" style="background:rgba(171,99,250,0.15)">👁</div>
+            <div>
+              <div class="mr-name">CheXagent</div>
+              <div class="mr-company">Stanford</div>
+            </div>
+            <div class="mr-badge badge-m">Imaging</div>
+          </div>
+          <div class="mockup-row">
+            <div class="mr-icon" style="background:rgba(255,102,146,0.15)">⚡</div>
+            <div>
+              <div class="mr-name">TxGemma</div>
+              <div class="mr-company">Google</div>
+            </div>
+            <div class="mr-badge badge-n">Niche</div>
+          </div>
+          <div class="mockup-row">
+            <div class="mr-icon" style="background:rgba(99,110,250,0.15)">🛡</div>
+            <div>
+              <div class="mr-name">Claude 3.7 Sonnet</div>
+              <div class="mr-company">Anthropic</div>
+            </div>
+            <div class="mr-badge badge-e">Enterprise</div>
+          </div>
+        </div>
+      </div>
+      <div class="float-badge float-badge-br">
+        <div class="fb-label">Open-Source Leader</div>
+        <div class="fb-val" style="color:var(--plotly-teal)">Med42 · M42 Abu Dhabi</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── STATS STRIP ─── -->
+<div class="stats-strip">
+  <div class="ss-item">
+    <div class="ss-num" style="color:var(--plotly-blue)">20</div>
+    <div class="ss-lbl">AI Models Profiled</div>
+  </div>
+  <div class="ss-item">
+    <div class="ss-num" style="color:var(--plotly-teal)">4</div>
+    <div class="ss-lbl">Specialized Sections</div>
+  </div>
+  <div class="ss-item">
+    <div class="ss-num" style="color:var(--plotly-purple)">12</div>
+    <div class="ss-lbl">Open-Source or Free</div>
+  </div>
+  <div class="ss-item">
+    <div class="ss-num" style="color:var(--plotly-gold)">2026</div>
+    <div class="ss-lbl">Clinical AI Landscape</div>
+  </div>
+</div>
+
+<!-- ─── SECTION STRIP ─── -->
+<div class="section-strip" id="sectionStrip">
+  <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#part1" class="strip-item">
+    <span class="si-dot" style="background:#ffa15a"></span>
+    Part I: Frontier &amp; Closed-Source
+    <span class="strip-count">5</span>
+  </a>
+  <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#part2" class="strip-item">
+    <span class="si-dot" style="background:#00cc96"></span>
+    Part II: Open-Source Ecosystem
+    <span class="strip-count">6</span>
+  </a>
+  <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#part3" class="strip-item">
+    <span class="si-dot" style="background:#ab63fa"></span>
+    Part III: Multimodal &amp; Imaging
+    <span class="strip-count">6</span>
+  </a>
+  <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#part4" class="strip-item">
+    <span class="si-dot" style="background:#ff6692"></span>
+    Part IV: Niche Task-Masters
+    <span class="strip-count">3</span>
+  </a>
+  <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#compare" class="strip-item">
+    ⚖️ Full Comparison Table
+  </a>
+</div>
+
+<main>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PART I: FRONTIER -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="part1" class="part-section theme-amber">
+    <div class="part-header reveal visible">
+      <div>
+        <div class="part-label">Part I</div>
+        <h2 class="part-title">The Frontier &amp;<br><em>Closed-Source Giants</em></h2>
+        <div class="part-sub">Proprietary Command Centers — Paid / Enterprise</div>
+        <p class="part-desc">
+          These are the proprietary "Command Centers" — high-performance, subscription/API-based, and heavily regulated. Typically used for large-scale hospital enterprise deployments where performance and strict licensing are required.
+        </p>
+      </div>
+      <div class="part-meta">
+        <div class="pms-cyber">
+          <div class="part-meta-stat">
+            <div class="pms-icon" style="background:rgba(255,161,90,0.15)">🏢</div>
+            <div class="pms-info">
+              <div class="pms-lbl">Access Type</div>
+              <div class="pms-val">Enterprise / Paid API</div>
+            </div>
+          </div>
+        </div>
+        <div class="pms-cyber">
+          <div class="part-meta-stat">
+            <div class="pms-icon" style="background:rgba(255,161,90,0.15)">🔒</div>
+            <div class="pms-info">
+              <div class="pms-lbl">Data Compliance</div>
+              <div class="pms-val">HIPAA, SOC2, Enterprise-Grade</div>
+            </div>
+          </div>
+        </div>
+        <div class="pms-cyber">
+          <div class="part-meta-stat">
+            <div class="pms-icon" style="background:rgba(255,161,90,0.15)">⚡</div>
+            <div class="pms-info">
+              <div class="pms-lbl">Best For</div>
+              <div class="pms-val">Hospital-wide deployments at scale</div>
+            </div>
+          </div>
+        </div>
+        <div class="pms-cyber">
+          <div class="part-meta-stat">
+            <div class="pms-icon" style="background:rgba(255,161,90,0.15)">📊</div>
+            <div class="pms-info">
+              <div class="pms-lbl">Models in this Section</div>
+              <div class="pms-val">5 Frontier Models</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CYBERPUNK MODEL TABS — Part I -->
+    <div class="model-tab-grid reveal visible">
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-01" class="model-tab">
+        <div class="model-tab-inner">
+          <div class="mt-num">01</div>
+          <div class="mt-name">Med-Gemini</div>
+          <div class="mt-company">Google</div>
+          <div class="mt-class">Frontier Multimodal Medical LLM</div>
+          <div class="mt-badge-row"><span class="ec-access-badge badge-e">Enterprise</span></div>
+        </div>
+      </a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-02" class="model-tab">
+        <div class="model-tab-inner">
+          <div class="mt-num">02</div>
+          <div class="mt-name">Med-PaLM 2</div>
+          <div class="mt-company">Google</div>
+          <div class="mt-class">Specialized Clinical Expert Model</div>
+          <div class="mt-badge-row"><span class="ec-access-badge badge-e">Enterprise</span></div>
+        </div>
+      </a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-03" class="model-tab">
+        <div class="model-tab-inner">
+          <div class="mt-num">03</div>
+          <div class="mt-name">GPT-4.1-Med</div>
+          <div class="mt-company">OpenAI</div>
+          <div class="mt-class">Clinical-Tier Reasoning Model</div>
+          <div class="mt-badge-row"><span class="ec-access-badge badge-e">Paid API</span></div>
+        </div>
+      </a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-04" class="model-tab">
+        <div class="model-tab-inner">
+          <div class="mt-num">04</div>
+          <div class="mt-name">Claude 3.7 Sonnet</div>
+          <div class="mt-company">Anthropic</div>
+          <div class="mt-class">High-Safety Reasoning Model</div>
+          <div class="mt-badge-row"><span class="ec-access-badge badge-e">Paid API</span></div>
+        </div>
+      </a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-05" class="model-tab">
+        <div class="model-tab-inner">
+          <div class="mt-num">05</div>
+          <div class="mt-name">Enterprise Scribes</div>
+          <div class="mt-company">Nuance / AWS</div>
+          <div class="mt-class">Ambient Clinical Intelligence</div>
+          <div class="mt-badge-row"><span class="ec-access-badge badge-e">HIPAA</span></div>
+        </div>
+      </a>
+    </div>
+
+    <div class="entries-grid">
+      <!-- Entry 1 -->
+      <div id="entry-01" class="cyber-border-sm reveal visible">
+        <div class="cyber-border-sm-inner">
+        <div class="entry-card">
+        <div class="ec-top">
+          <div class="ec-num">01</div>
+          <div class="ec-header">
+            <div class="ec-name">Med-Gemini</div>
+            <div class="ec-company">Google</div>
+            <div class="ec-class-wrap">
+              <div class="ec-class">Frontier Multimodal Medical LLM</div>
+              <span class="ec-access-badge badge-e">Enterprise</span>
+            </div>
+          </div>
+        </div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div>
+          <div class="ec-use">Cross-departmental reasoning involving text, medical images (Radiology, Pathology), and genomic data.</div>
+          <div class="ec-section-lbl">Why It Matters</div>
+          <div class="ec-why">A flagship multimodal brain capable of interpreting diverse medical inputs like X-rays, CT scans, and clinical notes simultaneously to provide expert-level insights.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features">
+            <span class="ec-feat">Multimodal Fusion</span>
+            <span class="ec-feat">Genomic Integration</span>
+            <span class="ec-feat">Expert-Level Analysis</span>
+            <span class="ec-feat">Enterprise Security</span>
+          </div>
+        </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Entry 2 -->
+      <div id="entry-02" class="cyber-border-sm reveal visible">
+        <div class="cyber-border-sm-inner">
+        <div class="entry-card">
+        <div class="ec-top">
+          <div class="ec-num">02</div>
+          <div class="ec-header">
+            <div class="ec-name">Med-PaLM 2</div>
+            <div class="ec-company">Google</div>
+            <div class="ec-class-wrap">
+              <div class="ec-class">Specialized Clinical Expert Model</div>
+              <span class="ec-access-badge badge-e">Enterprise</span>
+            </div>
+          </div>
+        </div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div>
+          <div class="ec-use">High-accuracy clinical question answering and USMLE-style medical reasoning.</div>
+          <div class="ec-section-lbl">Why It Matters</div>
+          <div class="ec-why">Consistently achieves top scores on medical benchmarks like MedQA and is optimized for clinician-rated professional evaluations.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features">
+            <span class="ec-feat">Top Benchmark Scores</span>
+            <span class="ec-feat">USMLE-Ready</span>
+            <span class="ec-feat">Clinician Evaluated</span>
+            <span class="ec-feat">Clinical QA</span>
+          </div>
+        </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Entry 3 -->
+      <div id="entry-03" class="cyber-border-sm reveal visible">
+        <div class="cyber-border-sm-inner">
+        <div class="entry-card">
+        <div class="ec-top">
+          <div class="ec-num">03</div>
+          <div class="ec-header">
+            <div class="ec-name">GPT-4.1-Med</div>
+            <div class="ec-company">OpenAI</div>
+            <div class="ec-class-wrap">
+              <div class="ec-class">Clinical-Tier Reasoning Model</div>
+              <span class="ec-access-badge badge-e">Paid API</span>
+            </div>
+          </div>
+        </div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div>
+          <div class="ec-use">Diagnostic support, differential diagnosis, and complex medical logic processing.</div>
+          <div class="ec-section-lbl">Why It Matters</div>
+          <div class="ec-why">Advanced clinical variants show superior reasoning in physician evaluations, often outperforming general models in complex medical scenarios.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features">
+            <span class="ec-feat">Differential Diagnosis</span>
+            <span class="ec-feat">Complex Logic</span>
+            <span class="ec-feat">Physician Rated</span>
+            <span class="ec-feat">Diagnostic Support</span>
+          </div>
+        </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Entry 4 -->
+      <div id="entry-04" class="cyber-border-sm reveal visible">
+        <div class="cyber-border-sm-inner">
+        <div class="entry-card">
+        <div class="ec-top">
+          <div class="ec-num">04</div>
+          <div class="ec-header">
+            <div class="ec-name">Claude 3.7 Sonnet</div>
+            <div class="ec-company">Anthropic</div>
+            <div class="ec-class-wrap">
+              <div class="ec-class">High-Safety Reasoning Model</div>
+              <span class="ec-access-badge badge-e">Paid API</span>
+            </div>
+          </div>
+        </div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div>
+          <div class="ec-use">Long-form clinical analysis, safe patient data review, and treatment plan generation.</div>
+          <div class="ec-section-lbl">Why It Matters</div>
+          <div class="ec-why">Safety-first alignment with ability to handle long-context medical records for comprehensive differential diagnosis — the most trustworthy for high-stakes clinical settings.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features">
+            <span class="ec-feat">Safety-First</span>
+            <span class="ec-feat">Long Context</span>
+            <span class="ec-feat">Treatment Planning</span>
+            <span class="ec-feat">HIPAA Compatible</span>
+          </div>
+        </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Entry 5 -->
+      <div id="entry-05" class="cyber-border-sm reveal visible">
+        <div class="cyber-border-sm-inner">
+        <div class="entry-card">
+        <div class="ec-top">
+          <div class="ec-num">05</div>
+          <div class="ec-header">
+            <div class="ec-name">Enterprise Scribes</div>
+            <div class="ec-company">Nuance DAX / AWS HealthScribe</div>
+            <div class="ec-class-wrap">
+              <div class="ec-class">Ambient Clinical Intelligence</div>
+              <span class="ec-access-badge badge-e">HIPAA</span>
+            </div>
+          </div>
+        </div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div>
+          <div class="ec-use">Fully automated bedside-to-chart documentation and generation of structured SOAP notes.</div>
+          <div class="ec-section-lbl">Why It Matters</div>
+          <div class="ec-why">Focuses on the administrative "workforce" aspect of medicine, significantly reducing documentation burden through real-time summarization.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features">
+            <span class="ec-feat">Automated Docs</span>
+            <span class="ec-feat">SOAP Notes</span>
+            <span class="ec-feat">Real-time Transcription</span>
+            <span class="ec-feat">Administrative AI</span>
+          </div>
+        </div>
+        </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PART II: OPEN-SOURCE -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="part2" class="part-section theme-emerald">
+    <div class="part-header reveal visible">
+      <div>
+        <div class="part-label">Part II</div>
+        <h2 class="part-title">The Open-Source &amp;<br><em>Open-Weight Ecosystem</em></h2>
+        <div class="part-sub">Democratic Models — Free / Community</div>
+        <p class="part-desc">
+          These are the engines of medical transparency, allowing hospitals and researchers to download model weights and run them on local, private servers. Sensitive patient data never leaves the hospital's firewall.
+        </p>
+      </div>
+      <div class="part-meta">
+        <div class="pms-cyber">
+          <div class="part-meta-stat">
+            <div class="pms-icon" style="background:rgba(0,204,150,0.12)">🌐</div>
+            <div class="pms-info">
+              <div class="pms-lbl">Access Type</div>
+              <div class="pms-val">Free / Open Weights (MIT / Apache 2.0)</div>
+            </div>
+          </div>
+        </div>
+        <div class="pms-cyber">
+          <div class="part-meta-stat">
+            <div class="pms-icon" style="background:rgba(0,204,150,0.12)">🏥</div>
+            <div class="pms-info">
+              <div class="pms-lbl">Data Sovereignty</div>
+              <div class="pms-val">On-premise, no cloud data exposure</div>
+            </div>
+          </div>
+        </div>
+        <div class="pms-cyber">
+          <div class="part-meta-stat">
+            <div class="pms-icon" style="background:rgba(0,204,150,0.12)">🔧</div>
+            <div class="pms-info">
+              <div class="pms-lbl">Best For</div>
+              <div class="pms-val">Private hospitals, research, customization</div>
+            </div>
+          </div>
+        </div>
+        <div class="pms-cyber">
+          <div class="part-meta-stat">
+            <div class="pms-icon" style="background:rgba(0,204,150,0.12)">📦</div>
+            <div class="pms-info">
+              <div class="pms-lbl">Models in this Section</div>
+              <div class="pms-val">6 Open-Source Models</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CYBERPUNK MODEL TABS — Part II -->
+    <div class="model-tab-grid reveal visible">
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-07" class="model-tab"><div class="model-tab-inner"><div class="mt-num">07</div><div class="mt-name">DeepSeek-R1</div><div class="mt-company">DeepSeek AI</div><div class="mt-class">Advanced Clinical Reasoning (Open Weights)</div><div class="mt-badge-row"><span class="ec-access-badge badge-o">MIT</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-08" class="model-tab"><div class="model-tab-inner"><div class="mt-num">08</div><div class="mt-name">HuatuoGPT-o1</div><div class="mt-company">Freedom Intelligence</div><div class="mt-class">Medical Reasoning LLM</div><div class="mt-badge-row"><span class="ec-access-badge badge-o">Free</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-09" class="model-tab"><div class="model-tab-inner"><div class="mt-num">09</div><div class="mt-name">Qwen2.5-Med</div><div class="mt-company">Alibaba</div><div class="mt-class">Bilingual (CN/EN) Medical Assistant</div><div class="mt-badge-row"><span class="ec-access-badge badge-o">Free</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-10" class="model-tab"><div class="model-tab-inner"><div class="mt-num">10</div><div class="mt-name">GPT-OSS-120B</div><div class="mt-company">Open-Weight</div><div class="mt-class">Massive Open-Weight Reasoning Model</div><div class="mt-badge-row"><span class="ec-access-badge badge-o">Apache 2.0</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-11" class="model-tab"><div class="model-tab-inner"><div class="mt-num">11</div><div class="mt-name">Med42</div><div class="mt-company">M42 Abu Dhabi</div><div class="mt-class">Clinical Fine-tune (LLaMA-based)</div><div class="mt-badge-row"><span class="ec-access-badge badge-o">Open Access</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-12" class="model-tab"><div class="model-tab-inner"><div class="mt-num">12</div><div class="mt-name">ClinicalCamel</div><div class="mt-company">Hugging Face Community</div><div class="mt-class">EMR-Focused Specialist</div><div class="mt-badge-row"><span class="ec-access-badge badge-o">Community</span></div></div></a>
+    </div>
+
+    <div class="entries-grid">
+      <div id="entry-07" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">07</div><div class="ec-header"><div class="ec-name">DeepSeek-R1</div><div class="ec-company">DeepSeek AI</div><div class="ec-class-wrap"><div class="ec-class">Advanced Clinical Reasoning (Open Weights)</div><span class="ec-access-badge badge-o">MIT</span></div></div></div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Deep "Chain-of-Thought" reasoning for complex health law, bioethics, and multi-step clinical cases.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">Celebrated for extreme cost-efficiency and transparent reasoning — shows the "logic steps" it took to reach a diagnosis, making it easy for doctors to verify conclusions.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">Chain-of-Thought</span><span class="ec-feat">Transparent Logic</span><span class="ec-feat">Bioethics</span><span class="ec-feat">Cost-Efficient</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-08" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">08</div><div class="ec-header"><div class="ec-name">HuatuoGPT-o1</div><div class="ec-company">Freedom Intelligence</div><div class="ec-class-wrap"><div class="ec-class">Medical Reasoning LLM</div><span class="ec-access-badge badge-o">Free</span></div></div></div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Identifying clinical mistakes, exploring alternative diagnostics, and refining treatment plans.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">Uses unique "iterative refinement" — if it finds a flaw in its own logic during thinking, it backtracks and corrects before presenting to the clinician.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">Iterative Refinement</span><span class="ec-feat">Self-Correction</span><span class="ec-feat">Error Detection</span><span class="ec-feat">Think Mode</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-09" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">09</div><div class="ec-header"><div class="ec-name">Qwen2.5-Med</div><div class="ec-company">Alibaba</div><div class="ec-class-wrap"><div class="ec-class">Bilingual (CN/EN) Medical Assistant</div><span class="ec-access-badge badge-o">Free</span></div></div></div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">High-efficiency hospital analytics, medical reporting, and agentic workflows (e.g., calling lab systems).</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">Leading open-source bilingual model — bridges Western medical standards and Eastern clinical data, making it a versatile "workhorse" for global hospital management.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">Bilingual CN/EN</span><span class="ec-feat">Agentic Workflows</span><span class="ec-feat">Hospital Analytics</span><span class="ec-feat">Global Bridge</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-10" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">10</div><div class="ec-header"><div class="ec-name">GPT-OSS-120B</div><div class="ec-company">Open-Weight</div><div class="ec-class-wrap"><div class="ec-class">Massive Open-Weight Reasoning Model</div><span class="ec-access-badge badge-o">Apache 2.0</span></div></div></div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">High-stakes clinical decision support and intensive medical research.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">120B parameter model in open format offers "Frontier-level" performance without cloud privacy risks. Designed for institutions requiring absolute data sovereignty.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">120B Parameters</span><span class="ec-feat">Data Sovereignty</span><span class="ec-feat">Frontier Performance</span><span class="ec-feat">No Cloud Risks</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-11" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">11</div><div class="ec-header"><div class="ec-name">Med42</div><div class="ec-company">M42 Abu Dhabi</div><div class="ec-class-wrap"><div class="ec-class">Clinical Fine-tune (LLaMA-based)</div><span class="ec-access-badge badge-o">Open Access</span></div></div></div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">General physician-assistant tasks, patient-facing health queries, and clinical Q&amp;A.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">Specifically aligned to overcome the "refusal" issues in general models — fine-tuned to provide direct, professional clinical guidance safely without hedging.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">No Refusal Bias</span><span class="ec-feat">Direct Guidance</span><span class="ec-feat">Patient-Facing</span><span class="ec-feat">LLaMA Base</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-12" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">12</div><div class="ec-header"><div class="ec-name">ClinicalCamel</div><div class="ec-company">Hugging Face Community</div><div class="ec-class-wrap"><div class="ec-class">EMR-Focused Specialist</div><span class="ec-access-badge badge-o">Community</span></div></div></div>
+        <div class="ec-divider"></div>
+        <div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Summarizing messy or fragmented Electronic Health Records (EHR) into clean, readable clinical views.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">Excels at "cleaning" medical data — takes long, disorganized doctor's notes and labs and synthesizes them into concise summaries, saving clinicians hours of reading.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">EHR Cleanup</span><span class="ec-feat">Data Synthesis</span><span class="ec-feat">Time Saver</span><span class="ec-feat">Community Driven</span></div>
+        </div>
+      </div></div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PART III: MULTIMODAL & IMAGING -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="part3" class="part-section theme-purple">
+    <div class="part-header reveal visible">
+      <div>
+        <div class="part-label">Part III</div>
+        <h2 class="part-title">Multimodal &amp;<br><em>Imaging Specialists</em></h2>
+        <div class="part-sub">Text + Visuals — The Diagnostic Specialists</div>
+        <p class="part-desc">
+          Every model here "sees" the patient in a different way. While general LLMs process text, these specialized engines are trained to interpret high-resolution, high-dimensional visual data of modern medicine. Each is a distinct diagnostic specialist.
+        </p>
+      </div>
+      <div class="part-meta">
+        <div class="pms-cyber"><div class="part-meta-stat"><div class="pms-icon" style="background:rgba(171,99,250,0.12)">🧠</div><div class="pms-info"><div class="pms-lbl">Modalities</div><div class="pms-val">CT, MRI, X-ray, Pathology, PET</div></div></div></div>
+        <div class="pms-cyber"><div class="part-meta-stat"><div class="pms-icon" style="background:rgba(171,99,250,0.12)">🔬</div><div class="pms-info"><div class="pms-lbl">Key Capability</div><div class="pms-val">3D volumetric + whole-slide analysis</div></div></div></div>
+        <div class="pms-cyber"><div class="part-meta-stat"><div class="pms-icon" style="background:rgba(171,99,250,0.12)">🎯</div><div class="pms-info"><div class="pms-lbl">Best For</div><div class="pms-val">Radiology, Pathology, Oncology depts</div></div></div></div>
+        <div class="pms-cyber"><div class="part-meta-stat"><div class="pms-icon" style="background:rgba(171,99,250,0.12)">📐</div><div class="pms-info"><div class="pms-lbl">Models in this Section</div><div class="pms-val">6 Imaging Models</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- CYBERPUNK MODEL TABS — Part III -->
+    <div class="model-tab-grid reveal visible">
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-13" class="model-tab"><div class="model-tab-inner"><div class="mt-num">13</div><div class="mt-name">MedGemma 1.5</div><div class="mt-company">Google</div><div class="mt-class">3D Multimodal Foundation Model</div><div class="mt-badge-row"><span class="ec-access-badge badge-m">Research</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-14" class="model-tab"><div class="model-tab-inner"><div class="mt-num">14</div><div class="mt-name">LLaVA-Med</div><div class="mt-company">Microsoft</div><div class="mt-class">Biomedical Vision-Language Assistant</div><div class="mt-badge-row"><span class="ec-access-badge badge-m">Research</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-15" class="model-tab"><div class="model-tab-inner"><div class="mt-num">15</div><div class="mt-name">CheXagent</div><div class="mt-company">Stanford</div><div class="mt-class">Chest X-ray (CXR) Specialist</div><div class="mt-badge-row"><span class="ec-access-badge badge-m">Research</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-16" class="model-tab"><div class="model-tab-inner"><div class="mt-num">16</div><div class="mt-name">GLM-4.5V</div><div class="mt-company">Zhipu AI</div><div class="mt-class">3D Spatial Vision-Language AI</div><div class="mt-badge-row"><span class="ec-access-badge badge-m">API + Open</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-17" class="model-tab"><div class="model-tab-inner"><div class="mt-num">17</div><div class="mt-name">Virchow</div><div class="mt-company">Paige / Microsoft</div><div class="mt-class">Pathology-Native Feature Backbone</div><div class="mt-badge-row"><span class="ec-access-badge badge-m">Apache 2.0</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-18" class="model-tab"><div class="model-tab-inner"><div class="mt-num">18</div><div class="mt-name">UNI</div><div class="mt-company">Harvard / Mahmood Lab</div><div class="mt-class">Pathology Foundation Model</div><div class="mt-badge-row"><span class="ec-access-badge badge-m">Academic</span></div></div></a>
+    </div>
+
+    <div class="entries-grid">
+      <div id="entry-13" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">13</div><div class="ec-header"><div class="ec-name">MedGemma 1.5</div><div class="ec-company">Google</div><div class="ec-class-wrap"><div class="ec-class">3D Multimodal Foundation Model</div><span class="ec-access-badge badge-m">Research</span></div></div></div>
+        <div class="ec-divider"></div><div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Interpreting 3D CT/MRI volumes, whole-slide pathology images, and multi-timepoint Chest X-ray analysis.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">One of the first open-resource models capable of "3D reasoning" — processes entire volumetric scans to identify conditions with massive accuracy jumps over 2D-focused models.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">3D Reasoning</span><span class="ec-feat">Volumetric Scans</span><span class="ec-feat">Pathology</span><span class="ec-feat">Multi-Timepoint</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-14" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">14</div><div class="ec-header"><div class="ec-name">LLaVA-Med</div><div class="ec-company">Microsoft / Research</div><div class="ec-class-wrap"><div class="ec-class">Biomedical Vision-Language Assistant</div><span class="ec-access-badge badge-m">Research</span></div></div></div>
+        <div class="ec-divider"></div><div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Conversational inquiry and open-ended dialogue regarding biomedical images (e.g., "What is unusual about this microscopy slide?").</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">The "Swiss Army Knife" of medical vision — first major model to use "medical instruction tuning," allowing natural conversation with clinicians about any image type.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">Swiss Army Knife</span><span class="ec-feat">Instruction Tuning</span><span class="ec-feat">Conversational</span><span class="ec-feat">Any Image Type</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-15" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">15</div><div class="ec-header"><div class="ec-name">CheXagent</div><div class="ec-company">Stanford</div><div class="ec-class-wrap"><div class="ec-class">Chest X-ray (CXR) Specialist</div><span class="ec-access-badge badge-m">Research</span></div></div></div>
+        <div class="ec-divider"></div><div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Dedicated chest X-ray analysis, automated radiology report drafting, and multi-view comparisons (front vs. side view).</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">By focusing entirely on the chest, it outperforms general multimodal models in detecting subtle abnormalities like pneumothorax or pleural effusions.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">CXR Specialist</span><span class="ec-feat">Report Drafting</span><span class="ec-feat">Multi-View</span><span class="ec-feat">Narrow Expert</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-16" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">16</div><div class="ec-header"><div class="ec-name">GLM-4.5V</div><div class="ec-company">Zhipu AI</div><div class="ec-class-wrap"><div class="ec-class">3D Spatial Vision-Language AI</div><span class="ec-access-badge badge-m">API + Open</span></div></div></div>
+        <div class="ec-divider"></div><div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Superior spatial relationship understanding and "grounding" (precisely locating objects) in complex anatomical imaging.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">Dedicated "Thinking Mode" for visual data — doesn't just identify a tumor; reasons through spatial layout of surrounding organs, uniquely suited for surgical planning.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">Spatial Reasoning</span><span class="ec-feat">Thinking Mode</span><span class="ec-feat">Surgical Planning</span><span class="ec-feat">Grounding</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-17" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">17</div><div class="ec-header"><div class="ec-name">Virchow</div><div class="ec-company">Paige / Microsoft</div><div class="ec-class-wrap"><div class="ec-class">Pathology-Native Feature Backbone</div><span class="ec-access-badge badge-m">Apache 2.0</span></div></div></div>
+        <div class="ec-divider"></div><div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Tile-level analysis and whole-slide histopathology for pan-cancer detection and rare variant identification.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">Trained on 1.5 million whole-slide images from MSKCC — heavyweight champion of digital pathology. Provides the "feature backbone" for world-class cancer detection.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">1.5M Slides</span><span class="ec-feat">Pan-Cancer</span><span class="ec-feat">MSKCC Trained</span><span class="ec-feat">Feature Backbone</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-18" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">18</div><div class="ec-header"><div class="ec-name">UNI</div><div class="ec-company">Harvard / Mahmood Lab</div><div class="ec-class-wrap"><div class="ec-class">General-Purpose Pathology Foundation Model</div><span class="ec-access-badge badge-m">Academic</span></div></div></div>
+        <div class="ec-divider"></div><div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Resolution-agnostic tissue classification and disease subtyping across 108+ different cancer types.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">"Resolution-agnostic" — maintains accuracy at 10x or 40x magnification. Trained on 100 million diverse tissue patches, remarkably stable across hospital staining protocols.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">Resolution-Agnostic</span><span class="ec-feat">100M Patches</span><span class="ec-feat">108+ Cancers</span><span class="ec-feat">Stable Protocols</span></div>
+        </div>
+      </div></div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PART IV: NICHE TASK-MASTERS -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="part4" class="part-section theme-pink">
+    <div class="part-header reveal visible">
+      <div>
+        <div class="part-label">Part IV</div>
+        <h2 class="part-title">The Niche<br><em>"Task-Masters"</em></h2>
+        <div class="part-sub">Specialty Tools — Precision Instruments</div>
+        <p class="part-desc">
+          These are not general-purpose chat models — they are precision instruments built for one specific, high-stakes medical job. From drug discovery to hospital administrative efficiency, these tools focus on accuracy in a single domain.
+        </p>
+      </div>
+      <div class="part-meta">
+        <div class="pms-cyber"><div class="part-meta-stat"><div class="pms-icon" style="background:rgba(255,102,146,0.12)">⚡</div><div class="pms-info"><div class="pms-lbl">Philosophy</div><div class="pms-val">One job, done extraordinarily well</div></div></div></div>
+        <div class="pms-cyber"><div class="part-meta-stat"><div class="pms-icon" style="background:rgba(255,102,146,0.12)">💊</div><div class="pms-info"><div class="pms-lbl">Domains</div><div class="pms-val">Drug discovery, ASR, NLP extraction</div></div></div></div>
+        <div class="pms-cyber"><div class="part-meta-stat"><div class="pms-icon" style="background:rgba(255,102,146,0.12)">🎯</div><div class="pms-info"><div class="pms-lbl">Best For</div><div class="pms-val">Pharma labs, radiology, EHR systems</div></div></div></div>
+        <div class="pms-cyber"><div class="part-meta-stat"><div class="pms-icon" style="background:rgba(255,102,146,0.12)">🔩</div><div class="pms-info"><div class="pms-lbl">Models in this Section</div><div class="pms-val">3 Precision Instruments</div></div></div></div>
+      </div>
+    </div>
+
+    <!-- CYBERPUNK MODEL TABS — Part IV -->
+    <div class="model-tab-grid reveal visible">
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-19" class="model-tab"><div class="model-tab-inner"><div class="mt-num">19</div><div class="mt-name">TxGemma</div><div class="mt-company">Google</div><div class="mt-class">Therapeutics &amp; Drug Discovery LLM</div><div class="mt-badge-row"><span class="ec-access-badge badge-n">Hugging Face</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-20" class="model-tab"><div class="model-tab-inner"><div class="mt-num">20</div><div class="mt-name">MedASR</div><div class="mt-company">Google Health</div><div class="mt-class">Medical Speech-to-Text Model</div><div class="mt-badge-row"><span class="ec-access-badge badge-n">Open Weights</span></div></div></a>
+      <a href="file:///C:/Users/ac/Desktop/DrFarooqAi-articles/ai/ATLAS_Medical_AI_Webpage.html#entry-21" class="model-tab"><div class="model-tab-inner"><div class="mt-num">21</div><div class="mt-name">LangExtract</div><div class="mt-company">Gemini-Powered</div><div class="mt-class">Information Extraction Specialist</div><div class="mt-badge-row"><span class="ec-access-badge badge-n">Apache 2.0</span></div></div></a>
+    </div>
+
+    <div class="entries-grid">
+      <div id="entry-19" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">19</div><div class="ec-header"><div class="ec-name">TxGemma</div><div class="ec-company">Google</div><div class="ec-class-wrap"><div class="ec-class">Therapeutics &amp; Drug Discovery LLM</div><span class="ec-access-badge badge-n">Hugging Face</span></div></div></div>
+        <div class="ec-divider"></div><div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Predicting drug properties, molecular classification, and supporting pharmaceutical research.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">Targets the "lab-to-bedside" bottleneck — predicts behavior of small molecules and proteins across 60+ therapeutic tasks, significantly reducing time and cost in early-stage drug development.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">Drug Discovery</span><span class="ec-feat">Molecular Prediction</span><span class="ec-feat">60+ Tasks</span><span class="ec-feat">Lab-to-Bedside</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-20" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">20</div><div class="ec-header"><div class="ec-name">MedASR</div><div class="ec-company">Google Health</div><div class="ec-class-wrap"><div class="ec-class">Medical Speech-to-Text Model</div><span class="ec-access-badge badge-n">Open Weights</span></div></div></div>
+        <div class="ec-divider"></div><div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Converting high-jargon clinical audio — radiology dictations and physician-patient consults — into documentation text.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">Trained on 5,000+ hours of physician dictations — the most reliable "ear" for clinical environments. General voice models often fail at medical terminology; MedASR doesn't.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">5000+ Hours</span><span class="ec-feat">Medical Jargon</span><span class="ec-feat">Dictation Ready</span><span class="ec-feat">Clinical Audio</span></div>
+        </div>
+      </div></div></div>
+
+      <div id="entry-21" class="cyber-border-sm reveal visible"><div class="cyber-border-sm-inner"><div class="entry-card">
+        <div class="ec-top"><div class="ec-num">21</div><div class="ec-header"><div class="ec-name">LangExtract</div><div class="ec-company">Gemini-Powered Library</div><div class="ec-class-wrap"><div class="ec-class">Information Extraction Specialist</div><span class="ec-access-badge badge-n">Apache 2.0</span></div></div></div>
+        <div class="ec-divider"></div><div class="ec-body">
+          <div class="ec-section-lbl">Clinical Use</div><div class="ec-use">Programmatically pulling structured lab data, dosages, and diagnostic findings from unstructured PDFs and clinical notes.</div>
+          <div class="ec-section-lbl">Why It Matters</div><div class="ec-why">Solves the "black box" problem with Precise Source Grounding — for every extracted data point, provides exact coordinates in the original document, allowing instant physician verification.</div>
+          <div class="ec-section-lbl">Key Features</div>
+          <div class="ec-features"><span class="ec-feat">Source Grounding</span><span class="ec-feat">PDF Extraction</span><span class="ec-feat">Verification Ready</span><span class="ec-feat">Structured Output</span></div>
+        </div>
+      </div></div></div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- FULL COMPARISON TABLE -->
+  <!-- ═══════════════════════════════════════ -->
+  <section id="compare" class="compare-section">
+    <div class="compare-header reveal visible">
+      <h2 class="compare-title">Full Model Comparison</h2>
+      <p class="compare-desc">All 20 Medical AI models at a glance — access type, company, category, and key strengths.</p>
+    </div>
+
+    <div class="table-wrap reveal visible">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Model</th>
+            <th>Company</th>
+            <th>Category</th>
+            <th>Access</th>
+            <th>Top Strength</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>01</td><td class="td-name">Med-Gemini</td><td class="td-company">Google</td><td><span class="ec-access-badge badge-e">Frontier</span></td><td>Enterprise API</td><td>Multimodal Fusion</td></tr>
+          <tr><td>02</td><td class="td-name">Med-PaLM 2</td><td class="td-company">Google</td><td><span class="ec-access-badge badge-e">Frontier</span></td><td>Enterprise</td><td>USMLE Benchmarks</td></tr>
+          <tr><td>03</td><td class="td-name">GPT-4.1-Med</td><td class="td-company">OpenAI</td><td><span class="ec-access-badge badge-e">Frontier</span></td><td>Paid API</td><td>Differential Diagnosis</td></tr>
+          <tr><td>04</td><td class="td-name">Claude 3.7 Sonnet</td><td class="td-company">Anthropic</td><td><span class="ec-access-badge badge-e">Frontier</span></td><td>Paid API</td><td>Safety + Long Context</td></tr>
+          <tr><td>05</td><td class="td-name">Enterprise Scribes</td><td class="td-company">Nuance / AWS</td><td><span class="ec-access-badge badge-e">Frontier</span></td><td>Enterprise HIPAA</td><td>Ambient Documentation</td></tr>
+          <tr><td>07</td><td class="td-name">DeepSeek-R1</td><td class="td-company">DeepSeek AI</td><td><span class="ec-access-badge badge-o">Open-Source</span></td><td>MIT License</td><td>Chain-of-Thought</td></tr>
+          <tr><td>08</td><td class="td-name">HuatuoGPT-o1</td><td class="td-company">Freedom Intelligence</td><td><span class="ec-access-badge badge-o">Open-Source</span></td><td>Free</td><td>Self-Correction</td></tr>
+          <tr><td>09</td><td class="td-name">Qwen2.5-Med</td><td class="td-company">Alibaba</td><td><span class="ec-access-badge badge-o">Open-Source</span></td><td>Free</td><td>Bilingual CN/EN</td></tr>
+          <tr><td>10</td><td class="td-name">GPT-OSS-120B</td><td class="td-company">Open-Weight</td><td><span class="ec-access-badge badge-o">Open-Source</span></td><td>Apache 2.0</td><td>Data Sovereignty</td></tr>
+          <tr><td>11</td><td class="td-name">Med42</td><td class="td-company">M42 Abu Dhabi</td><td><span class="ec-access-badge badge-o">Open-Source</span></td><td>Open Access</td><td>No Refusal Bias</td></tr>
+          <tr><td>12</td><td class="td-name">ClinicalCamel</td><td class="td-company">Hugging Face Community</td><td><span class="ec-access-badge badge-o">Open-Source</span></td><td>Free</td><td>EHR Summarization</td></tr>
+          <tr><td>13</td><td class="td-name">MedGemma 1.5</td><td class="td-company">Google</td><td><span class="ec-access-badge badge-m">Imaging</span></td><td>Open Weights</td><td>3D Volumetric Scans</td></tr>
+          <tr><td>14</td><td class="td-name">LLaVA-Med</td><td class="td-company">Microsoft</td><td><span class="ec-access-badge badge-m">Imaging</span></td><td>Open Weights</td><td>Conversational Visual QA</td></tr>
+          <tr><td>15</td><td class="td-name">CheXagent</td><td class="td-company">Stanford</td><td><span class="ec-access-badge badge-m">Imaging</span></td><td>Open Weights</td><td>Chest X-ray Expert</td></tr>
+          <tr><td>16</td><td class="td-name">GLM-4.5V</td><td class="td-company">Zhipu AI</td><td><span class="ec-access-badge badge-m">Imaging</span></td><td>API + Open</td><td>Spatial Reasoning</td></tr>
+          <tr><td>17</td><td class="td-name">Virchow</td><td class="td-company">Paige / Microsoft</td><td><span class="ec-access-badge badge-m">Imaging</span></td><td>Apache 2.0</td><td>Pan-Cancer Detection</td></tr>
+          <tr><td>18</td><td class="td-name">UNI</td><td class="td-company">Harvard / Mahmood Lab</td><td><span class="ec-access-badge badge-m">Imaging</span></td><td>Academic</td><td>108+ Cancer Types</td></tr>
+          <tr><td>19</td><td class="td-name">TxGemma</td><td class="td-company">Google</td><td><span class="ec-access-badge badge-n">Niche</span></td><td>Hugging Face</td><td>Drug Discovery</td></tr>
+          <tr><td>20</td><td class="td-name">MedASR</td><td class="td-company">Google Health</td><td><span class="ec-access-badge badge-n">Niche</span></td><td>Open Weights</td><td>Medical Speech-to-Text</td></tr>
+          <tr><td>21</td><td class="td-name">LangExtract</td><td class="td-company">Gemini-Powered</td><td><span class="ec-access-badge badge-n">Niche</span></td><td>Apache 2.0</td><td>Source-Grounded Extraction</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div>
+    <div class="footer-brand">ATLAS · <span>Medical AI Models</span></div>
+    <div class="footer-sub">Curated by Dr. Muhammad Farooq · AI in Healthcare · LinkedIn Top Voice</div>
+  </div>
+  <div class="footer-right">
+    Clinical AI Landscape 2026<br>
+    <a href="https://drfarooqai.github.io/dr-farooq-cv/" target="_blank" style="color:var(--plotly-blue); text-decoration:none;">drfarooqai.github.io/dr-farooq-cv ↗</a>
+  </div>
+</footer>
+
+<script>
+  // ─── SCROLL PROGRESS ───
+  const prog = document.getElementById('prog');
+  window.addEventListener('scroll', () => {
+    const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+    prog.style.width = pct + '%';
+  });
+
+  // ─── ACTIVE NAV HIGHLIGHT ───
+  const sections = ['hero','part1','part2','part3','part4','compare'];
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const stripItems = document.querySelectorAll('.strip-item');
+
+  function updateActive() {
+    let current = 'hero';
+    for (const id of sections) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 120) current = id;
+    }
+    navLinks.forEach(a => {
+      const href = a.getAttribute('href').replace('#','');
+      a.classList.toggle('active', href === current);
+    });
+    stripItems.forEach(a => {
+      const href = a.getAttribute('href').replace('#','');
+      a.classList.toggle('active', href === current);
+    });
+  }
+  window.addEventListener('scroll', updateActive, { passive: true });
+
+  // ─── SCROLL REVEAL ───
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        const delay = Array.from(e.target.parentNode.children).indexOf(e.target) * 60;
+        setTimeout(() => e.target.classList.add('visible'), delay);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  reveals.forEach(el => io.observe(el));
+
+  // ─── MOCKUP TAB INTERACTION ───
+  document.querySelectorAll('.mtab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      this.closest('.mockup-tabs').querySelectorAll('.mtab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+
+
+</body></html>
