@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --cyan: #00f5ff;
+    --cyan: #58f205;
     --yellow: #ffd700;
     --red: #ff3366;
     --green: #58f205;
@@ -17,7 +17,7 @@
     --bg3: #071828;
     --panel: #0a1f33;
     --panel2: #0d2440;
-    --border: rgba(0,245,255,0.2);
+    --border: rgba(88,242,5,0.2);
     --text: #ffffff;
     --text-dim: #b0d4e8;
   }
@@ -38,8 +38,8 @@
     position: fixed;
     inset: 0;
     background-image:
-      linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+      linear-gradient(rgba(88,242,5,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,242,5,0.03) 1px, transparent 1px);
     background-size: 40px 40px;
     pointer-events: none;
     z-index: 0;
@@ -104,7 +104,7 @@
     font-size: clamp(16px, 2.8vw, 26px);
     font-weight: 900;
     color: var(--cyan);
-    text-shadow: 0 0 20px rgba(0,245,255,0.5);
+    text-shadow: 0 0 20px rgba(88,242,5,0.5);
     letter-spacing: 2px;
   }
 
@@ -157,13 +157,13 @@
     text-decoration: none;
     transition: all 0.3s;
     clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
-    background: rgba(0,245,255,0.05);
+    background: rgba(88,242,5,0.05);
   }
 
   .nav-link:hover {
     background: var(--cyan);
     color: #000;
-    box-shadow: 0 0 18px rgba(0,245,255,0.4);
+    box-shadow: 0 0 18px rgba(88,242,5,0.4);
   }
 
   .nav-link.articles {
@@ -219,7 +219,7 @@
     font-weight: 700;
     letter-spacing: 1.5px;
     padding: 12px 20px;
-    border: 1px solid rgba(0,245,255,0.4);
+    border: 1px solid rgba(88,242,5,0.4);
     background: var(--panel2);
     color: #ffffff;
     cursor: pointer;
@@ -232,14 +232,14 @@
   .tab:hover {
     color: var(--cyan);
     border-color: var(--cyan);
-    background: rgba(0,245,255,0.1);
+    background: rgba(88,242,5,0.1);
   }
 
   .tab.active {
     color: #000000;
     background: var(--cyan);
     border-color: var(--cyan);
-    box-shadow: 0 0 25px rgba(0,245,255,0.5);
+    box-shadow: 0 0 25px rgba(88,242,5,0.5);
     font-weight: 900;
   }
 
@@ -330,7 +330,7 @@
 
   select:focus, input:focus {
     border-color: var(--cyan);
-    box-shadow: 0 0 10px rgba(0,245,255,0.2);
+    box-shadow: 0 0 10px rgba(88,242,5,0.2);
   }
 
   select option { background: var(--bg3); }
@@ -454,7 +454,7 @@
   .gpu-card:hover {
     border-color: var(--cyan);
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0,245,255,0.1);
+    box-shadow: 0 10px 30px rgba(88,242,5,0.1);
   }
 
   .gpu-card.recommended {
@@ -539,7 +539,7 @@
 
   .data-table td {
     padding: 12px 14px;
-    border-bottom: 1px solid rgba(0,245,255,0.05);
+    border-bottom: 1px solid rgba(88,242,5,0.05);
     font-family: 'Share Tech Mono', monospace;
     font-size: 12px;
     color: var(--text);
@@ -547,7 +547,7 @@
   }
 
   .data-table tr:hover td {
-    background: rgba(0,245,255,0.04);
+    background: rgba(88,242,5,0.04);
   }
 
   .tier-badge {
@@ -561,7 +561,7 @@
 
   .tier-1 { background: rgba(255,51,102,0.2); color: var(--red); border: 1px solid var(--red); }
   .tier-2 { background: rgba(255,215,0,0.15); color: var(--yellow); border: 1px solid var(--yellow); }
-  .tier-3 { background: rgba(0,245,255,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
+  .tier-3 { background: rgba(88,242,5,0.1); color: var(--cyan); border: 1px solid var(--cyan); }
   .tier-4 { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid var(--green); }
 
   /* SEARCH */
@@ -649,7 +649,7 @@
 
   .gpu-slot:hover {
     border-color: var(--cyan);
-    background: rgba(0,245,255,0.03);
+    background: rgba(88,242,5,0.03);
   }
 
   .gpu-slot.filled {
@@ -705,7 +705,7 @@
     font-size: 42px;
     font-weight: 900;
     color: var(--cyan);
-    text-shadow: 0 0 30px rgba(0,245,255,0.5);
+    text-shadow: 0 0 30px rgba(88,242,5,0.5);
     text-align: center;
     margin: 10px 0;
   }
@@ -736,8 +736,8 @@
 
   .model-chip {
     display: inline-block;
-    background: rgba(0,245,255,0.08);
-    border: 1px solid rgba(0,245,255,0.3);
+    background: rgba(88,242,5,0.08);
+    border: 1px solid rgba(88,242,5,0.3);
     padding: 5px 12px;
     margin: 4px;
     font-family: 'Share Tech Mono', monospace;
@@ -796,7 +796,7 @@
   .pill:hover, .pill.active {
     border-color: var(--cyan);
     color: var(--cyan);
-    background: rgba(0,245,255,0.05);
+    background: rgba(88,242,5,0.05);
   }
 
   /* PERFORMANCE ESTIMATOR */
@@ -898,14 +898,14 @@
     text-decoration: none;
     transition: all 0.3s;
     clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
-    background: rgba(0,245,255,0.07);
+    background: rgba(88,242,5,0.07);
     display: inline-block;
   }
 
   .nav-link:hover {
     background: var(--cyan);
     color: #000;
-    box-shadow: 0 0 18px rgba(0,245,255,0.5);
+    box-shadow: 0 0 18px rgba(88,242,5,0.5);
     transform: translateY(-1px);
   }
 
