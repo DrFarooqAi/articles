@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -196,102 +196,266 @@ document.addEventListener('DOMContentLoaded', async function() {
       window.Babel.transformScriptTags();
     }
 
-    // ── Dr. Farooq Nav Overlay ──────────────────────────────────────────────
+    // ── Dr. Farooq Full Overlay (Nav + Hero + Footer) ──────────────────────
     ;(function() {
-      var NAV_ID = '__mf_nav_bar';
-      var CSS = [
-        '#'+NAV_ID+'{',
-          'position:fixed;top:0;left:0;right:0;z-index:2147483647;',
-          'height:50px;display:flex;align-items:center;justify-content:space-between;',
-          'padding:0 22px;box-sizing:border-box;',
-          'background:rgba(13,17,26,0.96);',
-          'backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);',
-          'border-bottom:1px solid rgba(255,255,255,0.07);',
-          'font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;',
-          'font-size:12px;',
-        '}',
-        '#'+NAV_ID+' *{box-sizing:border-box;}',
-        '#'+NAV_ID+' a{text-decoration:none;transition:color .15s;cursor:pointer;}',
-        '#'+NAV_ID+' .mf-left{display:flex;align-items:center;gap:14px;}',
-        '#'+NAV_ID+' .mf-back{',
-          'font-weight:700;color:#5b9cf6;display:flex;align-items:center;gap:5px;',
-        '}',
-        '#'+NAV_ID+' .mf-back:hover{color:#fff;}',
-        '#'+NAV_ID+' .mf-sep{width:1px;height:16px;background:rgba(255,255,255,0.1);}',
-        '#'+NAV_ID+' .mf-port{font-weight:600;color:rgba(149,152,161,0.7);}',
-        '#'+NAV_ID+' .mf-port:hover{color:#fff;}',
-        '#'+NAV_ID+' .mf-crumb{',
-          'font-family:ui-monospace,monospace;font-size:10px;font-weight:600;',
-          'letter-spacing:.1em;text-transform:uppercase;color:rgba(149,152,161,0.4);',
-        '}',
-        '#'+NAV_ID+' .mf-right{display:flex;align-items:center;gap:10px;}',
-        '#'+NAV_ID+' .mf-badge{',
-          'font-family:ui-monospace,monospace;font-size:9px;font-weight:700;',
-          'letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:3px;',
-          'border:1px solid rgba(8,153,129,0.35);color:#089981;',
-          'background:rgba(8,153,129,0.1);',
-        '}',
-        '#'+NAV_ID+' .mf-tag{',
-          'font-family:ui-monospace,monospace;font-size:9px;font-weight:700;',
-          'letter-spacing:.08em;padding:3px 9px;border-radius:3px;text-transform:uppercase;',
-          'border:1px solid rgba(91,156,246,0.25);color:rgba(91,156,246,0.8);',
-          'background:rgba(91,156,246,0.07);',
-        '}',
-        '#'+NAV_ID+' .mf-sub{',
-          'font-size:11px;font-weight:600;color:rgba(149,152,161,0.75);',
-          'border:1px solid rgba(255,255,255,0.1);border-radius:4px;',
-          'padding:5px 12px;',
-        '}',
-        '#'+NAV_ID+' .mf-sub:hover{color:#fff;border-color:rgba(91,156,246,0.4);}',
-        '#__mf_spacer{height:50px;width:100%;display:block;flex-shrink:0;}',
+      var NAV_ID   = '__mf_nav';
+      var HERO_ID  = '__mf_hero';
+      var FOOT_ID  = '__mf_foot';
+      var DONE_ID  = '__mf_done';
+
+      var SHARED_CSS = [
+        '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap");',
+        ':root{--tv-bg:#131722;--tv-bg2:#1e222d;--tv-bg3:#2a2e39;--tv-green:#089981;--tv-blue:#5b9cf6;--tv-yellow:#f7c752;--tv-muted:#787b86;--aws:#FF9900;--azure:#0089D6;--gcp:#4285F4;}',
+        '*{box-sizing:border-box;}a{text-decoration:none;}',
+        '#__mf_nav{position:fixed;top:0;left:0;right:0;z-index:2147483647;height:52px;',
+          'display:flex;align-items:center;justify-content:space-between;padding:0 20px;',
+          'background:rgba(19,23,34,0.97);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);',
+          'border-bottom:1px solid rgba(255,255,255,0.06);',
+          'font-family:Inter,-apple-system,sans-serif;font-size:12px;}',
+        '#__mf_nav .n-left{display:flex;align-items:center;gap:12px;}',
+        '#__mf_nav .n-back{font-weight:700;color:#5b9cf6;display:flex;align-items:center;gap:4px;transition:color .15s;}',
+        '#__mf_nav .n-back:hover{color:#fff;}',
+        '#__mf_nav .n-sep{width:1px;height:15px;background:rgba(255,255,255,0.1);}',
+        '#__mf_nav .n-link{font-weight:600;color:rgba(149,152,161,0.75);transition:color .15s;}',
+        '#__mf_nav .n-link:hover{color:#fff;}',
+        '#__mf_nav .n-crumb{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(149,152,161,0.35);}',
+        '#__mf_nav .n-right{display:flex;align-items:center;gap:8px;}',
+        '#__mf_nav .n-badge{font-family:"JetBrains Mono",monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px;border:1px solid rgba(247,199,82,.4);color:#f7c752;background:rgba(247,199,82,.08);}',
+        '#__mf_nav .n-li{font-size:11px;font-weight:700;color:#fff;padding:5px 14px;border-radius:4px;background:linear-gradient(135deg,#0a66c2,#0d7fd4);transition:opacity .15s;}',
+        '#__mf_nav .n-li:hover{opacity:.85;}',
+        '#__mf_spacer{height:52px;display:block;width:100%;}',
+        '#__mf_hero{width:100%;background:#131722;padding:60px 0 0;font-family:Inter,-apple-system,sans-serif;border-bottom:1px solid rgba(255,255,255,0.07);}',
+        '#__mf_hero .h-inner{max-width:1160px;margin:0 auto;padding:0 24px 0;}',
+        '#__mf_hero .h-label{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#787b86;margin-bottom:14px;}',
+        '#__mf_hero .h-title{font-size:clamp(26px,4vw,50px);font-weight:900;color:#fff;line-height:1.1;margin:0 0 12px;letter-spacing:-.02em;}',
+        '#__mf_hero .h-title .azure{color:#5b9cf6;}',
+        '#__mf_hero .h-title .gcp{color:#4285F4;}',
+        '#__mf_hero .h-sub{font-size:16px;color:#787b86;max-width:640px;margin:0 0 22px;line-height:1.6;}',
+        '#__mf_hero .h-meta{display:flex;align-items:center;gap:14px;margin-bottom:36px;font-size:12px;color:#787b86;flex-wrap:wrap;}',
+        '#__mf_hero .h-meta strong{color:#fff;}',
+        '#__mf_hero .h-dot{width:3px;height:3px;border-radius:50%;background:#787b86;}',
+        '#__mf_hero .h-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,0.07);}',
+        '@media(max-width:640px){#__mf_hero .h-cards{grid-template-columns:1fr;}}',
+        '#__mf_hero .h-card{background:#1e222d;padding:24px 28px;position:relative;overflow:hidden;}',
+        '#__mf_hero .h-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;}',
+        '#__mf_hero .h-card.aws::before{background:#FF9900;}',
+        '#__mf_hero .h-card.azure::before{background:#0089D6;}',
+        '#__mf_hero .h-card.gcp::before{background:#4285F4;}',
+        '#__mf_hero .h-card .c-logo{font-family:"JetBrains Mono",monospace;font-size:22px;font-weight:700;margin-bottom:4px;}',
+        '#__mf_hero .h-card.aws .c-logo{color:#FF9900;}',
+        '#__mf_hero .h-card.azure .c-logo{color:#0089D6;}',
+        '#__mf_hero .h-card.gcp .c-logo{color:#4285F4;}',
+        '#__mf_hero .h-card .c-name{font-size:11px;font-weight:600;color:#787b86;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;}',
+        '#__mf_hero .h-card .c-stat{font-size:32px;font-weight:800;color:#fff;line-height:1;}',
+        '#__mf_hero .h-card .c-desc{font-size:12px;color:#787b86;margin-top:4px;margin-bottom:12px;}',
+        '#__mf_hero .h-card .c-sig{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:3px;}',
+        '#__mf_hero .h-card.aws .c-sig{border:1px solid rgba(247,199,82,.35);color:#f7c752;background:rgba(247,199,82,.08);}',
+        '#__mf_hero .h-card.azure .c-sig{border:1px solid rgba(91,156,246,.35);color:#5b9cf6;background:rgba(91,156,246,.08);}',
+        '#__mf_hero .h-card.gcp .c-sig{border:1px solid rgba(8,153,129,.4);color:#089981;background:rgba(8,153,129,.08);}',
+        '#__mf_hero .h-card .c-pts{list-style:none;padding:0;margin:12px 0 0;font-size:12px;color:#787b86;display:flex;flex-direction:column;gap:5px;}',
+        '#__mf_hero .h-card .c-pts li::before{content:"\\25B8  ";}',
+        '#__mf_foot{width:100%;background:#1e222d;border-top:1px solid rgba(255,255,255,0.07);font-family:Inter,-apple-system,sans-serif;padding:48px 0 28px;}',
+        '#__mf_foot .f-inner{max-width:1160px;margin:0 auto;padding:0 24px;}',
+        '#__mf_foot .f-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:32px;margin-bottom:40px;}',
+        '@media(max-width:760px){#__mf_foot .f-grid{grid-template-columns:repeat(2,1fr);}}',
+        '@media(max-width:480px){#__mf_foot .f-grid{grid-template-columns:1fr;}}',
+        '#__mf_foot .f-col h4{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#787b86;margin:0 0 14px;}',
+        '#__mf_foot .f-col a{display:block;font-size:13px;font-weight:500;color:rgba(209,212,220,.7);margin-bottom:9px;transition:color .15s;line-height:1.35;}',
+        '#__mf_foot .f-col a:hover{color:#fff;}',
+        '#__mf_foot .f-bar{border-top:1px solid rgba(255,255,255,0.07);padding-top:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}',
+        '#__mf_foot .f-copy{font-size:11px;color:#787b86;}',
+        '#__mf_foot .f-li-btn{font-size:11px;font-weight:700;color:#fff;padding:6px 16px;border-radius:4px;background:linear-gradient(135deg,#0a66c2,#0d7fd4);transition:opacity .15s;}',
+        '#__mf_foot .f-li-btn:hover{opacity:.85;}',
       ].join('');
 
-      var HTML = (
-        '<style>'+CSS+'</style>'+
-        '<div id="'+NAV_ID+'">'+
-          '<div class="mf-left">'+
-            '<a href="../index.html" class="mf-back">&#8592; Articles Hub</a>'+
-            '<div class="mf-sep"></div>'+
-            '<a href="https://drfarooqai.github.io/dr-farooq-cv/" class="mf-port">Portfolio</a>'+
-            '<div class="mf-sep"></div>'+
-            '<span class="mf-crumb">Cloud AI &middot; Strategy</span>'+
+      var NAV_HTML =
+        '<div id="__mf_nav">'+
+          '<div class="n-left">'+
+            '<a href="../index.html" class="n-back">&#8592; Articles Hub</a>'+
+            '<div class="n-sep"></div>'+
+            '<a href="https://drfarooqai.github.io/dr-farooq-cv/" class="n-link">View Profile</a>'+
+            '<div class="n-sep"></div>'+
+            '<span class="n-crumb">Cloud Strategy</span>'+
           '</div>'+
-          '<div class="mf-right">'+
-            '<span class="mf-badge">GOOGLE: BULLISH</span>'+
-            '<span class="mf-tag">Cloud Analysis</span>'+
-            '<a href="https://drfarooq.substack.com" target="_blank" class="mf-sub">&#8599; Substack</a>'+
+          '<div class="n-right">'+
+            '<span class="n-badge">AWS vs Azure vs GCP</span>'+
+            '<a href="https://www.linkedin.com/in/dr-muhammadfarooq/" target="_blank" class="n-li">Follow on LinkedIn</a>'+
           '</div>'+
-        '</div>'
-      );
+        '</div>';
 
-      function inject() {
+      var HERO_HTML =
+        '<div id="__mf_hero">'+
+          '<div class="h-inner">'+
+            '<div class="h-label">Cloud Strategy &middot; Market Analysis &middot; May 2026</div>'+
+            '<h1 class="h-title"><span style="color:#FF9900">AWS</span> vs <span class="azure">Azure</span> vs <span class="gcp">GCP</span><br>The Cloud War That Shapes AI</h1>'+
+            '<p class="h-sub">A data-driven breakdown of the three hyperscaler giants competing for enterprise AI dominance &mdash; market share, revenue, and strategic moat.</p>'+
+            '<div class="h-meta">'+
+              '<strong>Dr. Muhammad Farooq</strong>'+
+              '<div class="h-dot"></div>'+
+              '<span>AI &amp; Healthcare Specialist, Riyadh KSA</span>'+
+              '<div class="h-dot"></div>'+
+              '<span>7 min read</span>'+
+            '</div>'+
+          '</div>'+
+          '<div class="h-cards">'+
+            '<div class="h-card aws">'+
+              '<div class="c-logo">AWS</div>'+
+              '<div class="c-name">Amazon Web Services</div>'+
+              '<div class="c-stat">~33%</div>'+
+              '<div class="c-desc">Global cloud market share</div>'+
+              '<span class="c-sig">NEUTRAL</span>'+
+              '<ul class="c-pts">'+
+                '<li>Broadest service catalog (200+)</li>'+
+                '<li>SageMaker AI platform leader</li>'+
+                '<li>Bedrock generative AI suite</li>'+
+                '<li>Mature enterprise ecosystem</li>'+
+              '</ul>'+
+            '</div>'+
+            '<div class="h-card azure">'+
+              '<div class="c-logo">AZURE</div>'+
+              '<div class="c-name">Microsoft Azure</div>'+
+              '<div class="c-stat">~23%</div>'+
+              '<div class="c-desc">Global cloud market share</div>'+
+              '<span class="c-sig">WATCH</span>'+
+              '<ul class="c-pts">'+
+                '<li>OpenAI partnership &amp; ChatGPT infra</li>'+
+                '<li>Microsoft 365 + Copilot flywheel</li>'+
+                '<li>Hybrid cloud via Azure Arc</li>'+
+                '<li>Fastest-growing enterprise AI</li>'+
+              '</ul>'+
+            '</div>'+
+            '<div class="h-card gcp">'+
+              '<div class="c-logo">GCP</div>'+
+              '<div class="c-name">Google Cloud Platform</div>'+
+              '<div class="c-stat">~12%</div>'+
+              '<div class="c-desc">Global cloud market share</div>'+
+              '<span class="c-sig">BULLISH</span>'+
+              '<ul class="c-pts">'+
+                '<li>Gemini models + TPU advantage</li>'+
+                '<li>Vertex AI &amp; open-weight Gemma</li>'+
+                '<li>BigQuery AI analytics leader</li>'+
+                '<li>Highest YoY growth trajectory</li>'+
+              '</ul>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
+
+      var FOOT_HTML =
+        '<div id="__mf_foot">'+
+          '<div class="f-inner">'+
+            '<div class="f-grid">'+
+              '<div class="f-col">'+
+                '<h4>AI &amp; Agents</h4>'+
+                '<a href="../ai/what-is-claude.html">What is Claude?</a>'+
+                '<a href="../ai/age-of-ai-v3.html">Age of AI v3</a>'+
+                '<a href="../ai/ai-agent-field-manual.html">AI Agent Field Manual</a>'+
+                '<a href="../ai/claude-code-33-hacks.html">Claude Code 33 Hacks</a>'+
+                '<a href="../ai/wake-up-era-of-ai.html">Wake Up: Era of AI is Era of YOU</a>'+
+                '<a href="../ai/stop-building-ai-apps.html">Stop Building AI Apps</a>'+
+              '</div>'+
+              '<div class="f-col">'+
+                '<h4>Cloud &amp; Strategy</h4>'+
+                '<a href="../ai/googles-trillion-dollar-open-weight.html">Google\'s Trillion-Dollar Open Weight</a>'+
+                '<a href="../ai/aws-vs-azure-vs-gcp.html">AWS vs Azure vs GCP</a>'+
+                '<a href="../ai/CLI-vs-MCP-vs-API.html">CLI vs MCP vs API</a>'+
+              '</div>'+
+              '<div class="f-col">'+
+                '<h4>Healthcare AI</h4>'+
+                '<a href="../ai/ai-not-replacing-doctors.html">AI is Not Replacing Doctors</a>'+
+                '<a href="../ai/ATLAS_of_Medical_AI_Models.html">ATLAS of Medical AI Models</a>'+
+              '</div>'+
+              '<div class="f-col">'+
+                '<h4>Connect</h4>'+
+                '<a href="https://www.linkedin.com/in/dr-muhammadfarooq/" target="_blank">&#8599; Follow on LinkedIn</a>'+
+                '<a href="https://drfarooqai.github.io/articles/" target="_blank">&#8599; Articles Hub</a>'+
+                '<a href="https://drfarooqai.github.io/dr-farooq-cv/" target="_blank">&#8599; View Profile</a>'+
+                '<a href="https://drfarooq.substack.com" target="_blank">&#8599; Substack</a>'+
+              '</div>'+
+            '</div>'+
+            '<div class="f-bar">'+
+              '<span class="f-copy">&copy; 2026 Dr. Muhammad Farooq &mdash; AI &amp; Healthcare Specialist, Riyadh KSA</span>'+
+              '<a href="https://www.linkedin.com/in/dr-muhammadfarooq/" target="_blank" class="f-li-btn">Follow on LinkedIn</a>'+
+            '</div>'+
+          '</div>'+
+        '</div>';
+
+      function hideArtcleChrome() {
+        var killers = ['artcle','opinions are the author','artcle >'];
+        document.querySelectorAll('nav,header,footer').forEach(function(el) {
+          var t = (el.innerText || el.textContent || '').toLowerCase();
+          for (var i=0;i<killers.length;i++) {
+            if (t.indexOf(killers[i]) > -1) {
+              el.style.cssText = 'display:none!important;visibility:hidden!important;height:0!important;overflow:hidden!important;';
+              break;
+            }
+          }
+        });
+      }
+
+      function injectAll() {
         if (!document.body) return;
-        if (document.getElementById(NAV_ID)) return;
-        var wrap = document.createElement('div');
-        wrap.innerHTML = HTML;
-        document.body.insertAdjacentElement('afterbegin', wrap);
+        var alreadyDone = document.getElementById(DONE_ID);
+        if (alreadyDone) { hideArtcleChrome(); return; }
+
+        if (!document.getElementById('__mf_style')) {
+          var st = document.createElement('style');
+          st.id = '__mf_style';
+          st.textContent = SHARED_CSS;
+          (document.head || document.body).appendChild(st);
+        }
+
+        if (!document.getElementById('__mf_nav')) {
+          var navEl = document.createElement('div');
+          navEl.innerHTML = NAV_HTML;
+          document.body.insertAdjacentElement('afterbegin', navEl);
+        }
+
         if (!document.getElementById('__mf_spacer')) {
           var sp = document.createElement('div');
           sp.id = '__mf_spacer';
-          wrap.insertAdjacentElement('afterend', sp);
+          document.body.insertAdjacentElement('afterbegin', sp);
         }
+
+        if (!document.getElementById('__mf_hero')) {
+          var heroEl = document.createElement('div');
+          heroEl.innerHTML = HERO_HTML;
+          var spNode = document.getElementById('__mf_spacer');
+          if (spNode) {
+            spNode.insertAdjacentElement('afterend', heroEl);
+          } else {
+            document.body.insertAdjacentElement('afterbegin', heroEl);
+          }
+        }
+
+        if (!document.getElementById('__mf_foot')) {
+          var footEl = document.createElement('div');
+          footEl.innerHTML = FOOT_HTML;
+          document.body.insertAdjacentElement('beforeend', footEl);
+        }
+
+        var done = document.createElement('div');
+        done.id = DONE_ID;
+        done.style.display = 'none';
+        document.body.appendChild(done);
+
+        hideArtcleChrome();
       }
 
-      // Multi-attempt: handles both sync and async (React/Vue) artcle apps
-      inject();
-      [150, 500, 1200, 3000].forEach(function(t) { setTimeout(inject, t); });
-      window.addEventListener('load', function() { inject(); setTimeout(inject, 600); });
+      injectAll();
+      [150, 500, 1200, 3000].forEach(function(t){ setTimeout(injectAll,t); });
+      window.addEventListener('load', function(){ injectAll(); setTimeout(injectAll,600); });
 
-      // MutationObserver: re-inject if the artcle app removes our nav
       if (window.MutationObserver) {
         var obs = new MutationObserver(function() {
-          if (!document.getElementById(NAV_ID)) inject();
+          if (!document.getElementById(DONE_ID)) injectAll();
+          else hideArtcleChrome();
         });
         setTimeout(function() {
-          if (document.body) obs.observe(document.body, { childList: true, subtree: false });
-          setTimeout(function() { obs.disconnect(); }, 20000);
+          if (document.body) obs.observe(document.body, {childList:true,subtree:false});
+          setTimeout(function(){ obs.disconnect(); }, 25000);
         }, 300);
       }
+
     })();
     // ────────────────────────────────────────────────────────────────────────
 
