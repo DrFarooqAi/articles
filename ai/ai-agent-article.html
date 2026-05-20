@@ -1,0 +1,1741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building an AI Agent Step by Step — Dr. Muhammad Farooq</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-deep:       #07080e;
+    --bg-card:       rgba(255,255,255,0.05);
+    --bg-card-hover: rgba(255,255,255,0.09);
+    --border:        rgba(255,255,255,0.10);
+    --border-glow:   rgba(193,240,7,0.30);
+    --purple:        #6C52FF;
+    --purple-light:  #9B87FF;
+    --purple-dim:    rgba(108,82,255,0.15);
+    --lime:          #c1f007;
+    --lime-dim:      rgba(193,240,7,0.12);
+    --teal:          #c1f007;
+    --teal-dim:      rgba(193,240,7,0.10);
+    --amber:         #c1f007;
+    --amber-dim:     rgba(193,240,7,0.10);
+    --white:         #FFFFFF;
+    --white-90:      rgba(255,255,255,0.90);
+    --white-70:      rgba(255,255,255,0.80);
+    --white-40:      rgba(255,255,255,0.60);
+    --white-15:      rgba(255,255,255,0.15);
+    --red-dim:       rgba(255,80,80,0.12);
+    --red:           #FF5050;
+    --pink:          #ff2d78;
+    --violet:        #9b5de5;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg-deep);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* ─── AURORA STREAK BACKGROUND (from uploaded image) ─── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 90% 55% at 50% 0%, rgba(80,30,140,0.55) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 20% 50%, rgba(193,240,7,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse 50% 30% at 80% 70%, rgba(108,82,255,0.08) 0%, transparent 50%),
+      linear-gradient(180deg, #0d0618 0%, #070810 40%, #04060f 100%);
+    pointer-events: none;
+  }
+
+  /* Aurora vertical streaks layer */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 38px,
+        rgba(180,60,180,0.07) 38px,
+        rgba(180,60,180,0.07) 39px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 72px,
+        rgba(108,82,255,0.06) 72px,
+        rgba(108,82,255,0.06) 73px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 113px,
+        rgba(220,100,220,0.05) 113px,
+        rgba(220,100,220,0.05) 114px
+      );
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.15) 60%, transparent 100%);
+    pointer-events: none;
+  }
+
+  /* ─── CANVAS STREAKS (JS-driven aurora) ─── */
+  #aurora-canvas {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 260px;
+    z-index: 0; pointer-events: none;
+    opacity: 0.55;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    padding: 0 32px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(7,8,16,0.92);
+    backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(193,240,7,0.15);
+    gap: 16px;
+  }
+
+  .nav-brand {
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 13px;
+    letter-spacing: 0.03em;
+    color: var(--white);
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .nav-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--lime);
+    box-shadow: 0 0 16px var(--lime), 0 0 32px rgba(193,240,7,0.4);
+    animation: pulse 2.5s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 16px var(--lime), 0 0 32px rgba(193,240,7,0.4); }
+    50% { opacity: 0.6; transform: scale(0.7); box-shadow: 0 0 8px var(--lime); }
+  }
+
+  .nav-links {
+    display: flex; gap: 4px; list-style: none; align-items: center;
+    flex-shrink: 0;
+  }
+
+  .nav-links a {
+    color: var(--white-40); text-decoration: none;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.02em;
+    padding: 5px 10px; border-radius: 6px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .nav-links a:hover {
+    color: var(--white);
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  /* highlighted nav links */
+  .nav-links a.nav-highlight {
+    color: var(--lime);
+    background: rgba(193,240,7,0.08);
+    border: 1px solid rgba(193,240,7,0.25);
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .nav-links a.nav-highlight:hover {
+    background: rgba(193,240,7,0.15);
+    border-color: rgba(193,240,7,0.5);
+    box-shadow: 0 0 16px rgba(193,240,7,0.2);
+  }
+
+  .nav-right {
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .nav-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 500;
+    color: var(--lime);
+    background: rgba(193,240,7,0.1);
+    border: 1px solid rgba(193,240,7,0.3);
+    padding: 4px 10px; border-radius: 20px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  /* ─── TICKER ─── */
+  .ticker-bar {
+    position: relative; z-index: 1;
+    margin-top: 64px;
+    height: 44px;
+    background: linear-gradient(90deg, rgba(108,82,255,0.12), rgba(193,240,7,0.07), rgba(108,82,255,0.12));
+    border-bottom: 1px solid rgba(193,240,7,0.20);
+    overflow: hidden;
+    display: flex; align-items: center;
+  }
+
+  .ticker-track {
+    display: flex; align-items: center; gap: 0;
+    animation: ticker 28s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker-item {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 0 36px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    border-right: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .ticker-item .tag {
+    font-size: 10px; color: #0a0a0a;
+    background: var(--lime);
+    padding: 2px 7px; border-radius: 3px;
+    font-weight: 700; letter-spacing: 0.05em;
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  main { position: relative; z-index: 1; }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 100px 48px 80px;
+    max-width: 1100px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 340px; gap: 64px;
+    align-items: center;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.12em;
+    color: var(--lime);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block; width: 24px; height: 2px;
+    background: var(--lime);
+    box-shadow: 0 0 8px var(--lime);
+  }
+
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(42px, 5vw, 68px);
+    font-weight: 800; line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 24px;
+  }
+
+  h1 .accent { color: var(--purple-light); }
+
+  .hero-sub {
+    font-size: 19px; font-weight: 400;
+    color: var(--white-70); line-height: 1.65;
+    margin-bottom: 40px; max-width: 540px;
+  }
+
+  .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--lime);
+    color: #080808; font-weight: 700; font-size: 14px;
+    padding: 13px 26px; border-radius: 8px;
+    text-decoration: none; letter-spacing: 0.02em;
+    transition: all 0.2s;
+    box-shadow: 0 0 30px rgba(193,240,7,0.3);
+  }
+  .btn-primary:hover {
+    background: #d8ff1a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 40px rgba(193,240,7,0.5);
+  }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--white-70); font-size: 14px; font-weight: 500;
+    padding: 13px 26px; border-radius: 8px;
+    text-decoration: none; letter-spacing: 0.02em;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover {
+    border-color: var(--lime);
+    color: var(--lime);
+    background: rgba(193,240,7,0.06);
+  }
+
+  /* ─── HERO CARD with running border ─── */
+  .hero-card {
+    background: rgba(255,255,255,0.04);
+    border-radius: 16px;
+    padding: 32px;
+    backdrop-filter: blur(14px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Running pink-violet border via conic-gradient trick */
+  .hero-card::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 18px;
+    background: conic-gradient(
+      from var(--border-angle, 0deg),
+      #ff2d78 0deg,
+      #9b5de5 90deg,
+      #ff2d78 180deg,
+      #9b5de5 270deg,
+      #ff2d78 360deg
+    );
+    z-index: -1;
+    animation: spin-border 3s linear infinite;
+  }
+  .hero-card::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 14px;
+    background: #0d0a1a;
+    z-index: -1;
+  }
+
+  @property --border-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+  }
+  @keyframes spin-border {
+    to { --border-angle: 360deg; }
+  }
+
+  .hero-card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--white-40); margin-bottom: 20px;
+  }
+
+  .author-row { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; }
+
+  .author-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--lime));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 800; color: #080808;
+    flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(193,240,7,0.3);
+  }
+
+  .author-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight: 700; color: var(--white);
+  }
+  .author-title { font-size: 12px; color: var(--white-40); }
+
+  .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+
+  .hero-stat {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 10px; padding: 14px;
+  }
+
+  .hero-stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px; font-weight: 800; color: var(--white); line-height: 1;
+  }
+  .hero-stat-num .unit { font-size: 13px; color: var(--lime); }
+  .hero-stat-label { font-size: 12px; color: var(--white-40); margin-top: 4px; }
+
+  /* ─── DIVIDER ─── */
+  .section-divider { max-width: 1100px; margin: 0 auto; height: 1px; background: rgba(255,255,255,0.08); }
+
+  /* ─── SECTION HEADER ─── */
+  .section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 48px; }
+
+  .section-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--lime);
+    background: rgba(193,240,7,0.10);
+    border: 1px solid rgba(193,240,7,0.30);
+    padding: 4px 12px; border-radius: 4px;
+    letter-spacing: 0.08em;
+  }
+
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(26px, 3vw, 38px);
+    font-weight: 700; letter-spacing: -0.02em;
+    color: var(--white);
+  }
+
+  /* ─── FLOW SECTION ─── */
+  .flow-section { padding: 80px 48px; max-width: 1100px; margin: 0 auto; }
+
+  .flow-pipeline {
+    display: flex; align-items: stretch;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 16px;
+    overflow: visible;
+    position: relative;
+  }
+
+  .flow-pipeline::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--pink) 20%, var(--violet) 50%, var(--lime) 80%, transparent 100%);
+    border-radius: 16px 16px 0 0;
+  }
+
+  .flow-stage {
+    flex: 1; padding: 36px 26px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    position: relative;
+    transition: background 0.25s;
+    overflow: hidden;
+  }
+
+  .flow-stage:last-child { border-right: none; }
+  .flow-stage:hover { background: rgba(255,255,255,0.06); }
+
+  /* Running side border on each card */
+  .flow-stage::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 2px; height: 100%;
+    background: linear-gradient(180deg, var(--pink), var(--violet), var(--pink));
+    background-size: 100% 200%;
+    animation: run-border 2s linear infinite;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .flow-stage:hover::after { opacity: 1; }
+
+  @keyframes run-border {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 0% 200%; }
+  }
+
+  .flow-arrow {
+    position: absolute; right: -14px; top: 50%;
+    transform: translateY(-50%);
+    width: 26px; height: 26px;
+    background: var(--bg-deep);
+    border: 1px solid rgba(193,240,7,0.4);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2; font-size: 11px; color: var(--lime);
+  }
+  .flow-stage:last-child .flow-arrow { display: none; }
+
+  .flow-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em;
+    color: var(--lime); margin-bottom: 12px;
+  }
+
+  .flow-stage h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px; font-weight: 700;
+    margin-bottom: 10px; color: var(--white);
+  }
+
+  .flow-file {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: #0a0a0a;
+    background: var(--lime);
+    padding: 3px 9px; border-radius: 4px;
+    display: inline-block; margin-bottom: 12px;
+    font-weight: 700;
+  }
+
+  .flow-desc { font-size: 14px; color: var(--white-70); line-height: 1.6; }
+
+  /* ─── LAYERS GRID ─── */
+  .layers-section { padding: 0 48px 80px; max-width: 1100px; margin: 0 auto; }
+
+  .layers-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; overflow: hidden;
+  }
+
+  .layer-cell {
+    background: var(--bg-deep);
+    padding: 30px 22px;
+    position: relative; overflow: hidden;
+    transition: background 0.2s;
+  }
+  .layer-cell:hover { background: rgba(255,255,255,0.05); }
+
+  /* running left border on layer cells */
+  .layer-cell::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0; width: 2px;
+    background: linear-gradient(180deg, var(--pink) 0%, var(--violet) 50%, var(--pink) 100%);
+    background-size: 100% 200%;
+    animation: run-border 2.5s linear infinite;
+    opacity: 0.5;
+  }
+
+  .layer-icon { font-size: 26px; margin-bottom: 14px; }
+
+  .layer-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 4px;
+  }
+
+  .layer-file {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--lime); margin-bottom: 10px;
+  }
+
+  .layer-desc { font-size: 13px; color: var(--white-70); line-height: 1.55; }
+
+  /* ─── CONTENT / LESSONS ─── */
+  .content-section { padding: 80px 48px; max-width: 1100px; margin: 0 auto; }
+
+  .lesson-block {
+    display: grid; grid-template-columns: 280px 1fr;
+    gap: 48px; margin-bottom: 64px; padding-bottom: 64px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .lesson-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+  .lesson-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 64px; font-weight: 500;
+    color: rgba(193,240,7,0.10);
+    line-height: 1; margin-bottom: 12px;
+    letter-spacing: -0.04em;
+  }
+
+  .lesson-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px; font-weight: 700; color: var(--white);
+    line-height: 1.2; margin-bottom: 12px;
+  }
+
+  .lesson-subtitle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: #0a0a0a;
+    background: var(--lime);
+    padding: 5px 14px; border-radius: 6px;
+    display: inline-block; margin-bottom: 16px;
+    font-weight: 700;
+  }
+
+  h3.pattern-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 700;
+    color: var(--white); margin: 30px 0 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  h3.pattern-title::before {
+    content: '';
+    display: block; width: 16px; height: 2px;
+    background: var(--lime); flex-shrink: 0;
+    box-shadow: 0 0 8px var(--lime);
+  }
+
+  p {
+    color: var(--white-70);
+    margin-bottom: 16px;
+    font-size: 16px;
+    font-weight: 400;
+  }
+
+  /* ─── CALLOUT BOXES ─── */
+  .callout {
+    border-radius: 10px; padding: 22px 26px; margin: 24px 0;
+    border-left: 3px solid; position: relative; overflow: hidden;
+  }
+
+  .callout-purple { background: rgba(108,82,255,0.12); border-color: var(--purple); }
+  .callout-teal   { background: rgba(193,240,7,0.08);  border-color: var(--lime); }
+  .callout-amber  { background: rgba(193,240,7,0.08);  border-color: var(--lime); }
+
+  .callout-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;
+  }
+  .callout-purple .callout-title { color: var(--purple-light); }
+  .callout-teal .callout-title   { color: var(--lime); }
+  .callout-amber .callout-title  { color: var(--lime); }
+  .callout p { margin-bottom: 0; font-size: 15px; }
+
+  /* ─── PRINCIPLES TABLE ─── */
+  .principles-table {
+    width: 100%; border-collapse: collapse;
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 12px; overflow: hidden; margin: 24px 0;
+  }
+
+  .principles-table th {
+    background: rgba(193,240,7,0.08);
+    padding: 14px 18px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--lime); text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .principles-table td {
+    padding: 16px 18px;
+    font-size: 15px; color: var(--white-70);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    vertical-align: top;
+  }
+  .principles-table tr:last-child td { border-bottom: none; }
+  .principles-table tr:hover td { background: rgba(255,255,255,0.04); color: var(--white); }
+  .td-file { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--lime); }
+  .td-layer { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--white); }
+
+  /* ─── PATTERN PILLS with running border ─── */
+  .pattern-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0; }
+
+  .pattern-pill {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px; padding: 20px;
+    position: relative; overflow: hidden;
+    transition: background 0.2s;
+  }
+
+  /* running pink-violet side borders */
+  .pattern-pill::before,
+  .pattern-pill::after {
+    content: '';
+    position: absolute;
+    width: 2px; height: 200%;
+    background: linear-gradient(180deg, transparent 0%, var(--pink) 30%, var(--violet) 70%, transparent 100%);
+    animation: slide-down 2.5s linear infinite;
+  }
+  .pattern-pill::before { left: 0; top: -100%; animation-delay: 0s; }
+  .pattern-pill::after  { right: 0; top: -100%; animation-delay: 1.25s; }
+
+  @keyframes slide-down {
+    0%   { top: -100%; }
+    100% { top: 100%; }
+  }
+
+  .pattern-pill:hover { background: rgba(255,255,255,0.07); }
+
+  .pattern-pill-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--lime); margin-bottom: 8px; letter-spacing: 0.08em;
+  }
+  .pattern-pill-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 6px;
+  }
+  .pattern-pill-desc { font-size: 13px; color: var(--white-70); line-height: 1.5; }
+
+  /* ─── ARCH SECTION ─── */
+  .arch-section { padding: 80px 48px; max-width: 1100px; margin: 0 auto; }
+
+  .arch-diagram {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 16px; padding: 52px;
+    position: relative; overflow: hidden; margin-top: 40px;
+  }
+
+  .arch-diagram::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--pink), var(--violet), var(--lime), var(--violet), var(--pink));
+    background-size: 200% 100%;
+    animation: shimmer-bar 3s linear infinite;
+  }
+
+  @keyframes shimmer-bar {
+    0%   { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+  }
+
+  .arch-row { display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; z-index: 1; }
+
+  .arch-box {
+    padding: 18px 32px; border-radius: 12px; border: 1px solid;
+    text-align: center; min-width: 160px; position: relative;
+  }
+  .arch-box-ui    { border-color: rgba(193,240,7,0.5); background: rgba(193,240,7,0.08); }
+  .arch-box-brain { border-color: var(--purple); background: var(--purple-dim); min-width: 360px; }
+  .arch-box-tool  { border-color: rgba(193,240,7,0.4); background: rgba(193,240,7,0.07); }
+  .arch-box-mem   { border-color: rgba(255,80,80,0.4); background: var(--red-dim); }
+
+  .arch-box-label { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; }
+  .arch-box-sub { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--white-40); margin-top: 5px; }
+
+  .arch-conn { display: flex; flex-direction: column; align-items: center; margin: 4px 0; }
+  .arch-conn-line { width: 1px; height: 22px; background: linear-gradient(to bottom, var(--lime), transparent); }
+  .arch-conn-dot  { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 8px var(--lime); }
+
+  .arch-middle { display: flex; align-items: flex-start; justify-content: center; gap: 64px; margin-bottom: 12px; position: relative; z-index: 1; }
+  .arch-side-group { display: flex; flex-direction: column; align-items: center; }
+
+  /* ─── PROGRESSION ─── */
+  .progression-section { padding: 80px 48px; max-width: 1100px; margin: 0 auto; }
+  .progression-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 40px; }
+
+  .prog-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 14px; padding: 30px;
+    position: relative; overflow: hidden;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .prog-card:hover { background: rgba(255,255,255,0.07); transform: translateY(-3px); }
+
+  /* running pink-violet side borders on prog cards */
+  .prog-card::before {
+    content: '';
+    position: absolute; left: 0; top: -100%; width: 2px; height: 200%;
+    background: linear-gradient(180deg, transparent, var(--pink), var(--violet), transparent);
+    animation: slide-down 3s linear infinite;
+  }
+  .prog-card::after {
+    content: '';
+    position: absolute; right: 0; top: -100%; width: 2px; height: 200%;
+    background: linear-gradient(180deg, transparent, var(--violet), var(--pink), transparent);
+    animation: slide-down 3s linear infinite;
+    animation-delay: 1.5s;
+  }
+
+  .prog-level {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 4px; display: inline-block; margin-bottom: 16px;
+  }
+  .prog-easy         { color: var(--lime);         background: rgba(193,240,7,0.12); border: 1px solid rgba(193,240,7,0.3); }
+  .prog-intermediate { color: #ffb347;              background: rgba(255,179,71,0.12); border: 1px solid rgba(255,179,71,0.3); }
+  .prog-advanced     { color: var(--purple-light);  background: var(--purple-dim); border: 1px solid rgba(108,82,255,0.3); }
+
+  .prog-card h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 16px;
+  }
+  .prog-items { list-style: none; }
+  .prog-items li {
+    font-size: 14px; color: var(--white-70);
+    padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.07);
+    display: flex; align-items: flex-start; gap: 10px; line-height: 1.45;
+  }
+  .prog-items li:last-child { border-bottom: none; }
+  .prog-items li::before { content: '→'; color: var(--lime); font-size: 12px; flex-shrink: 0; margin-top: 2px; }
+
+  /* ─── HEALTHCARE ─── */
+  .healthcare-section { padding: 0 48px 80px; max-width: 1100px; margin: 0 auto; }
+
+  .healthcare-card {
+    background: linear-gradient(135deg, rgba(108,82,255,0.10), rgba(193,240,7,0.05));
+    border: 1px solid rgba(193,240,7,0.25);
+    border-radius: 20px; padding: 52px;
+    position: relative; overflow: hidden;
+  }
+  .healthcare-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--pink), var(--violet), var(--lime));
+    background-size: 200% 100%;
+    animation: shimmer-bar 3s linear infinite;
+  }
+
+  .healthcare-card h2 { font-size: clamp(22px, 3vw, 32px); margin-bottom: 16px; }
+
+  .healthcare-mapping { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+
+  .mapping-row {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 10px; padding: 18px;
+    display: flex; align-items: center; gap: 14px;
+    position: relative; overflow: hidden;
+  }
+  .mapping-row::before {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--pink), var(--violet));
+    background-size: 200% 100%;
+    animation: shimmer-bar 4s linear infinite;
+  }
+
+  .mapping-from {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: #0a0a0a;
+    background: var(--lime);
+    padding: 4px 10px; border-radius: 4px;
+    white-space: nowrap; flex-shrink: 0;
+    font-weight: 700;
+  }
+  .mapping-arrow { color: var(--lime); font-size: 16px; flex-shrink: 0; }
+  .mapping-to { font-size: 14px; color: var(--white-70); line-height: 1.4; }
+
+  /* ─── PRINCIPLES STRIP ─── */
+  .principles-section { padding: 0 48px 80px; max-width: 1100px; margin: 0 auto; }
+
+  .principles-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1px; background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px; overflow: hidden; margin-top: 40px;
+  }
+
+  .principle-cell {
+    background: var(--bg-deep); padding: 30px 22px;
+    position: relative; overflow: hidden;
+    transition: background 0.2s;
+  }
+  .principle-cell:hover { background: rgba(255,255,255,0.05); }
+
+  .principle-cell::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--pink), var(--violet));
+    background-size: 200% 100%;
+    animation: shimmer-bar 4s linear infinite;
+    opacity: 0.7;
+  }
+
+  .principle-icon  { font-size: 24px; margin-bottom: 14px; }
+  .principle-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 10px; }
+  .principle-body  { font-size: 13px; color: var(--white-70); line-height: 1.6; }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 48px; max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 24px;
+  }
+  .footer-brand { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--white); }
+  .footer-brand span { color: var(--lime); }
+  .footer-links { display: flex; gap: 24px; list-style: none; }
+  .footer-links a { font-size: 14px; color: var(--white-40); text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--lime); }
+  .footer-copy { font-size: 12px; color: var(--white-40); font-family: 'JetBrains Mono', monospace; }
+
+  /* ─── INLINE ─── */
+  .highlight { color: var(--lime); font-weight: 600; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 960px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-card { display: none; }
+    .flow-pipeline { flex-direction: column; }
+    .flow-stage { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .flow-arrow { display: none; }
+    .layers-grid { grid-template-columns: 1fr 1fr; }
+    .lesson-block { grid-template-columns: 1fr; gap: 24px; }
+    .lesson-num { font-size: 44px; }
+    .arch-middle { flex-direction: column; align-items: center; gap: 12px; }
+    .progression-grid { grid-template-columns: 1fr; }
+    .healthcare-mapping { grid-template-columns: 1fr; }
+    .principles-strip { grid-template-columns: 1fr 1fr; }
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero, .flow-section, .layers-section, .content-section,
+    .arch-section, .progression-section, .healthcare-section,
+    .principles-section { padding-left: 20px; padding-right: 20px; }
+    footer { padding: 28px 20px; flex-direction: column; align-items: flex-start; }
+    .pattern-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ─── FADE IN ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero > * { animation: fadeUp 0.6s ease both; }
+  .hero > *:nth-child(1) { animation-delay: 0.1s; }
+  .hero > *:nth-child(2) { animation-delay: 0.3s; }
+  .flow-stage { animation: fadeUp 0.5s ease both; }
+  .flow-stage:nth-child(1) { animation-delay: 0.05s; }
+  .flow-stage:nth-child(2) { animation-delay: 0.12s; }
+  .flow-stage:nth-child(3) { animation-delay: 0.19s; }
+  .flow-stage:nth-child(4) { animation-delay: 0.26s; }
+
+  /* ─── MORE FROM DR. FAROOQ ─── */
+  .more-section {
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 80px 0 60px;
+    position: relative; z-index: 1;
+  }
+
+  .more-inner {
+    max-width: 1100px; margin: 0 auto;
+    padding: 0 48px;
+  }
+
+  /* Author bio card */
+  .author-bio-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 16px;
+    padding: 36px 40px;
+    margin-bottom: 56px;
+    position: relative; overflow: hidden;
+  }
+  .author-bio-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--pink), var(--violet), var(--lime), var(--violet), var(--pink));
+    background-size: 200% 100%;
+    animation: shimmer-bar 3s linear infinite;
+  }
+
+  .author-bio-top {
+    display: flex; align-items: center; gap: 20px;
+    margin-bottom: 20px;
+  }
+
+  .author-bio-avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    background: var(--lime);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800; color: #080808;
+    flex-shrink: 0;
+    box-shadow: 0 0 24px rgba(193,240,7,0.35);
+  }
+
+  .author-bio-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px; font-weight: 800; color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .author-bio-tags {
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .abio-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--lime);
+  }
+  .abio-sep { color: rgba(255,255,255,0.25); font-size: 11px; }
+
+  .author-bio-desc {
+    font-size: 15px; color: rgba(255,255,255,0.62);
+    line-height: 1.7; margin-bottom: 0;
+  }
+
+  /* Section label */
+  .more-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  /* Article cards grid */
+  .more-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .more-card {
+    background: rgba(255,255,255,0.04);
+    border-radius: 14px;
+    padding: 28px 24px;
+    text-decoration: none;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    transition: background 0.2s, transform 0.2s;
+    border: 1px solid transparent;
+  }
+  .more-card:hover {
+    background: rgba(255,255,255,0.07);
+    transform: translateY(-3px);
+  }
+
+  /* Each card gets its own running border color pair */
+  .more-card::before {
+    content: '';
+    position: absolute; left: 0; top: -100%; width: 2px; height: 200%;
+    animation: slide-down 2.5s linear infinite;
+  }
+  .more-card::after {
+    content: '';
+    position: absolute; right: 0; top: -100%; width: 2px; height: 200%;
+    animation: slide-down 2.5s linear infinite;
+    animation-delay: 1.25s;
+  }
+
+  /* top border line on each card */
+  .more-card .card-top-line {
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    border-radius: 14px 14px 0 0;
+  }
+
+  .more-card-1::before, .more-card-1::after,
+  .more-card-1 .card-top-line { background: linear-gradient(180deg, transparent, var(--teal), transparent); }
+  .more-card-1 .card-top-line { background: linear-gradient(90deg, var(--teal), transparent); }
+
+  .more-card-2::before { background: linear-gradient(180deg, transparent, var(--pink), transparent); }
+  .more-card-2::after  { background: linear-gradient(180deg, transparent, var(--violet), transparent); }
+  .more-card-2 .card-top-line { background: linear-gradient(90deg, var(--pink), var(--violet)); }
+
+  .more-card-3::before { background: linear-gradient(180deg, transparent, var(--lime), transparent); }
+  .more-card-3::after  { background: linear-gradient(180deg, transparent, var(--violet), transparent); }
+  .more-card-3 .card-top-line { background: linear-gradient(90deg, var(--lime), var(--violet)); }
+
+  .more-card-4::before { background: linear-gradient(180deg, transparent, var(--violet), transparent); }
+  .more-card-4::after  { background: linear-gradient(180deg, transparent, var(--pink), transparent); }
+  .more-card-4 .card-top-line { background: linear-gradient(90deg, var(--violet), var(--pink)); }
+
+  .more-card-5::before { background: linear-gradient(180deg, transparent, var(--pink), transparent); }
+  .more-card-5::after  { background: linear-gradient(180deg, transparent, var(--lime), transparent); }
+  .more-card-5 .card-top-line { background: linear-gradient(90deg, var(--pink), var(--lime)); }
+
+  /* 5th card spans differently — put cards 4+5 in last row */
+  .more-card:nth-child(4) { grid-column: 1; }
+  .more-card:nth-child(5) { grid-column: 2; }
+
+  .more-card-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.35); margin-bottom: 6px;
+  }
+
+  .more-card-cat {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.07em;
+    color: var(--lime); margin-bottom: 12px; text-transform: uppercase;
+  }
+
+  .more-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px; font-weight: 700; color: var(--white);
+    line-height: 1.25; margin-bottom: 12px;
+  }
+
+  .more-card-desc {
+    font-size: 13px; color: rgba(255,255,255,0.58);
+    line-height: 1.6; flex: 1; margin-bottom: 20px;
+  }
+
+  .more-card-cta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    color: var(--lime);
+    transition: letter-spacing 0.2s;
+  }
+  .more-card:hover .more-card-cta { letter-spacing: 0.12em; }
+
+  .more-footer-cta {
+    display: flex; justify-content: center;
+    margin-top: 16px;
+  }
+
+  @media (max-width: 960px) {
+    .more-inner { padding: 0 20px; }
+    .more-grid { grid-template-columns: 1fr; }
+    .more-card:nth-child(4), .more-card:nth-child(5) { grid-column: 1; }
+    .author-bio-top { flex-direction: column; align-items: flex-start; gap: 12px; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Aurora canvas streaks -->
+<canvas id="aurora-canvas"></canvas>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="#" class="nav-brand">
+    <span class="nav-dot"></span>
+    Dr. Muhammad Farooq
+  </a>
+  <ul class="nav-links">
+    <li><a href="#flow">Architecture</a></li>
+    <li><a href="#lessons">Deep Dive</a></li>
+    <li><a href="#principles">Principles</a></li>
+    <li><a href="#healthcare">Healthcare</a></li>
+    <li><a href="https://www.linkedin.com/in/dr-muhammad-farooq" target="_blank" class="nav-highlight">💼 LinkedIn</a></li>
+    <li><a href="https://drfarooqai.blogspot.com" target="_blank" class="nav-highlight">📰 Articles</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="nav-tag">AI Doctor · Top Voice</span>
+  </div>
+</nav>
+
+<!-- ─── TICKER ─── -->
+<div class="ticker-bar">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="tag">LAYER 1</span> Tool — Fetch External Data</span>
+    <span class="ticker-item"><span class="tag">LAYER 2</span> Knowledge — Prompt Templates</span>
+    <span class="ticker-item"><span class="tag">LAYER 3</span> Brain — LLM Call</span>
+    <span class="ticker-item"><span class="tag">LAYER 4</span> Memory — Persist Results</span>
+    <span class="ticker-item"><span class="tag">LAYER 5</span> UI — User Interaction</span>
+    <span class="ticker-item"><span class="tag">PATTERN</span> Validate Before API Call</span>
+    <span class="ticker-item"><span class="tag">PATTERN</span> System vs User Prompt</span>
+    <span class="ticker-item"><span class="tag">PATTERN</span> Graceful Degradation</span>
+    <span class="ticker-item"><span class="tag">PATTERN</span> Context Window Management</span>
+    <span class="ticker-item"><span class="tag">PATTERN</span> Structured JSON Output</span>
+    <span class="ticker-item"><span class="tag">LAYER 1</span> Tool — Fetch External Data</span>
+    <span class="ticker-item"><span class="tag">LAYER 2</span> Knowledge — Prompt Templates</span>
+    <span class="ticker-item"><span class="tag">LAYER 3</span> Brain — LLM Call</span>
+    <span class="ticker-item"><span class="tag">LAYER 4</span> Memory — Persist Results</span>
+    <span class="ticker-item"><span class="tag">LAYER 5</span> UI — User Interaction</span>
+    <span class="ticker-item"><span class="tag">PATTERN</span> Validate Before API Call</span>
+    <span class="ticker-item"><span class="tag">PATTERN</span> System vs User Prompt</span>
+    <span class="ticker-item"><span class="tag">PATTERN</span> Graceful Degradation</span>
+    <span class="ticker-item"><span class="tag">PATTERN</span> Context Window Management</span>
+    <span class="ticker-item"><span class="tag">PATTERN</span> Structured JSON Output</span>
+  </div>
+</div>
+
+<main>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div>
+    <div class="hero-eyebrow">Agent Architecture · Theory Guide</div>
+    <h1>Building an<br><span class="accent">AI Agent</span><br>Step by Step</h1>
+    <p class="hero-sub">
+      A theory-first breakdown of how modern AI agents are structured — from data acquisition to memory persistence. Every agent you build maps to the same 5 architectural layers.
+    </p>
+    <div class="hero-actions">
+      <a href="#lessons" class="btn-primary">Start Reading →</a>
+      <a href="#healthcare" class="btn-ghost">Healthcare Mapping</a>
+    </div>
+  </div>
+
+  <div class="hero-card">
+    <div class="hero-card-label">// authored by</div>
+    <div class="author-row">
+      <div class="author-avatar">MF</div>
+      <div>
+        <div class="author-name">Dr. Muhammad Farooq</div>
+        <div class="author-title">AI Doctor · LinkedIn Top Voice</div>
+      </div>
+    </div>
+    <div style="font-size:14px; color: rgba(255,255,255,0.70); line-height:1.65; margin-bottom:20px;">
+      Physician at the intersection of AI and healthcare. Building AI-powered systems for clinical workflows, insurance analytics, and hospital operations.
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num">5<span class="unit"> layers</span></div>
+        <div class="hero-stat-label">Universal Agent Structure</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">4<span class="unit"> lessons</span></div>
+        <div class="hero-stat-label">Deep Dive Patterns</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">12<span class="unit">+</span></div>
+        <div class="hero-stat-label">Design Patterns</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">1<span class="unit"> template</span></div>
+        <div class="hero-stat-label">Works Any Domain</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ─── AGENT FLOW ─── -->
+<section class="flow-section" id="flow">
+  <div class="section-header">
+    <span class="section-number">01 / OVERVIEW</span>
+    <h2>How an Agent Processes a Request</h2>
+  </div>
+  <div class="flow-pipeline">
+    <div class="flow-stage">
+      <div class="flow-num">STAGE 01</div>
+      <span class="flow-file">transcript.py</span>
+      <h3>Data Acquisition</h3>
+      <p class="flow-desc">User provides raw input. The Tool layer validates it, fetches real-world data from an external source, normalizes it into clean text, and handles fallbacks if the source fails.</p>
+      <div class="flow-arrow">→</div>
+    </div>
+    <div class="flow-stage">
+      <div class="flow-num">STAGE 02</div>
+      <span class="flow-file">prompts.py</span>
+      <h3>Prompt Assembly</h3>
+      <p class="flow-desc">The Knowledge layer selects the right prompt template, injects the style modifier and the fetched data as variables, and returns a complete system + user prompt pair.</p>
+      <div class="flow-arrow">→</div>
+    </div>
+    <div class="flow-stage">
+      <div class="flow-num">STAGE 03</div>
+      <span class="flow-file">agent.py</span>
+      <h3>Intelligence</h3>
+      <p class="flow-desc">The Brain layer sends the assembled prompt to the LLM, handles authentication and rate-limit errors gracefully, and returns the generated output as a clean string.</p>
+      <div class="flow-arrow">→</div>
+    </div>
+    <div class="flow-stage">
+      <div class="flow-num">STAGE 04</div>
+      <span class="flow-file">database.py</span>
+      <h3>Memory</h3>
+      <p class="flow-desc">The Memory layer optionally persists the result with metadata. If no database is configured, this step silently skips — the agent works regardless. History and analytics are enhancements, not dependencies.</p>
+      <div class="flow-arrow">→</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── 5 LAYERS ─── -->
+<section class="layers-section">
+  <div class="section-header">
+    <span class="section-number">02 / STRUCTURE</span>
+    <h2>The Universal 5-Layer Model</h2>
+  </div>
+  <div class="layers-grid">
+    <div class="layer-cell">
+      <div class="layer-icon">🖥️</div>
+      <div class="layer-name">UI Layer</div>
+      <div class="layer-file">app.py</div>
+      <div class="layer-desc">User interaction, page navigation, session state, input forms, and result display. Connects all other layers together.</div>
+    </div>
+    <div class="layer-cell">
+      <div class="layer-icon">🔧</div>
+      <div class="layer-name">Tool Layer</div>
+      <div class="layer-file">transcript.py</div>
+      <div class="layer-desc">Any function that crosses a boundary — file system, external API, database, web. The LLM never fetches directly; the Tool does.</div>
+    </div>
+    <div class="layer-cell">
+      <div class="layer-icon">📚</div>
+      <div class="layer-name">Knowledge Layer</div>
+      <div class="layer-file">prompts.py</div>
+      <div class="layer-desc">The prompt template library. System prompts, user prompts, style modifiers. Where the agent's actual intelligence is encoded.</div>
+    </div>
+    <div class="layer-cell">
+      <div class="layer-icon">🧠</div>
+      <div class="layer-name">Brain Layer</div>
+      <div class="layer-file">agent.py</div>
+      <div class="layer-desc">The LLM API call. Build prompt → call model → extract content → return string. This shape never changes across models.</div>
+    </div>
+    <div class="layer-cell">
+      <div class="layer-icon">💾</div>
+      <div class="layer-name">Memory Layer</div>
+      <div class="layer-file">database.py</div>
+      <div class="layer-desc">Persistence across sessions. Save results, track history, power analytics. Optional but transforms an agent into a system.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ─── LESSONS ─── -->
+<section class="content-section" id="lessons">
+  <div class="section-header">
+    <span class="section-number">03 / DEEP DIVE</span>
+    <h2>Four Lessons, Four Layers</h2>
+  </div>
+
+  <!-- LESSON 1 -->
+  <div class="lesson-block">
+    <div class="lesson-sidebar">
+      <div class="lesson-num">01</div>
+      <div class="lesson-title">The Brain Layer</div>
+      <div class="lesson-subtitle">agent.py</div>
+      <p style="font-size:14px; color:rgba(255,255,255,0.65);">The heart of any agent. Every LLM integration follows the same four patterns regardless of which model you use.</p>
+    </div>
+    <div class="lesson-body">
+      <p>The Brain layer is where the LLM call lives. It is deliberately thin — it does not make decisions about what to generate or how to structure prompts. Its sole job is to receive a ready-to-send prompt package and return a clean string. This separation is what makes the same Brain layer work across LinkedIn posts, clinical summaries, and coding assistants.</p>
+      <h3 class="pattern-title">Client Initialization</h3>
+      <p>Always abstract your API connection into a function that is called once. It checks deployment secrets first, falls back to local environment variables second. This single pattern makes the same codebase work on your laptop and in the cloud without any changes.</p>
+      <h3 class="pattern-title">The Core LLM Call Shape</h3>
+      <p>Every LLM call follows an identical structure: build the prompt, call the model with a system and user message, extract the content field from the response, return a string. This shape never changes. What changes is the prompt — and that belongs in the Knowledge layer, not here.</p>
+      <div class="callout callout-purple">
+        <div class="callout-title">Key Insight</div>
+        <p>The <span class="highlight">content_type</span> and <span class="highlight">style</span> parameters are how one function serves six different outputs. The logic for each lives in prompts.py — the Brain layer never needs to know what it is generating.</p>
+      </div>
+      <h3 class="pattern-title">Structured Output from LLM</h3>
+      <p>When you need the model to return data rather than prose, you must explicitly instruct it to return only valid JSON with no markdown fences or preamble. Before parsing, always strip any code fence characters the model may have added. Always have a safe fallback in the error handler so a parsing failure never crashes the UI.</p>
+      <h3 class="pattern-title">Typed Error Handling</h3>
+      <p>Do not catch all errors the same way. Classify them — invalid API key, rate limit exceeded, network timeout — and return a descriptive string for each. The UI layer can then check whether the output begins with "Error:" and display an appropriate message rather than showing a raw exception.</p>
+      <div class="pattern-grid">
+        <div class="pattern-pill">
+          <div class="pattern-pill-num">PATTERN 01</div>
+          <div class="pattern-pill-name">Abstract the Client</div>
+          <div class="pattern-pill-desc">One function, checks secrets first, falls back to .env. Works identically locally and in cloud.</div>
+        </div>
+        <div class="pattern-pill">
+          <div class="pattern-pill-num">PATTERN 02</div>
+          <div class="pattern-pill-name">The Immutable Call Shape</div>
+          <div class="pattern-pill-desc">Build prompt → call model → extract .content → return string. Never deviates.</div>
+        </div>
+        <div class="pattern-pill">
+          <div class="pattern-pill-num">PATTERN 03</div>
+          <div class="pattern-pill-name">JSON from LLM</div>
+          <div class="pattern-pill-desc">Instruct explicitly, strip fences before parsing, always have a fallback default.</div>
+        </div>
+        <div class="pattern-pill">
+          <div class="pattern-pill-num">PATTERN 04</div>
+          <div class="pattern-pill-name">Typed Error Returns</div>
+          <div class="pattern-pill-desc">Classify errors and return strings — never let raw exceptions surface to the user.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LESSON 2 -->
+  <div class="lesson-block">
+    <div class="lesson-sidebar">
+      <div class="lesson-num">02</div>
+      <div class="lesson-title">The Knowledge Layer</div>
+      <div class="lesson-subtitle">prompts.py</div>
+      <p style="font-size:14px; color:rgba(255,255,255,0.65);">Where the agent's intelligence actually lives. Not in the model — in the prompts.</p>
+    </div>
+    <div class="lesson-body">
+      <p>The Knowledge layer is the most powerful file in any agent. The LLM model is generic — it knows everything about everything. Prompts.py is what makes it a specialist. A content agent, a clinical coder, a radiology summariser — the model is the same; the prompts are entirely different.</p>
+      <h3 class="pattern-title">Separate Data from Logic</h3>
+      <p>The file is organized into three pure data dictionaries followed by two pure functions. Nothing mixes. The dictionaries hold all prompt text. The functions assemble and return prompt pairs. Adding a new output format means adding one dictionary entry — zero changes anywhere else in the codebase.</p>
+      <h3 class="pattern-title">System vs User Prompt</h3>
+      <p>These are two distinct things with two distinct jobs. The system prompt sets the AI's persona and expertise — it is static and does not change between calls. The user prompt contains the actual task, the constraints, and the input data — it is dynamically constructed for every call.</p>
+      <div class="callout callout-teal">
+        <div class="callout-title">Rule of Thumb</div>
+        <p><span class="highlight">System prompt</span> = who the AI is right now. <span class="highlight">User prompt</span> = what to do with this specific input. Never mix them.</p>
+      </div>
+      <h3 class="pattern-title">Template Variables</h3>
+      <p>User prompts contain placeholders — slots for the style instruction and the input data. A single assembly function fills these placeholders at runtime using Python's built-in string formatting. This is how one template serves millions of different inputs without duplication.</p>
+      <h3 class="pattern-title">The Cross-Cutting Modifier</h3>
+      <p>A writing style (Viral, Educational, Founder, Technical) is stored as a single instruction string. That string is injected into every content type prompt as a variable. When the user changes the style, all six outputs shift in tone simultaneously. This pattern is directly transferable to clinical settings: patient-facing vs physician-facing vs billing mode works identically.</p>
+      <h3 class="pattern-title">The Most Important Prompt Rule</h3>
+      <p>Always tell the model what <em>not</em> to include. Without negative constraints, LLMs prepend preamble phrases like "Here is your LinkedIn post:" before every output, which breaks downstream parsing. Negative instructions are as important as positive ones — often more so.</p>
+    </div>
+  </div>
+
+  <!-- LESSON 3 -->
+  <div class="lesson-block">
+    <div class="lesson-sidebar">
+      <div class="lesson-num">03</div>
+      <div class="lesson-title">The Tool Layer</div>
+      <div class="lesson-subtitle">transcript.py</div>
+      <p style="font-size:14px; color:rgba(255,255,255,0.65);">The most important architectural pattern in agentic AI. How an agent interacts with the outside world.</p>
+    </div>
+    <div class="lesson-body">
+      <p>The Tool layer is where agents cross boundaries. A tool is any function that touches something outside the agent itself — an external API, a file system, a database, the web. The critical principle: the LLM never makes external calls directly. The Tool does. The Tool normalizes the result. Only then does the cleaned data reach the Brain.</p>
+      <h3 class="pattern-title">Validate Before Any Network Call</h3>
+      <p>Never send bad input to an external API. Validate the input with a regex or schema check first. If it fails, return an error dictionary immediately. This is called failing fast — you save a network round trip and give the user a specific, actionable error message instead of a cryptic API exception.</p>
+      <h3 class="pattern-title">Consistent Return Schema</h3>
+      <p>Every single return path from a tool — success, partial success, every type of failure — should return the same shape of data. A dictionary with a predictable set of keys. The caller only checks one thing: is there an "error" key? If yes, display it. If no, proceed with the data.</p>
+      <h3 class="pattern-title">Fallback Chains</h3>
+      <p>Real-world APIs fail. Design every tool with Strategy 1 → Strategy 2 → Strategy 3 before giving up. When multiple strategies exist, prefer quality over speed. Document the fallback chain explicitly so future developers know the intent.</p>
+      <div class="callout callout-amber">
+        <div class="callout-title">Critical Real-World Pattern</div>
+        <p>Always <span class="highlight">normalize data before passing to the LLM</span>. Raw API responses are noisy, inconsistent, and full of metadata the model does not need. The Tool's job is to return clean, plain text — never raw API output.</p>
+      </div>
+      <h3 class="pattern-title">Context Window Management</h3>
+      <p>Long documents can exceed the LLM's token limit. Every tool that processes variable-length input needs a chunking strategy. The most practical approach: keep the beginning and the end — where the most informative content typically lives — and trim the middle with an explicit marker showing what was removed.</p>
+      <h3 class="pattern-title">Optional Dependencies</h3>
+      <p>Some tools rely on heavy libraries that should not be required for the agent to function at all. Import these inside the function, not at the top of the file. Catch all exceptions and return safe defaults.</p>
+    </div>
+  </div>
+
+  <!-- LESSON 4 -->
+  <div class="lesson-block">
+    <div class="lesson-sidebar">
+      <div class="lesson-num">04</div>
+      <div class="lesson-title">The Memory Layer</div>
+      <div class="lesson-subtitle">database.py</div>
+      <p style="font-size:14px; color:rgba(255,255,255,0.65);">Persistence across sessions. Transforms a single-use tool into a system with history, analytics, and accountability.</p>
+    </div>
+    <div class="lesson-body">
+      <p>Without memory, an agent processes each request in isolation and forgets everything. The Memory layer gives it persistence — the ability to accumulate history, surface patterns, and build analytics over time. In healthcare, this is the difference between a one-time tool and an auditable clinical workflow system.</p>
+      <h3 class="pattern-title">Memory is Optional, Not a Dependency</h3>
+      <p>The agent must work perfectly whether or not a database is configured. Every database function checks whether a connection exists before doing anything. If not, it returns a safe default — an empty list, a zero count, a sentinel integer. The UI never crashes because of a missing database.</p>
+      <h3 class="pattern-title">Cache Expensive Connections</h3>
+      <p>Creating a database client is slow. Create it once and reuse it across all subsequent calls in the same session. Never instantiate a new database connection on every function call. In frameworks with caching decorators, use them explicitly.</p>
+      <h3 class="pattern-title">Separate Reads from Writes</h3>
+      <p>One function per operation. Write functions save data and return a confirmation. Read functions query data — and different read functions select different subsets of columns depending on what the caller needs. Never fetch more data than the caller will use.</p>
+      <h3 class="pattern-title">Always Return Safe Defaults</h3>
+      <p>Every function that returns a collection or aggregate should return an empty structure on failure — never null, never an exception. An empty list. A dictionary with all counts set to zero. This means the UI layer can always safely access any field in the return value without defensive coding at every call site.</p>
+      <div class="callout callout-purple">
+        <div class="callout-title">The Schema Principle</div>
+        <p>One well-designed table handles all content types when they share the same shape. A table with <span class="highlight">input_id, input_type, output_type, output_text, metadata, created_at</span> serves every use case. In healthcare: note_id, note_type, output_type, processed_text, metadata, created_at.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ─── ARCHITECTURE ─── -->
+<section class="arch-section" id="architecture">
+  <div class="section-header">
+    <span class="section-number">04 / ARCHITECTURE</span>
+    <h2>Complete Agent Architecture</h2>
+  </div>
+  <div class="arch-diagram">
+    <div class="arch-row">
+      <div class="arch-box arch-box-ui">
+        <div class="arch-box-label" style="color:var(--lime);">UI Layer</div>
+        <div class="arch-box-sub">app.py · User interaction · Session state · Page routing · Display</div>
+      </div>
+    </div>
+    <div class="arch-conn">
+      <div class="arch-conn-line"></div>
+      <div class="arch-conn-dot"></div>
+      <div class="arch-conn-line"></div>
+    </div>
+    <div class="arch-middle">
+      <div class="arch-side-group">
+        <div class="arch-box arch-box-tool">
+          <div class="arch-box-label" style="color:var(--lime);">Tool Layer</div>
+          <div class="arch-box-sub">transcript.py<br>External APIs · Validation<br>Normalization · Fallbacks</div>
+        </div>
+      </div>
+      <div class="arch-side-group">
+        <div class="arch-box arch-box-mem">
+          <div class="arch-box-label" style="color:var(--red);">Memory Layer</div>
+          <div class="arch-box-sub">database.py<br>Supabase · History<br>Analytics · Optional</div>
+        </div>
+      </div>
+    </div>
+    <div class="arch-conn">
+      <div class="arch-conn-line"></div>
+      <div class="arch-conn-dot"></div>
+      <div class="arch-conn-line"></div>
+    </div>
+    <div class="arch-row">
+      <div class="arch-box arch-box-brain">
+        <div class="arch-box-label" style="color:var(--purple-light);">Brain Layer — agent.py</div>
+        <div class="arch-box-sub" style="margin-top:6px;">LLM API calls · Error handling · Structured output parsing</div>
+        <div style="margin-top:10px; font-size:11px; color:rgba(255,255,255,0.40); font-family:'JetBrains Mono',monospace;">
+          prompts.py → build_prompt() → GPT-4o / Claude / Gemini
+        </div>
+      </div>
+    </div>
+  </div>
+  <table class="principles-table" style="margin-top:32px;">
+    <thead>
+      <tr><th>Layer</th><th>File</th><th>Primary Responsibility</th><th>Fails Gracefully?</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="td-layer">UI</td><td class="td-file">app.py</td><td>User interaction, navigation, display</td><td style="color:var(--lime);">Connects all layers</td></tr>
+      <tr><td class="td-layer">Tool</td><td class="td-file">transcript.py</td><td>External data fetching, validation, normalization</td><td style="color:var(--lime);">Returns error dict</td></tr>
+      <tr><td class="td-layer">Knowledge</td><td class="td-file">prompts.py</td><td>Prompt templates, style library, variable injection</td><td style="color:rgba(255,255,255,0.45);">Static data — no failures</td></tr>
+      <tr><td class="td-layer">Brain</td><td class="td-file">agent.py</td><td>LLM API calls, error classification, output parsing</td><td style="color:var(--lime);">Returns error string</td></tr>
+      <tr><td class="td-layer">Memory</td><td class="td-file">database.py</td><td>Persistence, history, analytics, deletion</td><td style="color:var(--lime);">Optional — skips silently</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- ─── PRINCIPLES ─── -->
+<section class="principles-section" id="principles">
+  <div class="section-header">
+    <span class="section-number">05 / PRINCIPLES</span>
+    <h2>Eight Design Principles</h2>
+  </div>
+  <div class="principles-strip">
+    <div class="principle-cell">
+      <div class="principle-icon">⚡</div>
+      <div class="principle-title">Single Responsibility</div>
+      <div class="principle-body">Each file does exactly one thing. Responsibilities never bleed across files. This is what makes agents maintainable and extendable.</div>
+    </div>
+    <div class="principle-cell">
+      <div class="principle-icon">🛡️</div>
+      <div class="principle-title">Graceful Degradation</div>
+      <div class="principle-body">The core function always works. Optional components silently skip when unavailable. Never let infrastructure break the agent.</div>
+    </div>
+    <div class="principle-cell">
+      <div class="principle-icon">🧱</div>
+      <div class="principle-title">Data Over Logic</div>
+      <div class="principle-body">Add new output formats as data entries, not new code paths. The logic layer stays fixed; only the data dictionary grows.</div>
+    </div>
+    <div class="principle-cell">
+      <div class="principle-icon">🔒</div>
+      <div class="principle-title">Validate First</div>
+      <div class="principle-body">Never call an external API with unvalidated input. Fail fast, return a specific error, save the network round trip.</div>
+    </div>
+    <div class="principle-cell">
+      <div class="principle-icon">🌊</div>
+      <div class="principle-title">Fallback Chains</div>
+      <div class="principle-body">Real APIs fail. Design every tool with Strategy 1 → 2 → 3. Prefer quality over speed when multiple strategies exist.</div>
+    </div>
+    <div class="principle-cell">
+      <div class="principle-icon">✂️</div>
+      <div class="principle-title">Context Management</div>
+      <div class="principle-body">Long inputs must be chunked before hitting the LLM. Keep start and end; trim the middle. Every doc-processing agent needs this.</div>
+    </div>
+    <div class="principle-cell">
+      <div class="principle-icon">📐</div>
+      <div class="principle-title">Consistent Schema</div>
+      <div class="principle-body">Every return path returns the same shape. One key to check for errors. The UI never needs defensive coding.</div>
+    </div>
+    <div class="principle-cell">
+      <div class="principle-icon">🔁</div>
+      <div class="principle-title">Cache Connections</div>
+      <div class="principle-body">Create database and API clients once; reuse them. Never instantiate a new connection on every function call.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── HEALTHCARE ─── -->
+<section class="healthcare-section" id="healthcare">
+  <div class="healthcare-card">
+    <div class="section-header" style="margin-bottom:16px;">
+      <span class="section-number">06 / APPLICATION</span>
+      <h2>Mapping to <span class="accent">Healthcare AI</span></h2>
+    </div>
+    <p style="color:rgba(255,255,255,0.78); max-width:640px; font-size:17px;">
+      The architecture is domain-agnostic. The same 5 layers that power a content repurposing agent power a clinical note processing agent. Only the data in each layer changes — never the structure.
+    </p>
+    <div class="healthcare-mapping">
+      <div class="mapping-row">
+        <div class="mapping-from">YouTube URL</div>
+        <div class="mapping-arrow">→</div>
+        <div class="mapping-to">Patient discharge note, clinical record, or lab result</div>
+      </div>
+      <div class="mapping-row">
+        <div class="mapping-from">Content Types</div>
+        <div class="mapping-arrow">→</div>
+        <div class="mapping-to">Patient summary, physician flag, billing code suggestion, DRG assignment</div>
+      </div>
+      <div class="mapping-row">
+        <div class="mapping-from">Writing Styles</div>
+        <div class="mapping-arrow">→</div>
+        <div class="mapping-to">Patient-facing language, physician-facing, insurance-ready, regulatory format</div>
+      </div>
+      <div class="mapping-row">
+        <div class="mapping-from">Transcript fetch</div>
+        <div class="mapping-arrow">→</div>
+        <div class="mapping-to">NPHIES API call, EMR record fetch, or FHIR resource retrieval</div>
+      </div>
+      <div class="mapping-row">
+        <div class="mapping-from">Chunk transcript</div>
+        <div class="mapping-arrow">→</div>
+        <div class="mapping-to">Trim long admission notes while preserving key clinical findings</div>
+      </div>
+      <div class="mapping-row">
+        <div class="mapping-from">History table</div>
+        <div class="mapping-arrow">→</div>
+        <div class="mapping-to">Audit log of every processed note — who, when, what output was generated</div>
+      </div>
+    </div>
+    <div class="callout callout-purple" style="margin-top:32px;">
+      <div class="callout-title">The Universal Insight</div>
+      <p>The code structure of a clinical AI agent is nearly identical to the content repurposing agent described in this article. Replace "YouTube URL" with "clinical note" and "LinkedIn post" with "billing suggestion" — the pipeline is identical. The domain changes. The architecture does not.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROGRESSION ─── -->
+<section class="progression-section">
+  <div class="section-header">
+    <span class="section-number">07 / ROADMAP</span>
+    <h2>What to Build Next</h2>
+  </div>
+  <div class="progression-grid">
+    <div class="prog-card">
+      <span class="prog-level prog-easy">Easy</span>
+      <h3>Extend the Existing Architecture</h3>
+      <ul class="prog-items">
+        <li>Add new output types as data entries — no code changes needed</li>
+        <li>Batch-process multiple inputs from a folder or list</li>
+        <li>Detect input language and generate output in the same language</li>
+        <li>Add more writing style modifiers to the style library</li>
+      </ul>
+    </div>
+    <div class="prog-card">
+      <span class="prog-level prog-intermediate">Intermediate</span>
+      <h3>Add New Capabilities</h3>
+      <ul class="prog-items">
+        <li>Connect to external posting APIs (Buffer, LinkedIn) from the Tool layer</li>
+        <li>Add UI controls for tone, length, and formality as sliders</li>
+        <li>Generate image prompts alongside each output</li>
+        <li>Build a feedback loop that improves prompts based on user ratings</li>
+      </ul>
+    </div>
+    <div class="prog-card">
+      <span class="prog-level prog-advanced">Advanced</span>
+      <h3>Production-Grade Systems</h3>
+      <ul class="prog-items">
+        <li>Use embeddings to cluster past outputs by topic or semantic similarity</li>
+        <li>A/B test prompt variants and track performance with analytics</li>
+        <li>Build a multi-agent system where specialized sub-agents collaborate</li>
+        <li>Add RAG pipelines to ground outputs in verified domain knowledge</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+
+<!-- ─── MORE FROM DR. FAROOQ ─── -->
+<section class="more-section">
+  <div class="more-inner">
+
+    <div class="author-bio-card">
+      <div class="author-bio-top">
+        <div class="author-bio-avatar">MF</div>
+        <div>
+          <div class="author-bio-name">Dr. Muhammad Farooq</div>
+          <div class="author-bio-tags">
+            <span class="abio-tag">AI Top Voice</span>
+            <span class="abio-sep">·</span>
+            <span class="abio-tag">AI Doctor</span>
+            <span class="abio-sep">·</span>
+            <span class="abio-tag">LinkedIn Top Voice</span>
+          </div>
+        </div>
+      </div>
+      <p class="author-bio-desc">Physician, researcher, and AI strategist at the intersection of medicine and emerging technology. Dr. Farooq writes on AI adoption, digital health transformation, and the societal implications of intelligent systems. His analysis draws on clinical practice, data science, and a decade of observing technology reshape healthcare delivery.</p>
+    </div>
+
+    <div class="more-label">More From Dr. Farooq</div>
+
+    <div class="more-grid">
+
+      <a class="more-card more-card-1" href="https://drfarooqai.github.io/articles/ai/ai-agent-field-manual.html" target="_blank">
+        <div class="card-top-line"></div>
+        <div class="more-card-date">2026</div>
+        <div class="more-card-cat">AI &amp; Agents</div>
+        <div class="more-card-title">The AI Agent Field Manual</div>
+        <div class="more-card-desc">Battle-tested guide to building, debugging and securing your first autonomous agent — architecture, budget, audits, zero-trust, and daily iteration loops.</div>
+        <div class="more-card-cta">Read Article →</div>
+      </a>
+
+      <a class="more-card more-card-2" href="https://drfarooqai.github.io/articles/ai/age-of-ai-v3.html" target="_blank">
+        <div class="card-top-line"></div>
+        <div class="more-card-date">2026</div>
+        <div class="more-card-cat">AI &amp; Agents · Market Data</div>
+        <div class="more-card-title">The Age of Artificial Intelligence</div>
+        <div class="more-card-desc">Market data, adoption curves, enterprise transformation, and workforce impact — a data-driven deep dive into what the numbers are really saying about AI's trajectory.</div>
+        <div class="more-card-cta">Read Article →</div>
+      </a>
+
+      <a class="more-card more-card-3" href="https://drfarooqai.github.io/articles/ai/ATLAS_of_Medical_AI_Models.html" target="_blank">
+        <div class="card-top-line"></div>
+        <div class="more-card-date">2026</div>
+        <div class="more-card-cat">Healthcare AI</div>
+        <div class="more-card-title">The Complete Medical AI Model Atlas</div>
+        <div class="more-card-desc">A definitive guide to 20 AI models reshaping clinical medicine — frontier enterprise giants, open-source engines, and imaging &amp; niche specialists, with a full compare table.</div>
+        <div class="more-card-cta">Read Article →</div>
+      </a>
+
+      <a class="more-card more-card-4" href="https://drfarooqai.github.io/articles/ai/CLI-vs-MCP-vs-API.html" target="_blank">
+        <div class="card-top-line"></div>
+        <div class="more-card-date">2026</div>
+        <div class="more-card-cat">AI &amp; Agents</div>
+        <div class="more-card-title">CLI vs. MCP vs. API: Which is Best for AI Agents?</div>
+        <div class="more-card-desc">A practical breakdown of when to reach for a CLI, MCP server, or direct API call — trade-offs, latency, tooling, and real-world patterns for builders.</div>
+        <div class="more-card-cta">Read Article →</div>
+      </a>
+
+      <a class="more-card more-card-5" href="https://drfarooqai.github.io/articles/ai/ai-not-replacing-doctors.html" target="_blank">
+        <div class="card-top-line"></div>
+        <div class="more-card-date">2026</div>
+        <div class="more-card-cat">Healthcare AI</div>
+        <div class="more-card-title">AI is Not Replacing Doctors — It's Replacing Doctors Who Don't Use AI</div>
+        <div class="more-card-desc">Why healthcare professionals who understand AI will have an enormous competitive advantage in the next decade.</div>
+        <div class="more-card-cta">Read Article →</div>
+      </a>
+
+    </div>
+
+    <div class="more-footer-cta">
+      <a href="https://drfarooqai.github.io/articles/" target="_blank" class="btn-primary">View All 16 Articles →</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div>
+    <div class="footer-brand">Dr. Muhammad Farooq <span>· AI Doctor</span></div>
+    <div style="font-size:13px; color:rgba(255,255,255,0.45); margin-top:4px;">AI in Healthcare · LinkedIn Top Voice · Riyadh, KSA</div>
+  </div>
+  <ul class="footer-links">
+    <li><a href="https://www.linkedin.com/in/dr-muhammad-farooq" target="_blank">LinkedIn</a></li>
+    <li><a href="https://drfarooqai.blogspot.com" target="_blank">Articles</a></li>
+    <li><a href="https://github.com" target="_blank">GitHub</a></li>
+  </ul>
+  <div class="footer-copy">© 2026 · drfarooqai · MIT License</div>
+</footer>
+
+<script>
+// ─── AURORA STREAKS CANVAS ───
+const canvas = document.getElementById('aurora-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width  = window.innerWidth;
+  canvas.height = 260;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const streaks = Array.from({ length: 48 }, () => ({
+  x:     Math.random() * window.innerWidth,
+  speed: 0.2 + Math.random() * 0.6,
+  len:   60 + Math.random() * 140,
+  width: 0.5 + Math.random() * 1.5,
+  hue:   Math.random() < 0.6 ? 290 + Math.random() * 40 : 320 + Math.random() * 30,
+  sat:   60 + Math.random() * 30,
+  y:     Math.random() * 260,
+  alpha: 0.3 + Math.random() * 0.5,
+}));
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (const s of streaks) {
+    const grad = ctx.createLinearGradient(s.x, s.y - s.len, s.x, s.y);
+    grad.addColorStop(0, `hsla(${s.hue},${s.sat}%,65%,0)`);
+    grad.addColorStop(0.5, `hsla(${s.hue},${s.sat}%,65%,${s.alpha})`);
+    grad.addColorStop(1, `hsla(${s.hue},${s.sat}%,65%,0)`);
+    ctx.beginPath();
+    ctx.moveTo(s.x, s.y - s.len);
+    ctx.lineTo(s.x, s.y);
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = s.width;
+    ctx.stroke();
+
+    s.y += s.speed;
+    if (s.y - s.len > 260) {
+      s.y = -s.len;
+      s.x = Math.random() * canvas.width;
+    }
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
