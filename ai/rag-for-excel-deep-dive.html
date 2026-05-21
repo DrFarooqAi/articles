@@ -1,0 +1,2390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG for Excel — A Deep Dive · Dr. Muhammad Farooq</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════════
+   DESIGN TOKENS — mirroring drfarooqai.github.io
+═══════════════════════════════════════════════ */
+:root {
+  --bg:           #060e06;
+  --bg2:          #091009;
+  --surface:      #0d160d;
+  --surface2:     #121f12;
+  --border:       rgba(156,242,27,0.10);
+  --border-mid:   rgba(156,242,27,0.16);
+  --border-hi:    rgba(156,242,27,0.28);
+
+  --gold:         #f0a500;
+  --gold-bright:  #ffc740;
+  --gold-dim:     #c8830a;
+  --gold-glow:    rgba(240,165,0,0.22);
+
+  --amber:        #ff8c00;
+  --cyan:         #00d4e8;
+  --cyan-dim:     rgba(0,212,232,0.15);
+  --green:        #9cf21b;
+  --green-dim:    rgba(156,242,27,0.10);
+  --red:          #ff4d6a;
+  --violet:       #9b87f5;
+  --violet-dim:   rgba(155,135,245,0.12);
+
+  --text:         #eef0f8;
+  --text-mid:     #9ba3c0;
+  --text-dim:     #5a6280;
+  --text-faint:   #353d5c;
+
+  --radius-sm:    8px;
+  --radius:       12px;
+  --radius-lg:    18px;
+}
+
+/* ═══════════════════════════════════════════════
+   SNAKING BORDER ANIMATIONS
+   Uses conic-gradient rotation to create a light
+   that races around each box perimeter
+═══════════════════════════════════════════════ */
+@keyframes snake-spin {
+  0%   { --snake-angle: 0deg; }
+  100% { --snake-angle: 360deg; }
+}
+
+@keyframes snake-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes shimmer-glow {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+/* Register custom property for smooth animation */
+@property --snake-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════════ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  background: #060e06;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  line-height: 1.72;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Cryptify-style green radial mesh background */
+body::before {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 15% 0%,   rgba(30,120,30,0.55)  0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 85% 5%,   rgba(20,90,20,0.35)   0%, transparent 50%),
+    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(10,60,10,0.40)   0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 0%   50%, rgba(15,70,15,0.25)   0%, transparent 60%),
+    linear-gradient(180deg, #071407 0%, #040b04 40%, #020602 100%);
+}
+
+/* Subtle green dot grid overlay */
+body::after {
+  content: '';
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(circle, rgba(156,242,27,0.06) 1px, transparent 1px);
+  background-size: 52px 52px;
+}
+
+/* ═══════════════════════════════════════════════
+   HERO — full desktop split layout
+   Left: title + deck + CTAs | Right: stat cards
+   Parallax tilt on mouse/touch
+═══════════════════════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex; align-items: center;
+  padding: 100px 32px 80px;
+  border-bottom: 1px solid var(--border-mid);
+  overflow: hidden;
+  margin: 0 -32px;
+}
+
+/* Cryptify green hero background */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 85% 70% at 8% 0%,   rgba(28,120,28,0.72) 0%, transparent 54%),
+    radial-gradient(ellipse 55% 48% at 92% 2%,  rgba(18,90,18,0.48)  0%, transparent 50%),
+    radial-gradient(ellipse 65% 52% at 50% 95%, rgba(12,65,12,0.38)  0%, transparent 55%),
+    linear-gradient(170deg, #0b220b 0%, #071407 40%, #030b03 100%);
+}
+
+/* Bright green burst top-left */
+.hero::after {
+  content: '';
+  position: absolute; top: -100px; left: -80px;
+  width: 650px; height: 650px; border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(60,200,60,0.22) 0%,
+    rgba(30,130,30,0.12) 35%,
+    transparent 65%
+  );
+  pointer-events: none; z-index: 1;
+}
+
+.hero-bg-glow2 {
+  position: absolute; bottom: -100px; left: -60px;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(156,242,27,0.07) 0%, transparent 65%);
+  pointer-events: none; z-index: 1;
+}
+
+.hero-grid-overlay {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.11) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.30;
+}
+
+.hero-inner {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 860px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 56px;
+  align-items: center;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: transform 0.08s linear;
+}
+
+.hero h1 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(44px, 5.5vw, 76px); font-weight: 400;
+  line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 26px;
+  color: #fff;
+}
+
+.hero h1 em { font-style: italic; color: var(--gold); }
+
+.hero .hero-deck {
+  font-size: 17px; font-weight: 300;
+  color: rgba(220,240,232,0.80);
+  max-width: 560px; line-height: 1.80; margin-bottom: 40px;
+}
+
+.hero .author-row {
+  background: rgba(0,0,0,0.32);
+  border-color: rgba(255,255,255,0.16);
+  backdrop-filter: blur(12px);
+}
+
+/* ── Right panel stat cards ── */
+.hero-stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+
+.hero-stat-card {
+  background: rgba(0,20,14,0.70);
+  border-radius: 14px; padding: 20px 18px;
+  position: relative; overflow: hidden;
+  backdrop-filter: blur(18px);
+}
+
+/* Snaking conic border on stat cards */
+.hero-stat-card::before {
+  content: '';
+  position: absolute; inset: -1px; border-radius: 15px; z-index: 0;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 55deg,
+    #9cf21b 85deg, #00e8ff 120deg, #ffffff 148deg,
+    #9cf21b 175deg, transparent 205deg, transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: snake-spin 2.8s linear infinite;
+}
+
+.hero-stat-card::after {
+  content: '';
+  position: absolute; inset: 1.5px; border-radius: 13px;
+  background: rgba(0,20,14,0.88); z-index: 1;
+}
+
+.hero-stat-card > * { position: relative; z-index: 2; }
+
+.hsc-num {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 40px; font-weight: 400; line-height: 1; margin-bottom: 5px;
+}
+.hsc-num.g  { color: #9cf21b; text-shadow: 0 0 20px rgba(156,242,27,0.55); }
+.hsc-num.c  { color: #00e8ff; text-shadow: 0 0 20px rgba(0,232,255,0.50); }
+.hsc-num.gr { color: #9cf21b; text-shadow: 0 0 20px rgba(156,242,27,0.55); }
+.hsc-num.v  { color: #b8a8ff; text-shadow: 0 0 20px rgba(184,168,255,0.45); }
+
+.hsc-label {
+  font-size: 11px; font-weight: 500;
+  color: rgba(200,225,212,0.65);
+  text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.45;
+}
+
+/* old hero-stats (replaced by hero-stats-grid) — hide */
+.hero-stats { display: none; }
+
+/* ═══════════════════════════════════════════════
+   SNAKING conic border mixin — applied to all boxes
+   via pseudo-element trick
+═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════ */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 48px;
+  background: rgba(6,14,6,0.92);
+  backdrop-filter: blur(20px) saturate(1.4);
+  border-bottom: 1px solid rgba(156,242,27,0.14);
+}
+
+.nav-logo {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 15px; letter-spacing: -0.01em;
+  color: var(--text); text-decoration: none;
+  display: flex; align-items: center; gap: 9px;
+}
+
+.nav-logo-mark {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #000; letter-spacing: -0.03em;
+  flex-shrink: 0;
+}
+
+.nav-links {
+  display: flex; align-items: center; gap: 0; list-style: none;
+}
+
+.nav-links a {
+  font-size: 13px; font-weight: 500; color: var(--text-mid);
+  text-decoration: none; padding: 0 16px; line-height: 56px;
+  transition: color 0.18s;
+}
+
+.nav-links a:hover { color: var(--text); }
+.nav-links a.active { color: var(--gold); }
+
+.nav-links .nav-cta {
+  margin-left: 8px; padding: 7px 16px; line-height: normal;
+  background: rgba(240,165,0,0.10);
+  border: 1px solid rgba(240,165,0,0.28);
+  border-radius: 20px; color: var(--gold);
+  font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+}
+
+.nav-links .nav-cta:hover { background: rgba(240,165,0,0.18); color: var(--gold-bright); }
+
+/* ═══════════════════════════════════════════════
+   TICKER
+═══════════════════════════════════════════════ */
+.ticker-wrap {
+  position: fixed; top: 56px; left: 0; right: 0; z-index: 190;
+  overflow: hidden; height: 28px;
+  background: linear-gradient(90deg, #0d2a0d, #152e15, #0d2a0d);
+  border-bottom: 1px solid rgba(156,242,27,0.18);
+}
+
+.ticker-inner {
+  display: flex; gap: 0; width: max-content;
+  animation: ticker-scroll 36s linear infinite;
+  height: 28px; align-items: center;
+}
+
+.ticker-item {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(156,242,27,0.70); padding: 0 40px; white-space: nowrap;
+  display: flex; align-items: center; gap: 12px;
+}
+
+.ticker-item::after {
+  content: '◆';
+  font-size: 6px; color: rgba(156,242,27,0.28);
+}
+
+.ticker-item .hi { color: #9cf21b; font-weight: 500; }
+
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ═══════════════════════════════════════════════
+   PAGE LAYOUT
+═══════════════════════════════════════════════ */
+.page-wrap {
+  position: relative; z-index: 1;
+  max-width: 860px; margin: 0 auto;
+  padding: 0 32px 120px;
+}
+
+/* hero styles defined above near NAV */
+
+.hero-meta-row {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+
+.hero-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--gold); background: rgba(240,165,0,0.08);
+  border: 1px solid rgba(240,165,0,0.28); padding: 4px 12px; border-radius: 20px;
+}
+
+.hero-tag.cyan {
+  color: var(--cyan); background: var(--cyan-dim); border-color: rgba(0,212,232,0.30);
+}
+
+.hero-sep { color: var(--text-faint); font-size: 12px; }
+
+.hero-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em;
+}
+
+/* hero h1 styles defined above in hero block */
+
+.hero h1 .accent {
+  font-style: normal; color: var(--text);
+  border-bottom: 3px solid var(--gold);
+  padding-bottom: 2px;
+}
+
+.hero-deck {
+  font-size: 18px; font-weight: 300;
+  max-width: 680px; line-height: 1.80; margin-bottom: 42px;
+}
+
+.hero-cta-row {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 48px;
+}
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: 8px;
+  background: var(--gold); color: #000;
+  font-size: 14px; font-weight: 700; text-decoration: none;
+  transition: background 0.18s, transform 0.15s;
+}
+.btn-primary:hover { background: var(--gold-bright); transform: translateY(-1px); }
+
+.btn-ghost {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 11px 22px; border-radius: 8px;
+  border: 1px solid var(--border-mid); color: var(--text-mid);
+  font-size: 14px; font-weight: 500; text-decoration: none;
+  transition: border-color 0.18s, color 0.18s;
+}
+.btn-ghost:hover { border-color: var(--border-hi); color: var(--text); }
+
+/* ── Hero stat strip ── */
+.hero-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border-mid); border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.hstat {
+  padding: 24px 20px; text-align: center;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  transition: background 0.18s;
+}
+.hstat:last-child { border-right: none; }
+.hstat:hover { background: var(--surface2); }
+
+.hstat-num {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 34px; font-weight: 400; line-height: 1; margin-bottom: 6px;
+}
+
+.hstat-num.g { color: var(--gold-bright); }
+.hstat-num.c { color: var(--cyan); }
+.hstat-num.gr{ color: var(--green); }
+.hstat-num.v { color: var(--violet); }
+
+.hstat-label {
+  font-size: 11px; font-weight: 500; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.08em; line-height: 1.4;
+}
+
+/* ── Author row ── */
+.author-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px 22px; margin-top: 32px;
+  background: var(--surface);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  width: fit-content;
+}
+
+.author-av {
+  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+  background: linear-gradient(135deg, #3a2e80, var(--gold-dim));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+  color: #fff; letter-spacing: -0.02em;
+}
+
+.author-name { font-size: 14px; font-weight: 600; color: var(--text); line-height: 1.3; }
+.author-role {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--gold); letter-spacing: 0.06em; margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════════
+   TABLE OF CONTENTS
+═══════════════════════════════════════════════ */
+.toc-wrap {
+  margin: 60px 0 0;
+  background: var(--surface);
+  border: 1px solid var(--border-mid); border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.toc-head {
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.toc-list { list-style: none; padding: 8px 0; }
+
+.toc-list li a {
+  display: flex; align-items: center; gap: 16px;
+  padding: 11px 28px; text-decoration: none;
+  color: var(--text-mid); font-size: 14px; font-weight: 500;
+  border-left: 2px solid transparent;
+  transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+
+.toc-list li a:hover {
+  color: var(--text);
+  border-left-color: var(--gold);
+  background: rgba(240,165,0,0.04);
+}
+
+.toc-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-faint); letter-spacing: 0.05em; flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   SECTION SKELETON
+═══════════════════════════════════════════════ */
+.section {
+  padding: 80px 0 56px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chapter-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: #9cf21b; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 14px;
+}
+
+.chapter-label::after {
+  content: '';
+  flex: 0 0 40px; height: 1px; background: rgba(156,242,27,0.30);
+}
+
+.section h2 {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: clamp(28px, 4vw, 44px); font-weight: 400;
+  line-height: 1.12; letter-spacing: -0.015em; margin-bottom: 28px;
+  color: var(--text);
+}
+
+.section h2 em { font-style: italic; color: var(--gold); }
+
+.section h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px; font-weight: 700; color: var(--text);
+  margin: 40px 0 12px; letter-spacing: -0.01em;
+}
+
+.section h3.gold { color: var(--gold); }
+
+.section p {
+  font-size: 15px; color: var(--text-mid); margin-bottom: 18px;
+  line-height: 1.80; max-width: 760px;
+}
+
+.section p strong { color: var(--text); font-weight: 600; }
+.section p em     { font-style: italic; color: var(--gold); font-weight: 500; }
+
+/* ═══════════════════════════════════════════════
+   CALLOUT / INSIGHT BOXES
+═══════════════════════════════════════════════ */
+.callout {
+  margin: 28px 0; padding: 22px 28px;
+  border-radius: var(--radius); font-size: 15px;
+  line-height: 1.72; color: var(--text-mid);
+  position: relative;
+}
+
+.callout-gold {
+  background: rgba(240,165,0,0.06);
+  border: 1px solid rgba(240,165,0,0.22);
+  border-left: 3px solid var(--gold);
+}
+
+.callout-cyan {
+  background: rgba(0,212,232,0.05);
+  border: 1px solid rgba(0,212,232,0.20);
+  border-left: 3px solid var(--cyan);
+}
+
+.callout-green {
+  background: rgba(0,232,150,0.05);
+  border: 1px solid rgba(0,232,150,0.20);
+  border-left: 3px solid var(--green);
+}
+
+.callout-violet {
+  background: rgba(155,135,245,0.06);
+  border: 1px solid rgba(155,135,245,0.22);
+  border-left: 3px solid var(--violet);
+}
+
+.callout-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  margin-bottom: 10px; font-weight: 500;
+}
+
+.callout-gold   .callout-label { color: var(--gold); }
+.callout-cyan   .callout-label { color: var(--cyan); }
+.callout-green  .callout-label { color: var(--green); }
+.callout-violet .callout-label { color: var(--violet); }
+
+/* ═══════════════════════════════════════════════
+   FLOW STEPS (pipeline diagram) — shimmer border
+═══════════════════════════════════════════════ */
+.pipeline {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; margin: 32px 0;
+  position: relative; border-radius: var(--radius-lg); overflow: hidden;
+  isolation: isolate;
+}
+
+.pipeline::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 50deg,
+    #9cf21b 80deg, #00e8ff 115deg, #ffffff 145deg,
+    #9cf21b 170deg, transparent 200deg, transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: snake-spin 2.6s linear infinite;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.pipe-step {
+  background: var(--surface); padding: 24px 18px;
+  border-right: 1px solid var(--border); position: relative;
+  transition: background 0.18s;
+}
+.pipe-step:last-child { border-right: none; }
+.pipe-step:hover { background: var(--surface2); }
+
+.pipe-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 10px;
+}
+
+.pipe-title {
+  font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 7px;
+}
+
+.pipe-desc { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+
+.pipe-arrow {
+  position: absolute; top: 50%; right: -11px;
+  transform: translateY(-50%);
+  width: 20px; height: 20px; background: var(--bg2);
+  border: 1px solid var(--border-mid); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: var(--gold); z-index: 2;
+}
+
+/* ═══════════════════════════════════════════════
+   COMPARISON TABLE — shimmer border
+═══════════════════════════════════════════════ */
+.tbl-wrap {
+  margin: 28px 0; border-radius: var(--radius-lg); overflow: hidden;
+  position: relative; isolation: isolate;
+}
+
+.tbl-wrap::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 50deg,
+    #9cf21b 80deg, #00e8ff 115deg, #ffffff 145deg,
+    #9cf21b 170deg, transparent 200deg, transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: snake-spin 3.0s linear infinite;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+table { width: 100%; border-collapse: collapse; }
+
+thead tr { background: var(--surface); }
+thead th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--text-dim); padding: 14px 20px; text-align: left;
+  border-bottom: 1px solid var(--border-mid);
+}
+thead th:first-child { color: var(--gold); }
+
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: rgba(240,165,0,0.03); }
+
+tbody td { padding: 13px 20px; font-size: 14px; color: var(--text-mid); vertical-align: top; line-height: 1.6; }
+tbody td:first-child {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: var(--gold); white-space: nowrap; font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════
+   STRATEGY / FEATURE CARDS — shimmer borders
+═══════════════════════════════════════════════ */
+.cards-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px; margin: 28px 0;
+}
+
+/* Each card gets shimmer via pseudo-element border trick */
+.card {
+  position: relative;
+  background: var(--surface);
+  border-radius: var(--radius-lg); padding: 26px;
+  transition: transform 0.22s;
+  isolation: isolate;
+}
+
+.card::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 50deg,
+    #9cf21b 80deg, #00e8ff 115deg, #ffffff 145deg,
+    #9cf21b 170deg, transparent 200deg, transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.7;
+  animation: snake-spin 3.5s linear infinite;
+}
+
+.card:hover { transform: translateY(-3px); }
+.card:hover::before { opacity: 1; }
+
+.card-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 20px; display: inline-block; margin-bottom: 14px;
+}
+.card-tag.gold   { color: var(--gold);   background: rgba(240,165,0,0.10);  border: 1px solid rgba(240,165,0,0.25); }
+.card-tag.cyan   { color: var(--cyan);   background: var(--cyan-dim);        border: 1px solid rgba(0,212,232,0.28); }
+.card-tag.green  { color: var(--green);  background: var(--green-dim);       border: 1px solid rgba(0,232,150,0.28); }
+.card-tag.violet { color: var(--violet); background: var(--violet-dim);      border: 1px solid rgba(155,135,245,0.28); }
+.card-tag.red    { color: var(--red);    background: rgba(255,77,106,0.08);  border: 1px solid rgba(255,77,106,0.25); }
+
+.card-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.card-body { font-size: 13px; color: var(--text-mid); line-height: 1.70; }
+
+.card-footer {
+  margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim);
+  display: flex; align-items: center; gap: 6px;
+}
+.card-footer::before { content: '↗'; color: var(--cyan); }
+
+/* ═══════════════════════════════════════════════
+   THREE-COL STRATEGY STRIP — shimmer border
+═══════════════════════════════════════════════ */
+.strat-strip {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; margin: 28px 0;
+  position: relative; border-radius: var(--radius-lg); overflow: hidden;
+  isolation: isolate;
+}
+
+.strat-strip::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 50deg,
+    #9cf21b 80deg, #00e8ff 115deg, #ffffff 145deg,
+    #9cf21b 170deg, transparent 200deg, transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: snake-spin 2.8s linear infinite;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.60;
+  pointer-events: none;
+}
+
+.strat-cell {
+  background: var(--surface); padding: 26px 22px;
+  border-right: 1px solid var(--border); transition: background 0.18s;
+}
+.strat-cell:last-child { border-right: none; }
+.strat-cell:hover { background: var(--surface2); }
+
+.strat-top-bar {
+  height: 3px; width: 32px; border-radius: 2px; margin-bottom: 16px;
+}
+.strat-cell:nth-child(1) .strat-top-bar { background: var(--violet); }
+.strat-cell:nth-child(2) .strat-top-bar { background: var(--gold); }
+.strat-cell:nth-child(3) .strat-top-bar { background: var(--cyan); }
+
+.strat-name  { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.strat-desc  { font-size: 13px; color: var(--text-mid); line-height: 1.65; }
+.strat-badge {
+  display: inline-block; margin-top: 12px;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  padding: 3px 10px; border-radius: 20px;
+}
+.strat-cell:nth-child(1) .strat-badge { color: var(--violet); background: var(--violet-dim); border: 1px solid rgba(155,135,245,0.25); }
+.strat-cell:nth-child(2) .strat-badge { color: var(--gold);   background: rgba(240,165,0,0.10); border: 1px solid rgba(240,165,0,0.22); }
+.strat-cell:nth-child(3) .strat-badge { color: var(--cyan);   background: var(--cyan-dim); border: 1px solid rgba(0,212,232,0.25); }
+
+/* ═══════════════════════════════════════════════
+   COMPRESSION / STAT BOXES — shimmer border
+═══════════════════════════════════════════════ */
+.stat-boxes {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 0; margin: 28px 0;
+  position: relative; border-radius: var(--radius-lg); overflow: hidden;
+  isolation: isolate;
+}
+
+.stat-boxes::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 50deg,
+    #9cf21b 80deg, #00e8ff 115deg, #ffffff 145deg,
+    #9cf21b 170deg, transparent 200deg, transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: snake-spin 3.2s linear infinite;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.stat-box {
+  background: var(--surface); padding: 28px 22px; text-align: center;
+  border-right: 1px solid var(--border); transition: background 0.18s;
+}
+.stat-box:last-child { border-right: none; }
+.stat-box:hover { background: var(--surface2); }
+
+.stat-big {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 40px; font-weight: 400; line-height: 1; margin-bottom: 8px;
+}
+.stat-box:nth-child(1) .stat-big { color: var(--red); }
+.stat-box:nth-child(2) .stat-big { color: var(--gold-bright); }
+.stat-box:nth-child(3) .stat-big { color: var(--green); }
+
+.stat-box-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.stat-box-sub   { font-size: 12px; color: var(--text-dim); line-height: 1.55; }
+
+/* ═══════════════════════════════════════════════
+   iPAD CODE FRAME
+═══════════════════════════════════════════════ */
+.ipad-wrap {
+  display: flex; justify-content: center;
+  margin: 36px 0; perspective: 1200px;
+}
+
+.ipad {
+  width: 100%; max-width: 800px;
+  background: #1c1e2c;
+  border-radius: 22px;
+  border: 7px solid #282b3e;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.05),
+    0 24px 64px rgba(0,0,0,0.65),
+    0 0 60px rgba(240,165,0,0.08);
+  overflow: hidden;
+}
+
+.ipad-bar {
+  background: #222438;
+  padding: 9px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.ipad-dots { display: flex; gap: 6px; }
+.ipad-dot  { width: 10px; height: 10px; border-radius: 50%; }
+.ipad-dot.r { background: #ff5f57; }
+.ipad-dot.y { background: #febc2e; }
+.ipad-dot.g { background: #28c840; }
+
+.ipad-cam {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #383a52; margin: 0 auto;
+}
+
+.ipad-fname {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--text-dim); letter-spacing: 0.06em;
+}
+
+.ipad-screen {
+  background: #0d0f1a; padding: 24px 28px;
+  overflow-x: auto; position: relative;
+}
+
+.ipad-screen::before {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 50% 40% at 0% 0%, rgba(155,135,245,0.05), transparent),
+    radial-gradient(ellipse 40% 50% at 100% 100%, rgba(0,212,232,0.03), transparent);
+}
+
+.ipad-nums-row {
+  display: flex; gap: 0;
+}
+
+.ipad-line-col {
+  flex-shrink: 0; width: 36px; padding-right: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; line-height: 1.8; color: #2e3352;
+  text-align: right; user-select: none;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  margin-right: 16px;
+}
+
+.ipad-nums-row pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px; line-height: 1.8; color: #b8c0e0;
+  flex: 1; white-space: pre; tab-size: 2;
+}
+
+.ipad-foot {
+  background: #1a1c2a; padding: 7px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.ipad-foot-l, .ipad-foot-r {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: var(--text-faint);
+}
+
+.ipad-lang {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--violet); background: rgba(155,135,245,0.10);
+  border: 1px solid rgba(155,135,245,0.25); padding: 2px 9px; border-radius: 10px;
+}
+
+/* Syntax */
+.kw { color: #c792ea; }
+.fn { color: #82aaff; }
+.st { color: #a8e571; }
+.cm { color: #374060; font-style: italic; }
+.nu { color: #ff9d6c; }
+.cl { color: #ffcb6b; }
+.op { color: #89ddff; }
+
+/* ═══════════════════════════════════════════════
+   PITFALL LIST
+═══════════════════════════════════════════════ */
+.pitfalls { display: flex; flex-direction: column; gap: 16px; margin: 28px 0; }
+
+.pitfall {
+  display: grid; grid-template-columns: 56px 1fr; gap: 20px; align-items: start;
+  background: var(--surface);
+  border-radius: var(--radius-lg); padding: 24px 26px;
+  position: relative; isolation: isolate;
+  transition: transform 0.2s;
+}
+
+.pitfall::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 50deg,
+    #9cf21b 80deg, #00e8ff 115deg, #ffffff 145deg,
+    #9cf21b 170deg, transparent 200deg, transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: snake-spin 2.4s linear infinite;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.pitfall:hover { transform: translateY(-2px); }
+.pitfall:hover::before { opacity: 0.9; }
+
+.pitfall-n {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 42px; font-weight: 400; line-height: 1;
+  color: rgba(255,77,106,0.22); padding-top: 4px;
+}
+
+.pitfall-title {
+  font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px;
+}
+
+.pitfall-prob { font-size: 14px; color: var(--text-mid); margin-bottom: 12px; line-height: 1.68; }
+
+.pitfall-fix {
+  font-size: 13px; color: var(--green); line-height: 1.65;
+  display: flex; gap: 7px; align-items: flex-start;
+}
+.pitfall-fix::before {
+  content: '→ Fix:'; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════
+   CASE STUDY CARDS
+═══════════════════════════════════════════════ */
+.cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin: 28px 0; }
+
+.case {
+  background: var(--surface);
+  border-radius: var(--radius-lg); padding: 28px; position: relative; overflow: hidden;
+  transition: transform 0.22s;
+  isolation: isolate;
+}
+
+.case::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 50deg,
+    #9cf21b 80deg, #00e8ff 115deg, #ffffff 145deg,
+    #9cf21b 170deg, transparent 200deg, transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: snake-spin 3.6s linear infinite;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.case::after {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 150px; height: 150px; border-radius: 50%; opacity: 0.07; pointer-events: none;
+  z-index: 0;
+}
+
+.case:hover { transform: translateY(-3px); }
+.case:hover::before { opacity: 1; }
+
+.case.health { }
+.case.health::after  { background: var(--cyan); }
+.case.health:hover   { border-color: rgba(0,212,232,0.35); }
+
+.case.finance::after { background: var(--gold); }
+.case.finance:hover  { border-color: rgba(240,165,0,0.35); }
+
+.case.telecom::after { background: var(--violet); }
+.case.telecom:hover  { border-color: rgba(155,135,245,0.35); }
+
+.case-sector {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  margin-bottom: 14px; padding: 3px 11px; border-radius: 20px; display: inline-block;
+}
+.case.health  .case-sector { color: var(--cyan);   background: var(--cyan-dim);  border: 1px solid rgba(0,212,232,0.28); }
+.case.finance .case-sector { color: var(--gold);   background: rgba(240,165,0,0.10); border: 1px solid rgba(240,165,0,0.28); }
+.case.telecom .case-sector { color: var(--violet); background: var(--violet-dim); border: 1px solid rgba(155,135,245,0.28); }
+
+.case-title { font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.case-desc  { font-size: 13px; color: var(--text-mid); line-height: 1.70; }
+
+.case-result {
+  display: flex; align-items: center; gap: 12px; margin-top: 18px;
+  padding-top: 16px; border-top: 1px solid var(--border);
+}
+
+.result-big {
+  font-family: 'Instrument Serif', Georgia, serif;
+  font-size: 30px; font-weight: 400; color: var(--green); line-height: 1;
+}
+
+.result-desc { font-size: 12px; color: var(--text-dim); line-height: 1.45; }
+
+/* ═══════════════════════════════════════════════
+   GLOSSARY — simple definition list, no cards
+═══════════════════════════════════════════════ */
+.glossary-list { list-style: none; margin: 28px 0; }
+
+.glossary-list li {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; gap: 18px; align-items: baseline;
+  font-size: 15px; line-height: 1.70;
+}
+
+.glossary-list li:last-child { border-bottom: none; }
+
+.gl-term {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px; font-weight: 500;
+  color: var(--gold); white-space: nowrap; flex-shrink: 0; min-width: 210px;
+}
+
+.gl-def { color: var(--text-mid); }
+
+/* ═══════════════════════════════════════════════
+   FUTURE CARDS
+═══════════════════════════════════════════════ */
+.future-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg); padding: 38px; margin-bottom: 16px;
+  position: relative; overflow: hidden; isolation: isolate;
+  transition: transform 0.22s;
+}
+
+.future-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 50deg,
+    #9cf21b 80deg, #00e8ff 115deg, #ffffff 145deg,
+    #9cf21b 170deg, transparent 200deg, transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: snake-spin 2.2s linear infinite;
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.future-card::after {
+  content: ''; position: absolute; top: -80px; right: -80px;
+  width: 240px; height: 240px; border-radius: 50%;
+  pointer-events: none; opacity: 0.06;
+}
+
+.future-card:nth-child(1)::after { background: var(--violet); }
+.future-card:nth-child(2)::after { background: var(--gold); }
+.future-card:hover { transform: translateY(-2px); }
+.future-card:hover::before { opacity: 1; }
+
+.future-card h3 { font-family: 'DM Sans', sans-serif; font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+.future-card p  { font-size: 14px; color: var(--text-mid); line-height: 1.78; max-width: 100%; }
+
+/* ═══════════════════════════════════════════════
+   AUTHOR CARD
+═══════════════════════════════════════════════ */
+.author-card {
+  margin: 72px 0 0;
+  background: var(--surface); border: 1px solid var(--border-mid);
+  border-radius: var(--radius-lg); padding: 38px;
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 28px; align-items: start;
+}
+
+.author-card-av {
+  width: 64px; height: 64px; border-radius: 14px; flex-shrink: 0;
+  background: linear-gradient(135deg, #3a2e80, var(--gold-dim));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', sans-serif; font-size: 20px; font-weight: 700; color: #fff;
+}
+
+.author-card-name { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.author-card-role {
+  font-family: 'JetBrains Mono', monospace; font-size: 11px;
+  color: var(--gold); letter-spacing: 0.07em; margin-bottom: 14px;
+}
+.author-card-bio { font-size: 14px; color: var(--text-mid); line-height: 1.74; }
+
+/* ═══════════════════════════════════════════════
+   MORE ARTICLES
+═══════════════════════════════════════════════ */
+.more-section { margin-top: 72px; }
+
+.more-label {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--text-dim); margin-bottom: 24px;
+  display: flex; align-items: center; gap: 14px;
+}
+.more-label::after { content: ''; flex: 1; height: 1px; background: var(--border-mid); }
+
+/* more-grid replaced by more-row (3-col horizontal) */
+
+.more-card {
+  display: flex; align-items: flex-start; gap: 20px;
+  padding: 22px 26px; text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface); transition: background 0.18s;
+}
+.more-card:last-child { border-bottom: none; }
+.more-card:hover { background: var(--surface2); }
+
+.more-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 9px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); background: rgba(240,165,0,0.10);
+  border: 1px solid rgba(240,165,0,0.22); padding: 3px 8px; border-radius: 4px;
+  white-space: nowrap; flex-shrink: 0; margin-top: 2px;
+}
+
+.more-body { flex: 1; }
+.more-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; line-height: 1.35; }
+.more-desc  { font-size: 13px; color: var(--text-dim); line-height: 1.55; }
+
+.more-arr {
+  font-size: 16px; color: var(--text-faint); flex-shrink: 0; margin-top: 2px;
+  transition: color 0.18s, transform 0.18s;
+}
+.more-card:hover .more-arr { color: var(--gold); transform: translateX(3px); }
+
+/* ═══════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════ */
+.site-footer {
+  position: relative; z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 48px 32px; max-width: 860px; margin: 0 auto;
+}
+
+.footer-inner {
+  display: flex; justify-content: space-between; align-items: flex-end;
+  flex-wrap: wrap; gap: 28px;
+}
+
+.footer-brand { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+.footer-roles {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: var(--gold); letter-spacing: 0.08em; margin-bottom: 4px;
+}
+.footer-sub { font-size: 12px; color: var(--text-dim); }
+
+.footer-links { display: flex; gap: 22px; list-style: none; align-items: center; }
+.footer-links a { font-size: 13px; color: var(--text-dim); text-decoration: none; transition: color 0.18s; }
+.footer-links a:hover { color: var(--gold); }
+
+/* ═══════════════════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════════════════ */
+.reveal {
+  opacity: 0; transform: translateY(22px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.on { opacity: 1; transform: translateY(0); }
+
+/* ═══════════════════════════════════════════════
+   MORE ARTICLES — 3-column horizontal row
+═══════════════════════════════════════════════ */
+.more-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.more-card-h {
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--surface);
+  border-radius: var(--radius-lg); padding: 26px 24px;
+  text-decoration: none;
+  position: relative; overflow: hidden; isolation: isolate;
+  transition: transform 0.22s;
+}
+
+/* Snaking border on article cards */
+.more-card-h::before {
+  content: '';
+  position: absolute; inset: 0;
+  border-radius: inherit; padding: 1.5px;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 50deg,
+    #9cf21b 80deg, #00e8ff 115deg, #ffffff 145deg,
+    #9cf21b 170deg, transparent 200deg, transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.45;
+  animation: snake-spin 4s linear infinite;
+  pointer-events: none;
+}
+
+.more-card-h:hover { transform: translateY(-3px); }
+.more-card-h:hover::before { opacity: 0.9; }
+
+.more-card-h-tag {
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold); background: rgba(240,165,0,0.10);
+  border: 1px solid rgba(240,165,0,0.22); padding: 3px 10px;
+  border-radius: 4px; display: inline-block; width: fit-content;
+}
+
+.more-card-h-title {
+  font-size: 16px; font-weight: 700; color: var(--text);
+  line-height: 1.35;
+}
+
+.more-card-h-desc {
+  font-size: 13px; color: var(--text-dim); line-height: 1.58; flex: 1;
+}
+
+.more-card-h-arr {
+  font-size: 13px; font-weight: 600;
+  color: var(--gold); margin-top: 6px;
+  transition: transform 0.18s;
+}
+
+.more-card-h:hover .more-card-h-arr { transform: translateX(4px); }
+
+/* ═══════════════════════════════════════════════
+   FONT SIZE INCREASES on card body text
+═══════════════════════════════════════════════ */
+.card-body   { font-size: 14px; color: var(--text-mid); line-height: 1.70; }
+.card-footer { font-size: 12px; }
+.card-title  { font-size: 18px; }
+.arch-desc   { font-size: 14px; }
+.strat-desc  { font-size: 14px; }
+.strat-name  { font-size: 16px; }
+.pipe-desc   { font-size: 13px; }
+.pipe-title  { font-size: 15px; }
+.case-desc   { font-size: 14px; }
+.case-title  { font-size: 18px; }
+.pitfall-prob  { font-size: 14px; }
+.pitfall-title { font-size: 17px; }
+.pitfall-fix   { font-size: 14px; }
+.future-card p { font-size: 15px; }
+.future-card h3 { font-size: 19px; }
+.gloss-d    { font-size: 14px; }
+.gl-def     { font-size: 15px; }
+.gl-term    { font-size: 13px; min-width: 220px; }
+.callout    { font-size: 15px; }
+.stat-box-sub   { font-size: 13px; }
+.stat-box-title { font-size: 15px; }
+
+/* ═══════════════════════════════════════════════
+   iPHONE DEVICE FRAME — TOC
+═══════════════════════════════════════════════ */
+.iphone-section {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 60px 0 40px;
+}
+
+.iphone-label-row {
+  margin-bottom: 32px; text-align: center;
+}
+
+.iphone-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--green);
+  background: rgba(156,242,27,0.08);
+  border: 1px solid rgba(156,242,27,0.22);
+  padding: 6px 18px; border-radius: 20px;
+}
+
+.iphone-wrap {
+  display: flex; justify-content: center;
+}
+
+/* ── The device shell ── */
+.iphone-device {
+  position: relative;
+  width: 320px;
+  background: linear-gradient(160deg, #1c1c1e 0%, #0f0f10 60%, #161617 100%);
+  border-radius: 52px;
+  padding: 14px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.10),
+    0 0 0 2px rgba(0,0,0,0.60),
+    0 30px 80px rgba(0,0,0,0.80),
+    0 0 60px rgba(156,242,27,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+/* Side buttons */
+.iphone-btn-vol-up, .iphone-btn-vol-dn, .iphone-btn-power {
+  position: absolute;
+  background: linear-gradient(90deg, #2a2a2c, #1a1a1c);
+  border-radius: 3px;
+}
+
+.iphone-btn-vol-up {
+  left: -3px; top: 108px;
+  width: 3px; height: 34px;
+}
+
+.iphone-btn-vol-dn {
+  left: -3px; top: 152px;
+  width: 3px; height: 34px;
+}
+
+.iphone-btn-power {
+  right: -3px; top: 130px;
+  width: 3px; height: 52px;
+}
+
+/* ── Screen bezel ── */
+.iphone-screen-bezel {
+  background: #000;
+  border-radius: 40px;
+  overflow: hidden;
+  position: relative;
+  display: flex; flex-direction: column;
+}
+
+/* ── Dynamic Island ── */
+.iphone-island {
+  width: 110px; height: 34px;
+  background: #000;
+  border-radius: 20px;
+  margin: 12px auto 0;
+  position: relative; z-index: 10;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05);
+}
+
+/* ── Status bar ── */
+.iphone-status {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 4px 20px 2px;
+  background: #000;
+}
+
+.iphone-time {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 700; color: #fff; letter-spacing: -0.02em;
+}
+
+.iphone-status-right {
+  display: flex; align-items: center; gap: 5px;
+}
+
+.iphone-battery {
+  width: 22px; height: 11px;
+  border: 1.5px solid rgba(255,255,255,0.55);
+  border-radius: 3px; position: relative; padding: 1.5px;
+}
+
+.iphone-battery::after {
+  content: '';
+  position: absolute; right: -4px; top: 50%;
+  transform: translateY(-50%);
+  width: 2.5px; height: 5px;
+  background: rgba(255,255,255,0.4);
+  border-radius: 0 2px 2px 0;
+}
+
+.iphone-battery-fill {
+  width: 75%; height: 100%;
+  background: #9cf21b; border-radius: 1.5px;
+}
+
+/* ── App header ── */
+.iphone-app-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px 10px;
+  background: linear-gradient(180deg, #111 0%, #0d0d0d 100%);
+  border-bottom: 1px solid rgba(156,242,27,0.12);
+}
+
+.iphone-app-icon {
+  width: 32px; height: 32px; border-radius: 8px; overflow: hidden; flex-shrink: 0;
+}
+
+.iphone-app-title {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 700; color: #fff; flex: 1;
+}
+
+.iphone-app-chapters {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; color: #9cf21b;
+  background: rgba(156,242,27,0.10);
+  border: 1px solid rgba(156,242,27,0.22);
+  padding: 2px 8px; border-radius: 10px;
+}
+
+/* ── Chapter list ── */
+.iphone-scroll-area {
+  background: #0a0a0b;
+  flex: 1; overflow-y: auto;
+  /* custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156,242,27,0.25) transparent;
+}
+
+.iphone-scroll-area::-webkit-scrollbar { width: 3px; }
+.iphone-scroll-area::-webkit-scrollbar-thumb { background: rgba(156,242,27,0.25); border-radius: 2px; }
+
+.iphone-chapter {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 18px;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.16s;
+}
+
+.iphone-chapter:last-child, .iphone-chapter.last { border-bottom: none; }
+.iphone-chapter:hover { background: rgba(156,242,27,0.06); }
+
+.iphone-ch-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px; font-weight: 500;
+  color: #9cf21b;
+  min-width: 28px; text-align: right;
+  letter-spacing: 0.04em;
+}
+
+.iphone-ch-title {
+  font-size: 13px; font-weight: 500;
+  color: rgba(240,245,240,0.88); flex: 1;
+  line-height: 1.35;
+}
+
+.iphone-ch-arrow {
+  font-size: 16px; color: rgba(156,242,27,0.45);
+  transition: transform 0.15s, color 0.15s;
+}
+
+.iphone-chapter:hover .iphone-ch-arrow {
+  transform: translateX(3px);
+  color: #9cf21b;
+}
+
+/* ── Home bar ── */
+.iphone-bottom {
+  background: #0a0a0b;
+  padding: 10px 0 14px;
+  display: flex; justify-content: center;
+}
+
+.iphone-home-bar {
+  width: 120px; height: 5px;
+  background: rgba(255,255,255,0.25);
+  border-radius: 3px;
+}
+
+/* Snaking conic border on iPhone device */
+.iphone-device::before {
+  content: '';
+  position: absolute; inset: -2px;
+  border-radius: 54px; z-index: -1;
+  background: conic-gradient(
+    from var(--snake-angle, 0deg) at 50% 50%,
+    transparent 0deg, transparent 50deg,
+    #9cf21b 80deg, #00e8ff 115deg, #ffffff 145deg,
+    #9cf21b 170deg, transparent 200deg, transparent 360deg
+  );
+  animation: snake-spin 3.5s linear infinite;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════ */
+@media (max-width: 780px) {
+  nav { padding: 0 18px; }
+  .nav-links { display: none; }
+  .page-wrap { padding: 0 18px 80px; }
+
+  /* Hero collapses to single column */
+  .hero { padding: 90px 18px 60px; margin: 0 -18px; min-height: auto; }
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero-right { order: -1; }
+  .hero-stats-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .pipeline  { grid-template-columns: 1fr; }
+  .pipe-arrow { display: none; }
+  .strat-strip { grid-template-columns: 1fr; }
+  .stat-boxes  { grid-template-columns: 1fr; }
+  .author-card { grid-template-columns: 1fr; }
+  .more-row { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────── -->
+<nav>
+  <a href="https://drfarooqai.github.io/dr-farooq-cv/" class="nav-logo">
+    <div class="nav-logo-mark">F</div>
+    Dr. Farooq AI
+  </a>
+  <ul class="nav-links">
+    <li><a href="#core">Core Paradigm</a></li>
+    <li><a href="#chunking">Chunking</a></li>
+    <li><a href="#arch">Architectures</a></li>
+    <li><a href="#security">Security</a></li>
+    <li><a href="#cases">Case Studies</a></li>
+    <li><a href="https://drfarooqai.github.io/articles/" class="nav-cta">All Articles ↗</a></li>
+  </ul>
+</nav>
+
+<!-- ── TICKER ────────────────────────────────── -->
+<div class="ticker-wrap">
+  <div class="ticker-inner">
+    <span class="ticker-item">RAG for Excel <span class="hi">Deep Dive · 2026</span></span>
+    <span class="ticker-item">SpreadsheetLLM <span class="hi">96% Token Compression</span></span>
+    <span class="ticker-item">TableRAG <span class="hi">SQL + Vector Hybrid</span></span>
+    <span class="ticker-item">BRTR Agentic Framework <span class="hi">Multi-Turn Reasoning</span></span>
+    <span class="ticker-item">T-RAG <span class="hi">Hypergraph Retrieval</span></span>
+    <span class="ticker-item">SheetCompressor <span class="hi">14.9× Compression</span></span>
+    <span class="ticker-item">Formula Dependency Graphs <span class="hi">NetworkX + openpyxl</span></span>
+    <span class="ticker-item">RAG for Excel <span class="hi">Deep Dive · 2026</span></span>
+    <span class="ticker-item">SpreadsheetLLM <span class="hi">96% Token Compression</span></span>
+    <span class="ticker-item">TableRAG <span class="hi">SQL + Vector Hybrid</span></span>
+    <span class="ticker-item">BRTR Agentic Framework <span class="hi">Multi-Turn Reasoning</span></span>
+    <span class="ticker-item">T-RAG <span class="hi">Hypergraph Retrieval</span></span>
+    <span class="ticker-item">SheetCompressor <span class="hi">14.9× Compression</span></span>
+    <span class="ticker-item">Formula Dependency Graphs <span class="hi">NetworkX + openpyxl</span></span>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- ── HERO ──────────────────────────────── -->
+  <section class="hero">
+    <!-- Background extras -->
+    <div class="hero-bg-glow2"></div>
+    <div class="hero-grid-overlay"></div>
+
+    <div class="hero-inner" id="heroInner">
+      <!-- LEFT: text -->
+      <div class="hero-left">
+        <div class="hero-meta-row">
+          <span class="hero-tag">Technical Deep Dive</span>
+          <span class="hero-sep">·</span>
+          <span class="hero-tag cyan">AI &amp; Excel</span>
+          <span class="hero-sep">·</span>
+          <span class="hero-date">May 2026</span>
+        </div>
+
+        <h1>
+          RAG for Excel —<br>
+          <em>A Deep Dive</em>
+        </h1>
+
+        <p class="hero-deck">
+          Standard RAG pipelines collapse when confronted with spreadsheets. This guide dissects every layer of tabular retrieval — from spatial chunking and formula dependency graphs to agentic multi-turn reasoning — and shows enterprise architects how to build systems that actually work.
+        </p>
+
+        <div class="hero-cta-row">
+          <a href="#core" class="btn-primary">Start Reading →</a>
+          <a href="#cases" class="btn-ghost">Case Studies</a>
+        </div>
+
+        <div class="author-row">
+          <div class="author-av">MF</div>
+          <div>
+            <div class="author-name">Dr. Muhammad Farooq</div>
+            <div class="author-role">AI Doctor · LinkedIn Top Voice · AI in Healthcare</div>
+          </div>
+        </div>
+      </div><!-- /hero-left -->
+
+      <!-- RIGHT: floating stat cards -->
+      <div class="hero-right">
+        <div class="hero-stats-grid">
+          <div class="hero-stat-card">
+            <div class="hsc-num g">96%</div>
+            <div class="hsc-label">Token Reduction<br>SheetCompressor</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="hsc-num c">14.9×</div>
+            <div class="hsc-label">Max Compression<br>Inverted Index</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="hsc-num gr">22%</div>
+            <div class="hsc-label">Accuracy Gain<br>CoS Pipeline</div>
+          </div>
+          <div class="hero-stat-card">
+            <div class="hsc-num v">9%</div>
+            <div class="hsc-label">Recall Boost<br>NLG Embeddings</div>
+          </div>
+        </div>
+      </div><!-- /hero-right -->
+    </div><!-- /hero-inner -->
+  </section>
+
+  <!-- ── TOC in iPhone Frame ──────────────── -->
+  <div class="iphone-section reveal">
+    <div class="iphone-label-row">
+      <span class="iphone-eyebrow">Contents · 10 Chapters</span>
+    </div>
+
+    <div class="iphone-wrap">
+      <!-- iPhone outer shell -->
+      <div class="iphone-device">
+        <!-- Side buttons -->
+        <div class="iphone-btn-vol-up"></div>
+        <div class="iphone-btn-vol-dn"></div>
+        <div class="iphone-btn-power"></div>
+
+        <!-- Screen bezel -->
+        <div class="iphone-screen-bezel">
+          <!-- Dynamic Island -->
+          <div class="iphone-island"></div>
+
+          <!-- Status bar -->
+          <div class="iphone-status">
+            <span class="iphone-time">9:41</span>
+            <div class="iphone-status-right">
+              <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+                <rect x="0" y="3" width="3" height="9" rx="1" fill="white" opacity="0.4"/>
+                <rect x="4.5" y="2" width="3" height="10" rx="1" fill="white" opacity="0.6"/>
+                <rect x="9" y="0" width="3" height="12" rx="1" fill="white" opacity="0.8"/>
+                <rect x="13.5" y="0" width="2.5" height="12" rx="1" fill="white"/>
+              </svg>
+              <svg width="16" height="12" viewBox="0 0 16 12" fill="white">
+                <path d="M8 2.5C10.5 2.5 12.7 3.6 14.2 5.3L15.5 4C13.6 1.9 11 0.5 8 0.5C5 0.5 2.4 1.9 0.5 4L1.8 5.3C3.3 3.6 5.5 2.5 8 2.5Z" opacity="0.4"/>
+                <path d="M8 5.5C9.7 5.5 11.2 6.2 12.3 7.4L13.6 6.1C12.1 4.6 10.2 3.5 8 3.5C5.8 3.5 3.9 4.6 2.4 6.1L3.7 7.4C4.8 6.2 6.3 5.5 8 5.5Z" opacity="0.7"/>
+                <circle cx="8" cy="10" r="1.5"/>
+              </svg>
+              <div class="iphone-battery">
+                <div class="iphone-battery-fill"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- App header -->
+          <div class="iphone-app-header">
+            <div class="iphone-app-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <rect width="20" height="20" rx="5" fill="#9cf21b"/>
+                <text x="10" y="14" text-anchor="middle" fill="#000" font-size="10" font-weight="700" font-family="sans-serif">F</text>
+              </svg>
+            </div>
+            <div class="iphone-app-title">RAG for Excel</div>
+            <div class="iphone-app-chapters">10 ch.</div>
+          </div>
+
+          <!-- Chapter list scrollable -->
+          <div class="iphone-scroll-area">
+            <a href="#core"     class="iphone-chapter"><span class="iphone-ch-num">I</span><span class="iphone-ch-title">The Core Paradigm</span><span class="iphone-ch-arrow">›</span></a>
+            <a href="#chunking" class="iphone-chapter"><span class="iphone-ch-num">II</span><span class="iphone-ch-title">Chunking Strategies</span><span class="iphone-ch-arrow">›</span></a>
+            <a href="#formulas" class="iphone-chapter"><span class="iphone-ch-num">III</span><span class="iphone-ch-title">Formula Dependency Graphs</span><span class="iphone-ch-arrow">›</span></a>
+            <a href="#arch"     class="iphone-chapter"><span class="iphone-ch-num">IV</span><span class="iphone-ch-title">Advanced Architectures</span><span class="iphone-ch-arrow">›</span></a>
+            <a href="#compress" class="iphone-chapter"><span class="iphone-ch-num">V</span><span class="iphone-ch-title">SheetCompressor &amp; CoS</span><span class="iphone-ch-arrow">›</span></a>
+            <a href="#security" class="iphone-chapter"><span class="iphone-ch-num">VI</span><span class="iphone-ch-title">Enterprise Security</span><span class="iphone-ch-arrow">›</span></a>
+            <a href="#cases"    class="iphone-chapter"><span class="iphone-ch-num">VII</span><span class="iphone-ch-title">Case Studies</span><span class="iphone-ch-arrow">›</span></a>
+            <a href="#pitfalls" class="iphone-chapter"><span class="iphone-ch-num">VIII</span><span class="iphone-ch-title">Engineering Failure Modes</span><span class="iphone-ch-arrow">›</span></a>
+            <a href="#future"   class="iphone-chapter"><span class="iphone-ch-num">IX</span><span class="iphone-ch-title">Future of Tabular Intelligence</span><span class="iphone-ch-arrow">›</span></a>
+            <a href="#glossary" class="iphone-chapter last"><span class="iphone-ch-num">X</span><span class="iphone-ch-title">Glossary of Key Terms</span><span class="iphone-ch-arrow">›</span></a>
+          </div>
+
+          <!-- Bottom bar -->
+          <div class="iphone-bottom">
+            <div class="iphone-home-bar"></div>
+          </div>
+        </div><!-- /screen-bezel -->
+      </div><!-- /iphone-device -->
+    </div><!-- /iphone-wrap -->
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       §01  CORE PARADIGM
+  ═══════════════════════════════════════ -->
+  <section id="core" class="section reveal">
+    <div class="chapter-label">Chapter I</div>
+    <h2>The Core Paradigm:<br><em>Why Spreadsheets Break RAG</em></h2>
+
+    <p>Imagine a highly capable assistant sitting an open-book exam. RAG transforms the LLM from a closed-book guesser into a precision retrieval engine — an intelligent librarian that pulls the exact, up-to-date pages from private archives and places them on the model's desk before it writes its answer. For unstructured text, this works beautifully. For spreadsheets, it fails almost immediately.</p>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-num">Stage 01</div>
+        <div class="pipe-title">User Query</div>
+        <div class="pipe-desc">Natural language question about spreadsheet data</div>
+        <div class="pipe-arrow">→</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Stage 02</div>
+        <div class="pipe-title">Vectorize</div>
+        <div class="pipe-desc">Query embedded into semantic vector space</div>
+        <div class="pipe-arrow">→</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Stage 03</div>
+        <div class="pipe-title">Retrieve</div>
+        <div class="pipe-desc">Hybrid Vector DB + BM25 search for context</div>
+        <div class="pipe-arrow">→</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Stage 04</div>
+        <div class="pipe-title">Generate</div>
+        <div class="pipe-desc">LLM synthesizes grounded answer with citations</div>
+      </div>
+    </div>
+
+    <h3>The Structural Gap</h3>
+    <p>Spreadsheets are not linear — they are spatial, relational computation graphs compressed into two-dimensional grids. The number <code style="color:var(--cyan);font-family:'JetBrains Mono',monospace;font-size:13px">5,000</code> in cell D12 is meaningless without knowing column D is "Q3 Projected Revenue" and row 12 is "Enterprise Software Sales." Standard chunkers sever headers from data, turning retrieved chunks into meaningless noise.</p>
+
+    <div class="callout callout-gold">
+      <div class="callout-label">Key Insight</div>
+      In a spreadsheet, a cell's meaning is entirely derived from its multi-axis coordinates — not its sequential neighbors. Standard RAG ignores this fundamental spatial structure and treats spreadsheets like paragraphs.
+    </div>
+
+    <div class="tbl-wrap reveal">
+      <table>
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>Sequential Prose</th>
+            <th>Spreadsheet Grids</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Reading Direction</td><td>Linear — left-to-right, top-to-bottom</td><td>Bi-directional spatial coordinate layout</td></tr>
+          <tr><td>Contextual Anchor</td><td>Surrounding sentences and paragraphs</td><td>Row headers, column headers, sheet metadata, formulas</td></tr>
+          <tr><td>Logic Layer</td><td>Explicit linguistic assertions</td><td>Dynamic mathematical dependency networks</td></tr>
+          <tr><td>Sparsity</td><td>Low — continuous text blocks</td><td>High — large empty regions, blank rows, adjacent tables</td></tr>
+          <tr><td>Token Representation</td><td>Direct character tokenization</td><td>Highly redundant cell-by-cell string mappings if uncompressed</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       §02  CHUNKING
+  ═══════════════════════════════════════ -->
+  <section id="chunking" class="section reveal">
+    <div class="chapter-label">Chapter II</div>
+    <h2>Spreadsheet<br><em>Chunking Strategies</em></h2>
+
+    <p>The objective is to construct chunks small enough to optimize retrieval precision, yet structurally complete enough to preserve the relational context of the data. Three primary strategies apply — each suited to a different class of spreadsheet.</p>
+
+    <div class="strat-strip">
+      <div class="strat-cell">
+        <div class="strat-top-bar"></div>
+        <div class="strat-name">Row-Level Chunking</div>
+        <div class="strat-desc">Ideal for transactional datasets — CDRs, HR directories, customer logs — where each row is a self-contained record. Rows are linearized into natural language sentences before embedding.</div>
+        <span class="strat-badge">Transactional Data</span>
+      </div>
+      <div class="strat-cell">
+        <div class="strat-top-bar"></div>
+        <div class="strat-name">Column-Level Chunking</div>
+        <div class="strat-desc">Applied to time-series or comparative financial sheets where columns represent consecutive quarters. Preserves temporal indicators essential for trend detection.</div>
+        <span class="strat-badge">Time-Series Data</span>
+      </div>
+      <div class="strat-cell">
+        <div class="strat-top-bar"></div>
+        <div class="strat-name">Block-Level Windowing</div>
+        <div class="strat-desc">Sliding rectangular window (e.g., 15×10 cells with 2-row/2-col overlap) for P&L statements. Headers are injected into every chunk regardless of window position.</div>
+        <span class="strat-badge">Financial Sheets</span>
+      </div>
+    </div>
+
+    <h3>Transforming Cells to Vectors</h3>
+    <p>Three representation methods prepare tabular chunks for vector indexing, each with distinct trade-offs between token efficiency and structural fidelity.</p>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-tag gold">Method 01</div>
+        <div class="card-title">Linearization</div>
+        <div class="card-body"><strong>Markdown</strong> is token-efficient and human-readable, ideal for constrained context windows. <strong>HTML</strong> preserves merged cells (colspan/rowspan), multi-level headers, and column alignments — richer structure at greater token cost.</div>
+        <div class="card-footer">Best for standard RAG pipelines</div>
+      </div>
+      <div class="card">
+        <div class="card-tag cyan">Method 02</div>
+        <div class="card-title">Natural Language Generation</div>
+        <div class="card-body">Tabular chunks translated into fluent prose sentences by an upstream script. Minimizes semantic distance between user queries and structured data — yielding up to <strong style="color:var(--green)">9% improvement</strong> in retrieval recall for models like <code style="color:var(--cyan);font-size:12px">text-embedding-3-small</code>.</div>
+        <div class="card-footer">Best for standard embedding models</div>
+      </div>
+      <div class="card">
+        <div class="card-tag violet">Method 03</div>
+        <div class="card-title">VLM Parsing — TabRAG</div>
+        <div class="card-body">State-of-the-art pipeline for complex sheets with multi-format grids and embedded charts. Layout detection → visual table parsing via VLM → JSON output → linguistic rationale synthesis → embedding storage.</div>
+        <div class="card-footer">Best for multi-modal complex sheets</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       §03  FORMULA GRAPHS
+  ═══════════════════════════════════════ -->
+  <section id="formulas" class="section reveal">
+    <div class="chapter-label">Chapter III</div>
+    <h2>Formula Parsing &amp;<br><em>Dependency Graphs</em></h2>
+
+    <p>The most significant challenge in spreadsheet RAG is <strong>formula blindness</strong>. When a user asks about a projected EBITDA figure, a standard system retrieves only the computed number — completely unaware it is calculated from forty other operational rows on different worksheets.</p>
+
+    <div class="callout callout-gold">
+      <div class="callout-label">Architecture Pattern</div>
+      Advanced pipelines build explicit formula dependency graphs during ingestion using <code style="color:var(--gold);font-size:13px">openpyxl</code>'s Tokenizer and <code style="color:var(--gold);font-size:13px">NetworkX</code>. Every upstream ancestor of a target metric is then injected into the LLM prompt as grounding context.
+    </div>
+
+    <!-- iPAD CODE FRAME 1 -->
+    <div class="ipad-wrap reveal">
+      <div class="ipad">
+        <div class="ipad-bar">
+          <div class="ipad-dots">
+            <div class="ipad-dot r"></div>
+            <div class="ipad-dot y"></div>
+            <div class="ipad-dot g"></div>
+          </div>
+          <div class="ipad-cam"></div>
+          <div class="ipad-fname">dependency_graph_builder.py</div>
+        </div>
+        <div class="ipad-screen">
+          <div class="ipad-nums-row">
+            <div class="ipad-line-col" id="lnums1"></div>
+<pre><span class="kw">import</span> openpyxl
+<span class="kw">from</span> openpyxl.formula <span class="kw">import</span> <span class="cl">Tokenizer</span>
+<span class="kw">import</span> networkx <span class="kw">as</span> nx
+
+<span class="kw">class</span> <span class="cl">DependencyGraphBuilder</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.graph <span class="op">=</span> nx.<span class="fn">DiGraph</span>()
+
+    <span class="kw">def</span> <span class="fn">build_dependency_graph</span>(self, file_path: str) <span class="op">-></span> nx.DiGraph:
+        <span class="cm"># Load workbook — preserve formulas, do not evaluate values</span>
+        workbook <span class="op">=</span> openpyxl.<span class="fn">load_workbook</span>(file_path, data_only<span class="op">=</span><span class="kw">False</span>)
+
+        <span class="kw">for</span> sheet_name <span class="kw">in</span> workbook.sheetnames:
+            sheet <span class="op">=</span> workbook[sheet_name]
+            <span class="kw">for</span> row <span class="kw">in</span> sheet.<span class="fn">iter_rows</span>():
+                <span class="kw">for</span> cell <span class="kw">in</span> row:
+                    <span class="kw">if</span> cell.value <span class="kw">and</span> <span class="fn">str</span>(cell.value).<span class="fn">startswith</span>(<span class="st">'='</span>):
+                        target <span class="op">=</span> <span class="fn">f</span><span class="st">"\'{sheet_name}\'!{cell.coordinate}"</span>
+                        self.graph.<span class="fn">add_node</span>(target, type<span class="op">=</span><span class="st">"formula"</span>)
+                        tok <span class="op">=</span> <span class="cl">Tokenizer</span>(cell.value)
+                        <span class="kw">for</span> t <span class="kw">in</span> tok.items:
+                            <span class="kw">if</span> t.type <span class="op">==</span> <span class="st">"OPERAND"</span> <span class="kw">and</span> t.subtype <span class="op">==</span> <span class="st">"RANGE"</span>:
+                                source <span class="op">=</span> t.value <span class="kw">if</span> <span class="st">'!'</span> <span class="kw">in</span> t.value \
+                                         <span class="kw">else</span> <span class="fn">f</span><span class="st">"\'{sheet_name}\'!{t.value}"</span>
+                                <span class="cm"># Directed edge: source cell → target formula</span>
+                                self.graph.<span class="fn">add_edge</span>(source, target)
+        <span class="kw">return</span> self.graph
+
+<span class="cm"># ── Upstream traversal — retrieve all parent cells of a KPI ──────────
+# upstream = nx.ancestors(formula_dag, "'Forecast'!F10")
+# Inject all upstream ancestors into LLM prompt as grounding context</span></pre>
+          </div>
+        </div>
+        <div class="ipad-foot">
+          <div class="ipad-foot-l">Ln 32, Col 1 · UTF-8 · LF</div>
+          <div class="ipad-lang">Python 3.11</div>
+        </div>
+      </div>
+    </div>
+
+    <p>By traversing upstream, when a user asks about a specific KPI, the retrieval engine pulls all parent assumptions, growth rates, and operational inputs — enabling the LLM to explain the full mathematical lineage of any financial change, not just its final value.</p>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       §04  ARCHITECTURES
+  ═══════════════════════════════════════ -->
+  <section id="arch" class="section reveal">
+    <div class="chapter-label">Chapter IV</div>
+    <h2>Advanced Retrieval<br><em>Architectures</em></h2>
+
+    <p>Standard single-pass retrieval is insufficient at enterprise scale. Modern systems deploy specialized frameworks designed for complex multi-table environments, each with distinct retrieval strategies and trade-off profiles.</p>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-tag gold">Framework 01</div>
+        <div class="card-title">TableRAG</div>
+        <div class="card-body">Unified SQL-text retrieval for heterogeneous documents. Ingestion writes structured tables to a relational DB (MySQL/DuckDB); text segments go to a vector store. Queries decompose into semantic text retrieval and SQL code generation — executed natively for mathematically precise answers.</div>
+        <div class="card-footer">Symbolic + textual understanding</div>
+      </div>
+      <div class="card">
+        <div class="card-tag cyan">Framework 02</div>
+        <div class="card-title">T-RAG</div>
+        <div class="card-body">Graph-aware table indexing using a heterogeneous hypergraph organized by semantic meaning, structural layout, and logical metadata. Multi-stage retrieval: coarse-grained hyperedge routing → fine-grained local search → graph-aware prompting with relational context.</div>
+        <div class="card-footer">Large sheet corpora at enterprise scale</div>
+      </div>
+      <div class="card">
+        <div class="card-tag violet">Framework 03</div>
+        <div class="card-title">BRTR</div>
+        <div class="card-body">Beyond Rows to Reasoning — an agentic iterative tool-calling loop. Complex queries generate a DAG of subtasks processed in parallel. Each subtask invokes tools (ReadRange, SearchValue, CalculateSummary), self-corrects across turns, and synthesizes an auditable trace.</div>
+        <div class="card-footer">Multi-sheet audit-ready analysis</div>
+      </div>
+      <div class="card">
+        <div class="card-tag green">Framework 04</div>
+        <div class="card-title">TableMind++</div>
+        <div class="card-body">Fine-tuned agents using SFT + Reinforcement Fine-Tuning with Rank-Aware Policy Optimization (RAPO). Adds uncertainty-aware inference: memory-guided plan pruning, confidence-based action refinement, and dual-weighted trajectory aggregation.</div>
+        <div class="card-footer">Hallucination-resistant table agents</div>
+      </div>
+      <div class="card">
+        <div class="card-tag red">Framework 05</div>
+        <div class="card-title">SheetMind</div>
+        <div class="card-body">Google Sheets multi-agent framework with three specialized agents: Manager (decomposes instructions), Action (generates BNF-grammar structured commands), and Reflection (validates outputs against original intent and triggers corrections).</div>
+        <div class="card-footer">Active user collaboration in-sheet</div>
+      </div>
+    </div>
+
+    <h3>Hybrid Retrieval &amp; RRF Scoring</h3>
+    <p>Dense vector embeddings capture abstract semantics ("operating costs" ≈ "expenses") but struggle with exact values and cell coordinates. Sparse BM25 handles exact matches but misses semantic equivalence. Production pipelines fuse both with <strong>Reciprocal Rank Fusion</strong>:</p>
+
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-num">Layer 01</div>
+        <div class="pipe-title">Dense Search</div>
+        <div class="pipe-desc">Vector cosine similarity — semantic recall</div>
+        <div class="pipe-arrow">→</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Layer 02</div>
+        <div class="pipe-title">Sparse BM25</div>
+        <div class="pipe-desc">Exact keyword matching — numerical precision</div>
+        <div class="pipe-arrow">→</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Layer 03</div>
+        <div class="pipe-title">RRF Fusion</div>
+        <div class="pipe-desc">Merges ranked lists — dampening constant k≈60</div>
+        <div class="pipe-arrow">→</div>
+      </div>
+      <div class="pipe-step">
+        <div class="pipe-num">Layer 04</div>
+        <div class="pipe-title">Top-K Context</div>
+        <div class="pipe-desc">Highest-scoring chunks enter LLM context window</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       §05  COMPRESSION
+  ═══════════════════════════════════════ -->
+  <section id="compress" class="section reveal">
+    <div class="chapter-label">Chapter V</div>
+    <h2>SpreadsheetLLM:<br><em>SheetCompressor &amp; the CoS Pipeline</em></h2>
+
+    <p>Large enterprise sheets containing millions of cells saturate context windows, inflate inference costs, and trigger the "lost in the middle" phenomenon — where the LLM ignores content in the middle of a long context. Microsoft's SheetCompressor addresses this with a three-stage pipeline that reduces tokens by <strong>up to 96%</strong> while preserving structural integrity.</p>
+
+    <div class="stat-boxes">
+      <div class="stat-box">
+        <div class="stat-big">4.4–14.9×</div>
+        <div class="stat-box-title">Inverted Index</div>
+        <div class="stat-box-sub">Unique values → coordinate lists. Blank cells eliminated. Ranges compacted.</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-big">1.34×</div>
+        <div class="stat-box-title">Format Aggregation</div>
+        <div class="stat-box-sub">DFS identifies contiguous numeric blocks. Replaced with semantic type labels.</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-big">96%</div>
+        <div class="stat-box-title">Total Reduction</div>
+        <div class="stat-box-sub">Combined SheetCompressor output — full structural skeleton preserved.</div>
+      </div>
+    </div>
+
+    <div class="callout callout-cyan">
+      <div class="callout-label">Chain of Spreadsheet (CoS) Pipeline</div>
+      Three-stage progressive reasoning: (1) heavily compress full workbook → LLM identifies relevant sub-table; (2) extract sub-table at moderate compression → LLM identifies target coordinate range; (3) inject raw uncompressed values for that exact range → LLM generates final answer. Result: <strong style="color:var(--green)">22% accuracy improvement</strong> on multi-table sheets versus naive full-sheet injection.
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       §06  SECURITY
+  ═══════════════════════════════════════ -->
+  <section id="security" class="section reveal">
+    <div class="chapter-label">Chapter VI</div>
+    <h2>Enterprise Security &amp;<br><em>Multi-Tenant Access Control</em></h2>
+
+    <p>Unlike structured databases, spreadsheets represent the "Wild West" of corporate data — employees duplicate files, share sheets with hidden tabs, and embed PII without encryption. A naive RAG pipeline risks exposing payroll data or HIPAA-regulated patient records to unauthorized users via the retrieval mechanism itself.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Pre-Filtering (Recommended)</th>
+            <th>Post-Filtering</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Workflow</td>
+            <td>Permissions lookup → allowed Doc IDs → vector search with ID-inclusion filter</td>
+            <td>Direct semantic search → retrieve Top-K → discard unauthorized chunks</td>
+          </tr>
+          <tr>
+            <td>Security Leakage Risk</td>
+            <td><span style="color:var(--green);font-weight:700">Zero</span> — user cannot search outside authorized boundaries</td>
+            <td><span style="color:var(--red);font-weight:700">High</span> — sensitive data floats to Top-K before discard</td>
+          </tr>
+          <tr>
+            <td>Retrieval Efficiency</td>
+            <td><span style="color:var(--green);font-weight:700">High</span> — search space filtered before scoring</td>
+            <td><span style="color:var(--red);font-weight:700">Low</span> — scores vectors that are ultimately rejected</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- iPAD CODE FRAME 2 -->
+    <div class="ipad-wrap reveal">
+      <div class="ipad">
+        <div class="ipad-bar">
+          <div class="ipad-dots">
+            <div class="ipad-dot r"></div>
+            <div class="ipad-dot y"></div>
+            <div class="ipad-dot g"></div>
+          </div>
+          <div class="ipad-cam"></div>
+          <div class="ipad-fname">row_level_security.sql</div>
+        </div>
+        <div class="ipad-screen">
+          <div class="ipad-nums-row">
+            <div class="ipad-line-col" id="lnums2"></div>
+<pre><span class="cm">-- ── Enforce row-level access control at the database engine layer ──────</span>
+<span class="kw">ALTER TABLE</span> spreadsheet_embeddings
+    <span class="kw">ENABLE ROW LEVEL SECURITY</span>;
+
+<span class="cm">-- Only the owning user or matching tenant can SELECT their rows</span>
+<span class="kw">CREATE POLICY</span> user_access_policy
+    <span class="kw">ON</span> spreadsheet_embeddings
+    <span class="kw">FOR SELECT</span>
+    <span class="kw">USING</span> (
+        owner_id  <span class="op">=</span> <span class="fn">current_setting</span>(<span class="st">'app.current_user_id'</span>)
+     <span class="kw">OR</span> tenant_id <span class="op">=</span> <span class="fn">current_setting</span>(<span class="st">'app.current_tenant_id'</span>)
+    );
+
+<span class="cm">-- ── Centralizes GDPR / HIPAA / SOC 2 compliance within the DB engine ──
+-- No application-layer filtering needed; the engine enforces isolation</span></pre>
+          </div>
+        </div>
+        <div class="ipad-foot">
+          <div class="ipad-foot-l">Ln 16, Col 1 · UTF-8 · LF</div>
+          <div class="ipad-lang">PostgreSQL + pgvector</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       §07  CASE STUDIES
+  ═══════════════════════════════════════ -->
+  <section id="cases" class="section reveal">
+    <div class="chapter-label">Chapter VII</div>
+    <h2>Enterprise<br><em>Case Studies</em></h2>
+
+    <p>The architecture above is not theoretical. These three case studies represent production deployments where tabular RAG pipelines replaced manual processes or failed naive implementations.</p>
+
+    <div class="cases">
+      <div class="case health">
+        <div class="case-sector">Healthcare</div>
+        <div class="case-title">Clinical Trials Audit &amp; Billing</div>
+        <div class="case-desc">Hierarchical RAG pipeline with BioClinical-E5 embeddings for EHR notes, cross-referenced against ICD-10-CM/PCS billing spreadsheets. Multi-stage validation: biomedical knowledge graph cross-check → rule-based code validation → containerized 20B LLM anomaly detection without external API exposure.</div>
+        <div class="case-result">
+          <div class="result-big">90%</div>
+          <div class="result-desc">Abstraction alignment<br>with human specialists</div>
+        </div>
+      </div>
+      <div class="case finance">
+        <div class="case-sector">Investment Banking</div>
+        <div class="case-title">Portfolio Analysis &amp; Model Reconciliation</div>
+        <div class="case-desc">BRTR agentic pipeline with ks-xlsx-parser. Full typed cell graph extraction preserving merged cells and active formulas. Upstream DAG construction for every financial KPI. HTML-formatted chunks with xxhash64 content hashing for version control. Pandas-based verification in a secure sandbox.</div>
+        <div class="case-result">
+          <div class="result-big">96%</div>
+          <div class="result-desc">Cost reduction in<br>portfolio analysis</div>
+        </div>
+      </div>
+      <div class="case telecom">
+        <div class="case-sector">Telecom &amp; Logistics</div>
+        <div class="case-title">Network Operations &amp; Log Analysis</div>
+        <div class="case-desc">TableRAG with relational mapping of CDR and routing tables to SQL. Semantic routing decomposes operations queries, the LLM generates SQL statements executed natively against the relational engine, and structured records are fused with adjacent incident tickets for unified reporting.</div>
+        <div class="case-result">
+          <div class="result-big">ms</div>
+          <div class="result-desc">Response latency on<br>complex routing queries</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       §08  PITFALLS
+  ═══════════════════════════════════════ -->
+  <section id="pitfalls" class="section reveal">
+    <div class="chapter-label">Chapter VIII</div>
+    <h2>Common Engineering<br><em>Failure Modes</em></h2>
+
+    <div class="pitfalls">
+      <div class="pitfall">
+        <div class="pitfall-n">01</div>
+        <div>
+          <div class="pitfall-title">Relying on LLMs to Perform Direct Arithmetic</div>
+          <div class="pitfall-prob">LLMs are statistical text predictors — not calculators. Multi-row additions, percentage calculations, and statistical divisions over raw retrieved cells produce unreliable results, especially on large numeric tables.</div>
+          <div class="pitfall-fix">Implement programmatic execution boundaries. Restrict the LLM to generating Python (pandas) or SQL. Execute in a sandboxed environment. Return only verified numerical outputs to the generation prompt.</div>
+        </div>
+      </div>
+      <div class="pitfall">
+        <div class="pitfall-n">02</div>
+        <div>
+          <div class="pitfall-title">Discarding Spatial Context During Chunking</div>
+          <div class="pitfall-prob">Standard token-count chunkers slice through spreadsheets arbitrarily, separating column headers in row 1 from data in row 100. The result: context detachment and noisy, semantically broken vectors.</div>
+          <div class="pitfall-fix">Deploy layout-aware hierarchical extractors (LlamaSheets, UnstructuredExcelLoader). Programmatically prepend/append header metadata to every chunk — making each one a self-contained semantic entity.</div>
+        </div>
+      </div>
+      <div class="pitfall">
+        <div class="pitfall-n">03</div>
+        <div>
+          <div class="pitfall-title">Ignoring Version Control and Duplicate Document Noise</div>
+          <div class="pitfall-prob">Enterprises constantly duplicate spreadsheets: v1, v2_final, v2_final_reconciled. Ingesting all versions into the same vector space creates semantic collision — the LLM receives contradictory data from different time periods.</div>
+          <div class="pitfall-fix">Enforce deterministic content hashing (xxhash64) on every cell block at ingestion. Track modification dates and ownership. Pre-filter retrieval to the most recently verified hash version of each workbook.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       §09  FUTURE
+  ═══════════════════════════════════════ -->
+  <section id="future" class="section reveal">
+    <div class="chapter-label">Chapter IX</div>
+    <h2>The Future of<br><em>Tabular Intelligence</em></h2>
+
+    <div class="future-card">
+      <h3>Multimodal Workspace Agents</h3>
+      <p>The next major evolution replaces text extraction pipelines with agents that natively interpret tabular structures, embedded diagrams, and visual chart images simultaneously. The indexing pipeline stores worksheets as raw visual canvases; the query engine uses layout-aware visual embeddings. The multimodal agent views target spreadsheet regions as images and uses native visual-text attention layers to generate comprehensive mathematical and narrative responses — without any extraction step at all.</p>
+    </div>
+
+    <div class="future-card">
+      <h3>Write-and-Execute Workspace Companions</h3>
+      <p>Frameworks like TableMind++ and SheetBrain introduce Reinforcement Learning via Rank-Aware Policy Optimization (RAPO) to train agents that do not merely retrieve — they actively edit formulas, build financial models, and perform automated reconciliations. The era of static, search-and-read RAG is giving way to dynamic, autonomous workspace companions that treat the spreadsheet as a live, editable environment.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       §10  GLOSSARY
+  ═══════════════════════════════════════ -->
+  <section id="glossary" class="section reveal">
+    <div class="chapter-label">Chapter X</div>
+    <h2>Key <em>Glossary</em></h2>
+
+    <ul class="glossary-list">
+      <li><span class="gl-term">RAG</span><span class="gl-def">Retrieval-Augmented Generation — an architectural pattern that grounds LLM outputs in external, verified knowledge bases before generation, preventing hallucination on private or recent data.</span></li>
+      <li><span class="gl-term">Inverted-Index Translation</span><span class="gl-def">A lossless serialization method that maps unique cell values to their coordinate lists, eliminating blank cells to compress spreadsheet token size by 4.4–14.9×.</span></li>
+      <li><span class="gl-term">Structural Anchors</span><span class="gl-def">High-variability rows and columns — main headers, totals rows, and section breaks — that SheetCompressor designates as the core skeleton when pruning redundant content.</span></li>
+      <li><span class="gl-term">Formula Dependency Graph</span><span class="gl-def">A directed mathematical graph built with NetworkX that maps which source cells feed into which formula cells, enabling upstream traversal of any KPI's full calculation lineage.</span></li>
+      <li><span class="gl-term">Reciprocal Rank Fusion (RRF)</span><span class="gl-def">A scoring formula that fuses the ranked output lists of dense vector search and sparse BM25 search, normalizing scores by rank position using a dampening constant of k≈60.</span></li>
+      <li><span class="gl-term">TableRAG</span><span class="gl-def">A unified retrieval framework that routes queries either to a semantic vector store or to a relational SQL engine, enabling both textual and symbolic reasoning across heterogeneous documents.</span></li>
+      <li><span class="gl-term">TabRAG</span><span class="gl-def">A vision-based RAG pipeline that uses document layout detection and a Vision Language Model to extract structured semantic representations from visually complex tables and charts.</span></li>
+      <li><span class="gl-term">BRTR</span><span class="gl-def">Beyond Rows to Reasoning — an agentic framework that decomposes complex queries into a DAG of parallel subtasks, each running an iterative tool-calling loop across multi-sheet workbooks.</span></li>
+      <li><span class="gl-term">RAPO</span><span class="gl-def">Rank-Aware Policy Optimization — a reinforcement learning algorithm that assigns higher update weights to high-quality reasoning trajectories, guiding table agents toward precise execution paths.</span></li>
+    </ul>
+  </section>
+
+  <!-- ── AUTHOR CARD ────────────────────── -->
+  <div class="author-card reveal">
+    <div class="author-card-av">MF</div>
+    <div>
+      <div class="author-card-name">Dr. Muhammad Farooq</div>
+      <div class="author-card-role">AI Top Voice · AI Doctor · LinkedIn Top Voice</div>
+      <div class="author-card-bio">Physician, researcher, and AI strategist at the intersection of medicine and emerging technology. Dr. Farooq writes on AI adoption, digital health transformation, and the societal implications of intelligent systems. His analysis draws on clinical practice, data science, and a decade of observing technology reshape healthcare delivery.</div>
+    </div>
+  </div>
+
+  <!-- ── MORE ARTICLES ──────────────────── -->
+  <div class="more-section reveal">
+    <div class="more-label">More From Dr. Farooq</div>
+    <div class="more-row">
+      <a href="https://drfarooqai.github.io/articles/ai/ai-agent-article.html" class="more-card-h">
+        <div class="more-card-h-tag">AI &amp; Agents</div>
+        <div class="more-card-h-title">Building an AI Agent Step by Step</div>
+        <div class="more-card-h-desc">Theory-first breakdown of how modern AI agents are structured — from data acquisition to memory persistence.</div>
+        <div class="more-card-h-arr">Read →</div>
+      </a>
+      <a href="https://drfarooqai.github.io/articles/ai/age-of-ai-v3.html" class="more-card-h">
+        <div class="more-card-h-tag">Market Data</div>
+        <div class="more-card-h-title">The Age of Artificial Intelligence</div>
+        <div class="more-card-h-desc">Market data, adoption curves, enterprise transformation, and workforce impact — what the numbers are really saying.</div>
+        <div class="more-card-h-arr">Read →</div>
+      </a>
+      <a href="https://drfarooqai.github.io/articles/ai/ATLAS_of_Medical_AI_Models.html" class="more-card-h">
+        <div class="more-card-h-tag">Healthcare AI</div>
+        <div class="more-card-h-title">The Complete Medical AI Model Atlas</div>
+        <div class="more-card-h-desc">A definitive guide to 20 AI models reshaping clinical medicine — frontier giants, open-source engines, and imaging specialists.</div>
+        <div class="more-card-h-arr">Read →</div>
+      </a>
+    </div>
+    <div style="text-align:center;margin-top:24px">
+      <a href="https://drfarooqai.github.io/articles/" style="font-size:14px;color:var(--text-mid);text-decoration:none;font-weight:500;transition:color 0.18s" onmouseover="this.style.color='var(--gold)'" onmouseout="this.style.color='var(--text-mid)'">View All Articles →</a>
+    </div>
+  </div>
+
+</div><!-- /page-wrap -->
+
+<!-- ── FOOTER ─────────────────────────────── -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Dr. Muhammad Farooq · AI Doctor</div>
+      <div class="footer-roles">AI Top Voice · LinkedIn Top Voice · AI in Healthcare</div>
+      <div class="footer-sub">Riyadh, KSA · © 2026 · drfarooqai</div>
+    </div>
+    <ul class="footer-links">
+      <li><a href="https://www.linkedin.com/in/dr-muhammad-farooq">LinkedIn</a></li>
+      <li><a href="https://drfarooqai.blogspot.com">Blog</a></li>
+      <li><a href="https://drfarooqai.github.io/articles/">Articles</a></li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+// ── Scroll reveal ─────────────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); } });
+}, { threshold: 0.06 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+// ── Active nav link ───────────────────────────
+const secs = document.querySelectorAll('section[id]');
+const nlinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let cur = '';
+  secs.forEach(s => { if (window.scrollY >= s.offsetTop - 140) cur = s.id; });
+  nlinks.forEach(a => { a.classList.toggle('active', a.getAttribute('href') === `#${cur}`); });
+}, { passive: true });
+
+// ── iPad line numbers ─────────────────────────
+document.querySelectorAll('.ipad-nums-row').forEach((row) => {
+  const pre  = row.querySelector('pre');
+  const nums = row.querySelector('.ipad-line-col');
+  if (!pre || !nums) return;
+  const count = pre.innerText.split('\n').length;
+  nums.innerHTML = Array.from({length: count}, (_, i) => `<div style="line-height:1.8">${i + 1}</div>`).join('');
+});
+
+// ── Hero parallax tilt (mouse + touch) ────────
+const heroEl   = document.querySelector('.hero');
+const heroInner = document.getElementById('heroInner');
+if (heroEl && heroInner) {
+  const MAX_TILT = 6; // degrees
+
+  function applyTilt(xFrac, yFrac) {
+    // xFrac, yFrac: -1 to 1 relative to hero center
+    const rotX = -yFrac * MAX_TILT;
+    const rotY =  xFrac * MAX_TILT;
+    heroInner.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+  }
+
+  function resetTilt() {
+    heroInner.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+  }
+
+  // Mouse move
+  heroEl.addEventListener('mousemove', (e) => {
+    const r = heroEl.getBoundingClientRect();
+    const xFrac = ((e.clientX - r.left) / r.width  - 0.5) * 2;
+    const yFrac = ((e.clientY - r.top)  / r.height - 0.5) * 2;
+    applyTilt(xFrac, yFrac);
+  }, { passive: true });
+
+  heroEl.addEventListener('mouseleave', resetTilt);
+
+  // Touch move
+  heroEl.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    const r = heroEl.getBoundingClientRect();
+    const xFrac = ((touch.clientX - r.left) / r.width  - 0.5) * 2;
+    const yFrac = ((touch.clientY - r.top)  / r.height - 0.5) * 2;
+    applyTilt(xFrac * 0.5, yFrac * 0.5); // gentler on touch
+  }, { passive: true });
+
+  heroEl.addEventListener('touchend', resetTilt);
+}
+</script>
+
+</body>
+</html>
