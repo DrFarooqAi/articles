@@ -1,0 +1,77 @@
+[
+  {
+    "id": 10,
+    "topic": "Model & Dataset Versioning",
+    "question": "You are using Vertex AI to manage workload prediction models and datasets in your IT company. After updating one of your models, you want to track and compare the new version with the previous one and also include dataset versioning.\n\nWhat should you do?",
+    "options": {
+      "A": "Use Vertex AI TensorBoard to visualize training metrics of the updated model, and use Data Catalog to manage dataset versioning.",
+      "B": "Use Vertex AI Model Monitoring to observe performance of the updated model, and use Vertex AI Training to manage dataset versioning.",
+      "C": "Use Vertex AI Experiments to track and compare model artifacts and versions, and use Vertex ML Metadata to manage dataset versioning.",
+      "D": "Use Vertex AI Experiments to track and compare model artifacts and versions, and use Vertex AI managed datasets to manage dataset versioning."
+    },
+    "correct": "D",
+    "analogy": "Think of this like a Video Game Save System. You (the developer) just updated your character (the Model). Now you need: A Compare Screen to look at your New Save File side-by-side with your Old Save File, and Inventory Tracking to know exactly which Items (Datasets) were in your backpack for that specific save.",
+    "explanation": "Vertex AI Experiments acts as your scientific lab notebook — every time you train a model, you write an entry and can flip back to track and compare versions. Vertex AI Managed Datasets acts like a smart shelf that automatically saves a snapshot of your data every time you use it, ensuring you always know which data version trained which model.",
+    "why_not": "Option C is the tricky one. Vertex ML Metadata is the underlying backend database that stores lineage info — but Vertex AI Managed Datasets is the specific, user-friendly tool explicitly designed for managing and versioning datasets. Always choose the dedicated tool over the backend engine."
+  },
+  {
+    "id": 9,
+    "topic": "Model Retraining Policy",
+    "question": "You are designing a retraining policy for a server workload prediction model deployed in Vertex AI. New monitoring data is added every week. You want to set up a retraining process that reduces cost and effort.\n\nWhat should you do?",
+    "options": {
+      "A": "Retrain the model when a significant shift in the distribution of workload attributes is detected in production data compared to the training data.",
+      "B": "Retrain the model when the model's latency increases by 10% due to higher traffic.",
+      "C": "Retrain the model when the model accuracy drops by 10% on the newly added dataset.",
+      "D": "Retrain the model every week whenever new monitoring data becomes available."
+    },
+    "correct": "A",
+    "analogy": "Think of this like maintaining a car. You don't change the oil every single day just because you drove it — that wastes money. You change it when the oil actually gets dirty (Data Drift). The goal is to only retrain when real-world data changes significantly.",
+    "explanation": "Option A uses Data Drift as a smart trigger. If the server workload looks the same as last week, retraining just teaches the model what it already knows — wasting compute budget. By waiting for a significant distribution shift, you only pay for expensive training when the model's knowledge is genuinely outdated.",
+    "why_not": "Option D (retrain every week) sounds safe but is wasteful. If data hasn't changed, you are spending money to learn the same thing twice. Option B (latency) is an infrastructure problem, not a model quality problem. Option C reacts to accuracy drops, which is reactive rather than proactive."
+  },
+  {
+    "id": 8,
+    "topic": "Time Series Forecasting",
+    "question": "Your IT operations team has collected server workload metrics for the past several annual cycles. Weekly performance logs are stored in CSV files. You have been asked to estimate weekly workload demand for upcoming seasons to optimize infrastructure usage and staffing. You want to use the most efficient approach.\n\nWhat should you do?",
+    "options": {
+      "A": "Upload the CSV logs into Cloud Storage. Use Python scripts to preprocess and clean the tabular data, then load it into BigQuery. Apply time series forecasting models to predict weekly workload demand.",
+      "B": "Upload the CSV logs into Cloud Storage. Use Python to preprocess and load the tabular data into BigQuery. Train a logistic regression model with BigQuery ML to classify workload demand into High, Medium, or Low.",
+      "C": "Load the CSV logs directly into BigQuery. Use BigQuery SQL for preprocessing. Connect BigQuery with Looker and build a dashboard that shows weekly workload trends in real time.",
+      "D": "Build a custom conversational application using Vertex AI Agent Builder. Ingest the CSV logs and use few-shot prompting with RAG in Gemini LLM to predict workload demand trends."
+    },
+    "correct": "A",
+    "analogy": "Think of this like predicting the weather. You have years of temperature logs. You want to know exactly how hot it will be next Tuesday — a specific number — so you can decide how much ice cream to stock. You need a tool built to read time-based patterns and produce future numbers.",
+    "explanation": "The data is classic time-series (weekly logs over annual cycles). The goal is forecasting a continuous future value (how much workload), not classifying into buckets. Time Series Forecasting models in BigQuery are specifically built to analyze seasonality and trends for precisely this type of prediction.",
+    "why_not": "Option B (Logistic Regression) is a classification tool — it predicts categories, not numbers. Option C (Looker) visualizes the past; it does not predict the future. Option D (LLM/RAG) is like using a sledgehammer to crack a nut — LLMs reason over text, not structured numerical CSV data efficiently."
+  },
+  {
+    "id": 7,
+    "topic": "Interpretable ML",
+    "question": "Your IT company's business team wants to understand the factors driving customer churn so they can adjust their strategy. You need to build a churn prediction model that emphasizes simple interpretability of results.\n\nWhich ML framework and modeling technique should you use?",
+    "options": {
+      "A": "Create a TensorFlow deep neural network (DNN) model and apply SHAP values to analyze feature importance.",
+      "B": "Build a PyTorch LSTM network and use attention mechanisms to provide interpretability.",
+      "C": "Develop a logistic regression model in scikit-learn and use the model's coefficients to understand feature impact.",
+      "D": "Develop a linear regression model in scikit-learn and interpret standardized coefficients to assess feature impact."
+    },
+    "correct": "C",
+    "analogy": "Think of this like a doctor explaining a diagnosis. The business team doesn't just want to know if a customer will churn (Yes/No) — they want to know WHY (high price? bad service?). You need a simple test where the results clearly point to the specific cause, not a black-box machine.",
+    "explanation": "Churn is a Yes/No classification problem. Logistic Regression is the gold standard for simple, interpretable classification. Its coefficients act like a clear scorecard: you can tell the business team 'the coefficient for Contract Length is negative — longer contracts reduce churn; Monthly Charges is positive — higher prices increase churn.' No extra tools needed.",
+    "why_not": "Option A (DNN + SHAP) is overkill — DNNs are black boxes by nature; SHAP is a complex add-on just to explain what the model did. Option D (Linear Regression) is a trap — it predicts continuous numbers, not Yes/No categories. For binary classification you must use Logistic Regression, not Linear."
+  },
+  {
+    "id": 6,
+    "topic": "Automated Model Monitoring",
+    "question": "You are responsible for managing a Vertex AI model deployed in production. The business requires the system to automatically retrain the model when its performance deteriorates.\n\nWhat approach should you take?",
+    "options": {
+      "A": "Set up a Vertex AI Model Monitoring job to track performance using production data, and trigger retraining when metrics fall below defined thresholds.",
+      "B": "Gather feedback from end users and retrain the model based on their evaluation of its performance.",
+      "C": "Schedule a recurring job to test the model against a static dataset, and retrain if performance drops below thresholds.",
+      "D": "Use Vertex Explainable AI to review feature attributions and detect biases, then retrain when major shifts are observed."
+    },
+    "correct": "A",
+    "analogy": "Think of this like a Smoke Detector. You don't manually check for fire every day (static testing). You don't wait for neighbors to complain (user feedback). You want an alarm that fires automatically when it detects smoke (performance drop) so the fire brigade (retraining pipeline) responds immediately.",
+    "explanation": "Vertex AI Model Monitoring watches your model in production, comparing live data against training data to detect drift and accuracy drops. You set thresholds (e.g. accuracy below 90%) and it automatically signals your pipeline to retrain — creating a self-healing system that requires zero manual intervention.",
+    "why_not": "Option C sounds similar but tests against a static dataset — the real world keeps changing, so you might pass on old data while failing on live production data. Option D (Explainable AI) is for understanding why a prediction was made, not for triggering retraining pipelines. Option B (user feedback) is slow, subjective, and not automatic."
+  }
+]
