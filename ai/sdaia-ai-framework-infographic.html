@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SDAIA AI Adoption Framework — Dr. Muhammad Farooq</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:    #00897b;
+    --teal-lt: #e0f7f4;
+    --blue:    #1565c0;
+    --blue-lt: #e3f0ff;
+    --violet:  #6200ea;
+    --violet-lt:#ede7ff;
+    --amber:   #e65100;
+    --amber-lt:#fff3e0;
+    --green:   #2e7d32;
+    --green-lt:#e8f5e9;
+    --red:     #c62828;
+    --red-lt:  #ffebee;
+    --bg:      #f5f7ff;
+    --bg2:     #ffffff;
+    --bg3:     #eef1fb;
+    --border:  #dde3f5;
+    --text:    #0d1333;
+    --muted:   #5a6282;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #dde3f5;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 24px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .poster {
+    width: 1200px;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.18);
+    border-radius: 4px;
+  }
+
+  /* Subtle dot grid */
+  .poster::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(0,137,123,0.12) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ═══ HEADER ═══ */
+  .header {
+    position: relative;
+    z-index: 1;
+    padding: 44px 52px 38px;
+    background: linear-gradient(135deg, #00897b 0%, #1565c0 55%, #6200ea 100%);
+    overflow: hidden;
+  }
+
+  /* subtle light texture */
+  .header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.04) 0px,
+      rgba(255,255,255,0.04) 1px,
+      transparent 1px,
+      transparent 14px
+    );
+  }
+
+  /* bottom accent stripe */
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, #00e5d1, #ffd740, #ff6e40, #ea80fc);
+  }
+
+  .header-inner {
+    position: relative; z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+
+  .sdaia-badge {
+    flex-shrink: 0;
+    width: 84px; height: 84px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.22);
+    border: 3px solid rgba(255,255,255,0.55);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 14px;
+    color: #fff;
+    text-align: center;
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.1);
+  }
+
+  .header-text { flex: 1; }
+
+  .header-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 4px;
+    color: rgba(255,255,255,0.75);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .header-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 40px; font-weight: 800;
+    color: #fff;
+    line-height: 1.1; letter-spacing: -0.5px;
+  }
+
+  .header-title span {
+    background: linear-gradient(90deg, #ffd740, #ff6e40);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-sub {
+    margin-top: 10px; font-size: 14px;
+    color: rgba(255,255,255,0.78);
+    font-weight: 400; letter-spacing: 0.2px;
+    max-width: 680px;
+  }
+
+  .header-meta { flex-shrink: 0; text-align: right; }
+
+  .vision-pill {
+    display: inline-block;
+    padding: 9px 22px;
+    border-radius: 30px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.2);
+    border: 1.5px solid rgba(255,255,255,0.5);
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .header-tag {
+    display: block; font-size: 11px;
+    color: rgba(255,255,255,0.6);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 1px; margin-top: 8px;
+  }
+
+  /* ═══ GRID ═══ */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative; z-index: 1;
+  }
+
+  /* ── BASE CELL ── */
+  .cell {
+    padding: 26px 24px;
+    border-right: 1.5px solid var(--border);
+    border-bottom: 1.5px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    background: var(--bg2);
+  }
+
+  .cell:nth-child(4n) { border-right: none; }
+
+  /* left accent bar */
+  .cell::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--acc, var(--teal));
+    opacity: 0.18;
+  }
+
+  /* top accent dot */
+  .cell::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 40px;
+    background: var(--acc, var(--teal));
+    opacity: 1;
+  }
+
+  /* ── CELL LABEL ── */
+  .cell-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--acc, var(--teal));
+    margin-bottom: 12px;
+    font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .cell-label::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--acc, var(--teal));
+    flex-shrink: 0;
+  }
+
+  /* ── CELL TITLE ── */
+  .cell-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 16.5px;
+    color: var(--text);
+    line-height: 1.25; margin-bottom: 10px;
+  }
+
+  /* ── CELL BODY ── */
+  .cell-body {
+    font-size: 12.5px; color: var(--muted);
+    line-height: 1.65; font-weight: 400;
+  }
+
+  /* ── CELL ICON ── */
+  .cell-icon {
+    font-size: 26px; margin-bottom: 10px;
+    display: block; line-height: 1;
+  }
+
+  /* ── STAT HERO ── */
+  .stat-hero {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 56px;
+    line-height: 1;
+    color: var(--acc, var(--teal));
+    margin-bottom: 6px;
+  }
+
+  .stat-desc {
+    font-size: 12px; color: var(--muted);
+    line-height: 1.55; font-weight: 400;
+  }
+
+  /* ── TAGS ── */
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .tag {
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 10.5px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.3px; font-weight: 600;
+    background: var(--acc-lt, var(--teal-lt));
+    color: var(--acc, var(--teal));
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* ── BULLET LIST ── */
+  .bullet-list { list-style: none; margin-top: 10px; }
+  .bullet-list li {
+    font-size: 12px; color: var(--muted);
+    padding: 5px 0 5px 18px;
+    position: relative; line-height: 1.5;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+  }
+  .bullet-list li:last-child { border-bottom: none; }
+  .bullet-list li::before {
+    content: '▸';
+    position: absolute; left: 0;
+    color: var(--acc, var(--teal));
+    font-size: 10px; top: 6px;
+  }
+
+  /* ── SPAN HELPERS ── */
+  .col-span-2 { grid-column: span 2; }
+  .col-span-4 { grid-column: span 4; border-right: none; }
+
+  /* ── ROW SECTION DIVIDER ── */
+  .row-divider {
+    grid-column: span 4;
+    padding: 10px 28px;
+    background: var(--bg3);
+    border-bottom: 1.5px solid var(--border);
+    display: flex; align-items: center; gap: 16px;
+    border-right: none;
+  }
+
+  .divider-line {
+    flex: 1; height: 1.5px;
+    background: linear-gradient(90deg, var(--acc, var(--teal)), transparent);
+  }
+  .divider-line.rev {
+    background: linear-gradient(90deg, transparent, var(--acc, var(--teal)));
+  }
+
+  .divider-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--acc, var(--teal));
+    white-space: nowrap; font-weight: 700;
+  }
+
+  /* ── PILLAR CELLS ── */
+  .pillar-cell {
+    padding: 28px 24px;
+  }
+
+  .pillar-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 72px; font-weight: 800;
+    color: var(--acc, var(--teal));
+    opacity: 0.08;
+    position: absolute;
+    bottom: -12px; right: 12px;
+    line-height: 1; pointer-events: none;
+  }
+
+  /* ── METRIC BAND ── */
+  .metric-band {
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: flex-start;
+  }
+
+  /* colored bg for metric cells */
+  .metric-teal   { background: linear-gradient(160deg, #e0f7f4, #f5fffd); }
+  .metric-green  { background: linear-gradient(160deg, #e8f5e9, #f5fff5); }
+  .metric-amber  { background: linear-gradient(160deg, #fff3e0, #fffbf5); }
+  .metric-red    { background: linear-gradient(160deg, #ffebee, #fff8f9); }
+  .metric-blue   { background: linear-gradient(160deg, #e3f0ff, #f5f8ff); }
+  .metric-violet { background: linear-gradient(160deg, #ede7ff, #f9f5ff); }
+
+  /* ── AI CHIPS ── */
+  .ai-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 5px 12px; border-radius: 6px;
+    font-size: 11px; font-family: 'JetBrains Mono', monospace;
+    font-weight: 600; margin: 3px 3px 3px 0;
+    border: 1.5px solid rgba(0,0,0,0.1);
+  }
+  .ai-chip .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+  }
+
+  /* ── PROGRESS BARS ── */
+  .bar-wrap { margin-top: 12px; }
+  .bar-label {
+    display: flex; justify-content: space-between;
+    font-size: 10.5px; color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 4px; letter-spacing: 0.3px;
+  }
+  .bar-label span:last-child { color: var(--acc, var(--teal)); font-weight: 700; }
+  .bar-track {
+    height: 6px;
+    background: rgba(0,0,0,0.07);
+    border-radius: 4px; margin-bottom: 10px; overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%; border-radius: 4px;
+    background: var(--acc, var(--teal));
+    opacity: 0.85;
+  }
+
+  /* ── FOOTER ── */
+  .footer-cell {
+    grid-column: span 4;
+    padding: 26px 52px;
+    background: linear-gradient(135deg, #00897b 0%, #1565c0 60%, #6200ea 100%);
+    border-right: none; border-bottom: none;
+    display: flex; align-items: center; gap: 32px;
+    position: relative; overflow: hidden;
+  }
+  .footer-cell::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ffd740, #ff6e40, #ea80fc, #00e5d1);
+  }
+
+  .footer-avatar {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    border: 2.5px solid rgba(255,255,255,0.6);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-weight: 800;
+    font-size: 16px; color: #fff; flex-shrink: 0;
+  }
+
+  .footer-info { flex: 1; }
+  .footer-name {
+    font-family: 'Syne', sans-serif; font-weight: 700;
+    font-size: 16px; color: #fff;
+  }
+  .footer-role {
+    font-size: 11.5px; color: rgba(255,255,255,0.72);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.4px; margin-top: 4px;
+  }
+
+  .footer-right { text-align: right; }
+  .footer-pill {
+    display: inline-block;
+    padding: 8px 20px; border-radius: 30px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.2);
+    border: 1.5px solid rgba(255,255,255,0.45);
+    color: #fff; margin-bottom: 6px;
+  }
+  .footer-tag-sm {
+    display: block; font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: rgba(255,255,255,0.55);
+    letter-spacing: 1.5px; margin-top: 4px;
+  }
+
+  /* colored pillar backgrounds */
+  .pillar-teal   { background: linear-gradient(160deg, #e0f7f4, #f5fffd); }
+  .pillar-violet { background: linear-gradient(160deg, #ede7ff, #f9f5ff); }
+  .pillar-amber  { background: linear-gradient(160deg, #fff3e0, #fffbf5); }
+  .pillar-blue   { background: linear-gradient(160deg, #e3f0ff, #f5f8ff); }
+
+  /* conclusion stripe colours */
+  .concl-col { padding-right: 24px; border-right: 1.5px solid var(--border); }
+  .concl-col:last-child { border-right: none; padding-right: 0; }
+
+</style>
+</head>
+<body>
+<div class="poster">
+
+  <!-- ═══ HEADER ═══ -->
+  <div class="header">
+    <div class="header-inner">
+      <div class="sdaia-badge">SDAIA<br>AI</div>
+      <div class="header-text">
+        <div class="header-eyebrow">⬡ Saudi Data & AI Authority &nbsp;•&nbsp; Official Framework 2024</div>
+        <div class="header-title">Artificial Intelligence<br><span>Adoption Framework</span></div>
+        <div class="header-sub">A structured guide for responsible, impactful AI integration across Saudi Arabia's public and private sectors — aligned with Vision 2030</div>
+      </div>
+      <div class="header-meta">
+        <div class="vision-pill">Vision 2030 Aligned</div>
+        <span class="header-tag">⬡ Smart Transformation Initiative</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ GRID ═══ -->
+  <div class="grid">
+
+    <!-- ─── PURPOSE & AUDIENCE ─── -->
+    <div class="row-divider" style="--acc: var(--teal);">
+      <div class="divider-line"></div>
+      <div class="divider-label">Core Purpose & Target Audience</div>
+      <div class="divider-line rev"></div>
+    </div>
+
+    <!-- Cell: Core Purpose -->
+    <div class="cell col-span-2" style="--acc: var(--teal); --acc-lt: var(--teal-lt);">
+      <div class="cell-label">Framework Mission</div>
+      <div class="cell-icon">🎯</div>
+      <div class="cell-title">Accelerate Smart Transformation</div>
+      <div class="cell-body">Integrate AI into operations, decision-making, and services — ensuring measurable, sustainable impact while upholding governance, ethics, and national values.</div>
+      <div class="tags">
+        <span class="tag">Governance</span>
+        <span class="tag">Ethics</span>
+        <span class="tag">Sustainability</span>
+        <span class="tag">National Values</span>
+      </div>
+    </div>
+
+    <!-- Cell: Target Audience -->
+    <div class="cell col-span-2" style="--acc: var(--blue); --acc-lt: var(--blue-lt); background: var(--blue-lt);">
+      <div class="cell-label">Target Audience</div>
+      <div class="cell-icon">👥</div>
+      <div class="cell-title">Who This Framework Serves</div>
+      <ul class="bullet-list">
+        <li>Government entities integrating AI into digital strategies</li>
+        <li>Policymakers assessing AI ecosystem readiness</li>
+        <li>Legislators identifying regulatory gaps</li>
+        <li>Leaders developing ethical AI frameworks</li>
+      </ul>
+    </div>
+
+    <!-- ─── THREE PILLARS ─── -->
+    <div class="row-divider" style="--acc: var(--violet);">
+      <div class="divider-line" style="background: linear-gradient(90deg, var(--violet), transparent);"></div>
+      <div class="divider-label" style="color: var(--violet);">Three Interconnected Pillars</div>
+      <div class="divider-line rev" style="background: linear-gradient(90deg, transparent, var(--violet));"></div>
+    </div>
+
+    <!-- Pillar 1 -->
+    <div class="cell pillar-cell pillar-teal" style="--acc: var(--teal);">
+      <div class="pillar-num">01</div>
+      <div class="cell-label">Pillar 1</div>
+      <div class="cell-title">Directions</div>
+      <div class="cell-body">Strategy, governance, planning, budgeting and alignment with national priorities.</div>
+      <ul class="bullet-list" style="margin-top: 12px;">
+        <li>Strategic KPIs &amp; roadmaps</li>
+        <li>Legal &amp; regulatory readiness</li>
+        <li>Risk assessment protocols</li>
+        <li>PDPL &amp; SDAIA compliance</li>
+      </ul>
+    </div>
+
+    <!-- Pillar 2 -->
+    <div class="cell pillar-cell pillar-violet" style="--acc: var(--violet);">
+      <div class="pillar-num">02</div>
+      <div class="cell-label">Pillar 2</div>
+      <div class="cell-title">Enablers</div>
+      <div class="cell-body">Data quality, technical infrastructure, and human capacity for AI adoption.</div>
+      <ul class="bullet-list" style="margin-top: 12px;">
+        <li>Data lineage &amp; governance</li>
+        <li>Scalable infrastructure</li>
+        <li>&lt;30 min/year downtime SLA</li>
+        <li>Talent &amp; academic partnerships</li>
+      </ul>
+    </div>
+
+    <!-- Pillar 3 -->
+    <div class="cell pillar-cell pillar-amber" style="--acc: var(--amber);">
+      <div class="pillar-num">03</div>
+      <div class="cell-label">Pillar 3</div>
+      <div class="cell-title">Outcomes</div>
+      <div class="cell-body">Intelligent applications and measurable impact on efficiency and services.</div>
+      <ul class="bullet-list" style="margin-top: 12px;">
+        <li>CI/CD model deployment</li>
+        <li>Privacy-by-design AI apps</li>
+        <li>Operational cost savings</li>
+        <li>Continuous impact metrics</li>
+      </ul>
+    </div>
+
+    <!-- AI Technologies -->
+    <div class="cell pillar-blue" style="--acc: var(--blue);">
+      <div class="cell-label">AI in Brief</div>
+      <div class="cell-title">Core AI Technologies</div>
+      <div style="display: flex; flex-wrap: wrap; margin-top: 12px;">
+        <span class="ai-chip" style="background: var(--teal-lt); color: var(--teal); border-color: rgba(0,137,123,0.25);">
+          <span class="dot" style="background: var(--teal);"></span>ML
+        </span>
+        <span class="ai-chip" style="background: var(--violet-lt); color: var(--violet); border-color: rgba(98,0,234,0.2);">
+          <span class="dot" style="background: var(--violet);"></span>NLP
+        </span>
+        <span class="ai-chip" style="background: var(--amber-lt); color: var(--amber); border-color: rgba(230,81,0,0.2);">
+          <span class="dot" style="background: var(--amber);"></span>Vision
+        </span>
+        <span class="ai-chip" style="background: var(--blue-lt); color: var(--blue); border-color: rgba(21,101,192,0.2);">
+          <span class="dot" style="background: var(--blue);"></span>GenAI
+        </span>
+      </div>
+      <div class="cell-body" style="margin-top: 14px; font-size: 11.5px;">Challenges: data quality gaps, model opacity, talent shortage, and ethical considerations.</div>
+    </div>
+
+    <!-- ─── KEY METRICS ─── -->
+    <div class="row-divider" style="--acc: var(--green);">
+      <div class="divider-line" style="background: linear-gradient(90deg, var(--green), transparent);"></div>
+      <div class="divider-label" style="color: var(--green);">Measurable Impact Targets</div>
+      <div class="divider-line rev" style="background: linear-gradient(90deg, transparent, var(--green));"></div>
+    </div>
+
+    <!-- Metric 1 -->
+    <div class="cell metric-band metric-teal" style="--acc: var(--teal);">
+      <div class="cell-label">Budget Efficiency</div>
+      <div class="stat-hero">≥8%</div>
+      <div class="stat-desc">Operational budget savings target through AI-driven process optimisation</div>
+    </div>
+
+    <!-- Metric 2 -->
+    <div class="cell metric-band metric-green" style="--acc: var(--green);">
+      <div class="cell-label">Productivity Uplift</div>
+      <div class="stat-hero">+20%</div>
+      <div class="stat-desc">Employee productivity gain with AI-assisted workflows (15–20% target range)</div>
+    </div>
+
+    <!-- Metric 3 -->
+    <div class="cell metric-band metric-amber" style="--acc: var(--amber);">
+      <div class="cell-label">AI-Powered Services</div>
+      <div class="stat-hero">25%</div>
+      <div class="stat-desc">Of all government services to be powered by AI under framework targets</div>
+    </div>
+
+    <!-- Metric 4 -->
+    <div class="cell metric-band metric-red" style="--acc: var(--red);">
+      <div class="cell-label">Response Speed</div>
+      <div class="stat-hero">20%</div>
+      <div class="stat-desc">Faster service response times through intelligent automation &amp; decision support</div>
+    </div>
+
+    <!-- ─── ENABLERS DEEP DIVE ─── -->
+    <div class="row-divider" style="--acc: var(--teal);">
+      <div class="divider-line"></div>
+      <div class="divider-label">Enablers Deep Dive</div>
+      <div class="divider-line rev"></div>
+    </div>
+
+    <!-- Data -->
+    <div class="cell metric-teal" style="--acc: var(--teal);">
+      <div class="cell-label">Data Enabler</div>
+      <div class="cell-title">Data Foundation</div>
+      <div class="bar-wrap">
+        <div class="bar-label"><span>Availability</span><span>HIGH</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:88%;"></div></div>
+        <div class="bar-label"><span>Quality</span><span>CRITICAL</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:95%;"></div></div>
+        <div class="bar-label"><span>Governance</span><span>MANDATORY</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:100%;"></div></div>
+      </div>
+      <div class="cell-body" style="margin-top: 8px; font-size: 11px;">Lineage tracking, reliability standards &amp; access controls are non-negotiable requirements.</div>
+    </div>
+
+    <!-- Infrastructure -->
+    <div class="cell metric-violet" style="--acc: var(--violet);">
+      <div class="cell-label">Infrastructure</div>
+      <div class="cell-title">Technical Standards</div>
+      <ul class="bullet-list">
+        <li>Scalability &amp; uptime SLA</li>
+        <li>&lt;30 min/year downtime limit</li>
+        <li>Real-time system monitoring</li>
+        <li>Disaster recovery plans</li>
+        <li>Technical interoperability</li>
+      </ul>
+    </div>
+
+    <!-- Human Capacity -->
+    <div class="cell metric-amber" style="--acc: var(--amber);">
+      <div class="cell-label">Human Capital</div>
+      <div class="cell-title">Human Capacity</div>
+      <ul class="bullet-list">
+        <li>Diverse AI team composition</li>
+        <li>Continuous professional dev</li>
+        <li>Academic partnerships</li>
+        <li>Job stability &amp; retention</li>
+        <li>Upskilling &amp; reskilling</li>
+      </ul>
+    </div>
+
+    <!-- AI Applications -->
+    <div class="cell metric-blue" style="--acc: var(--blue);">
+      <div class="cell-label">Outcomes: Apps</div>
+      <div class="cell-title">AI Applications</div>
+      <ul class="bullet-list">
+        <li>Model development lifecycle</li>
+        <li>CI/CD pipelines for AI</li>
+        <li>Privacy-by-design principles</li>
+        <li>Operational AI management</li>
+        <li>Continuous improvement loops</li>
+      </ul>
+    </div>
+
+    <!-- ─── CONCLUSION ─── -->
+    <div class="row-divider" style="--acc: var(--amber);">
+      <div class="divider-line" style="background: linear-gradient(90deg, var(--amber), transparent);"></div>
+      <div class="divider-label" style="color: var(--amber);">Strategic Conclusion</div>
+      <div class="divider-line rev" style="background: linear-gradient(90deg, transparent, var(--amber));"></div>
+    </div>
+
+    <!-- Conclusion 3-col -->
+    <div class="cell col-span-4" style="--acc: var(--teal); padding: 26px 36px; border-right: none; background: #f5f7ff;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0;">
+        <div class="concl-col">
+          <div class="cell-label">SDAIA's Role</div>
+          <div style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--text); margin-bottom:8px;">Strategic Enabler for Vision 2030</div>
+          <div class="cell-body">SDAIA is positioned as the key national partner — not a regulator but an active collaborator and capacity builder for AI transformation.</div>
+        </div>
+        <div class="concl-col" style="padding-left:24px; --acc: var(--blue);">
+          <div class="cell-label" style="--acc: var(--blue);">Core Philosophy</div>
+          <div style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--text); margin-bottom:8px;">AI as a Means, Not an End</div>
+          <div class="cell-body">The real goals are efficiency, quality of life, and innovation. The framework demands continuous collaboration and maturity measurement to verify impact.</div>
+        </div>
+        <div style="padding-left:24px; --acc: var(--violet);">
+          <div class="cell-label" style="--acc: var(--violet);">Governance Imperative</div>
+          <div style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--text); margin-bottom:8px;">Accountable Transformation</div>
+          <div class="cell-body">Regulatory compliance (PDPL, SDAIA guidelines), ethical AI deployment, and responsible data use are non-negotiable foundations across all pillars.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Author Footer -->
+    <div class="footer-cell">
+      <div class="footer-avatar">MF</div>
+      <div class="footer-info">
+        <div class="footer-name">Dr. Muhammad Farooq</div>
+        <div class="footer-role">AI Doctor &nbsp;•&nbsp; LinkedIn Top Voice &nbsp;•&nbsp; MSc Applied AI (IU Germany) &nbsp;•&nbsp; HMG Suwedi Hospital</div>
+      </div>
+      <div class="footer-right">
+        <div class="footer-pill">SDAIA Framework Summary</div>
+        <span class="footer-tag-sm">drfarooqai.github.io &nbsp;•&nbsp; Saudi Arabia Healthcare AI</span>
+      </div>
+    </div>
+
+  </div><!-- /grid -->
+</div><!-- /poster -->
+</body>
+</html>
