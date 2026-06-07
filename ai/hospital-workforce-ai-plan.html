@@ -295,6 +295,30 @@ nav{background:rgba(255,255,255,0.80) !important;border-bottom:1px solid var(--l
 .card>*,.chartcard>*,.kpi>*,.rolepanel>*,.phasedetail>*,.vmbox.mission>*{position:relative;z-index:1;}
 /* exec snake cards -> full ring too */
 .snakecard::before{background:conic-gradient(from var(--sa,0deg),#0C8C82,#22D3EE,#BFFCF5,#7C3AED,#EC4899,#22D3EE,#0C8C82) !important;}
+
+/* ===== GATE: hide all sections ===== */
+section,footer{display:none !important;}
+nav .navlinks{display:none !important;}
+
+/* teaser strip */
+#teaser{padding:48px 0 36px;background:linear-gradient(180deg,#F1FCFA 0%,#fff 100%);text-align:center;border-bottom:1px solid var(--line);}
+.teaser-ghost{font-family:var(--mono);font-size:13px;letter-spacing:0.12em;color:var(--ink);opacity:0.18;filter:blur(5px);user-select:none;pointer-events:none;max-width:680px;margin:0 auto 18px;line-height:2;}
+.teaser-lock{font-family:var(--mono);font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+
+/* gate modal */
+#gate-modal{position:fixed;inset:0;background:rgba(4,20,18,0.72);backdrop-filter:blur(6px);z-index:900;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .4s ease;}
+#gate-modal.visible{opacity:1;pointer-events:all;}
+#gate-card{background:#fff;border-radius:24px;padding:48px 44px;max-width:520px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(4,20,18,0.28);border-top:4px solid var(--teal);}
+.gate-icon{font-size:40px;margin-bottom:18px;line-height:1;}
+#gate-card h2{font-family:var(--serif);font-size:32px;color:var(--ink);line-height:1.1;margin-bottom:16px;}
+#gate-card p{font-size:16px;color:var(--ink-soft);line-height:1.6;margin-bottom:28px;}
+.gate-btns{display:flex;flex-direction:column;gap:12px;}
+.btn-dm{display:block;background:var(--teal);color:#fff;font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:0.08em;padding:16px 28px;border-radius:12px;transition:.2s;text-decoration:none;}
+.btn-dm:hover{background:#0A6F66;}
+.btn-comment{display:block;background:#fff;color:var(--teal);font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:0.08em;padding:16px 28px;border-radius:12px;border:2px solid var(--teal);transition:.2s;text-decoration:none;}
+.btn-comment:hover{background:#F1FCFA;}
+.gate-note{font-size:12.5px;color:var(--muted);margin-top:20px;margin-bottom:0 !important;}
+@media(max-width:560px){#gate-card{padding:36px 24px;}#gate-card h2{font-size:26px;}}
 </style>
 </head>
 <body>
@@ -329,6 +353,26 @@ nav{background:rgba(255,255,255,0.80) !important;border-bottom:1px solid var(--l
     <div class="by">A strategic plan by <b>Dr. Muhammad Farooq</b> &nbsp;·&nbsp; AI in Healthcare</div>
   </div>
 </header>
+
+<!-- TEASER STRIP -->
+<div id="teaser">
+  <div class="teaser-ghost">Executive Summary &nbsp;·&nbsp; Vision &amp; Mission &nbsp;·&nbsp; Workforce Model &nbsp;·&nbsp; Role-Based Curriculum &nbsp;·&nbsp; Governance &nbsp;·&nbsp; 12-Month Roadmap &nbsp;·&nbsp; KPIs &amp; Metrics &nbsp;·&nbsp; Budget &nbsp;·&nbsp; AI Tools Registry &nbsp;·&nbsp; Sustainability Plan…</div>
+  <div class="teaser-lock">🔒 &nbsp; Full plan available — contact Dr. Farooq on LinkedIn</div>
+</div>
+
+<!-- GATE MODAL -->
+<div id="gate-modal">
+  <div id="gate-card">
+    <div class="gate-icon">🔒</div>
+    <h2>This Plan is Available on Request</h2>
+    <p>The full <strong>Hospital Workforce AI Transformation Plan</strong> is shared exclusively with healthcare leaders and institutions.<br><br>Reach out to <strong>Dr. Muhammad Farooq</strong> on LinkedIn — comment on the post or send a direct message to request access.</p>
+    <div class="gate-btns">
+      <a href="https://www.linkedin.com/in/dr-muhammadfarooq/" target="_blank" rel="noopener" class="btn-dm">Send a DM on LinkedIn →</a>
+      <a href="https://www.linkedin.com/in/dr-muhammadfarooq/" target="_blank" rel="noopener" class="btn-comment">Comment on LinkedIn Post</a>
+    </div>
+    <p class="gate-note">Already have access? The link will be sent directly to you.</p>
+  </div>
+</div>
 
 <!-- EXECUTIVE SUMMARY -->
 <section id="summary">
@@ -741,6 +785,24 @@ D -->|No| F["Retire or rework"]`
   const __runM=()=>{try{mermaid.run({querySelector:'.mermaid'});}catch(e){console.error('mermaid',e);}};
   if(document.fonts&&document.fonts.ready){document.fonts.ready.then(()=>setTimeout(__runM,120));}else{setTimeout(__runM,250);}
 }
+</script>
+
+<script>
+/* Gate: show modal when hero scrolls out of view */
+(function(){
+  var modal = document.getElementById('gate-modal');
+  var hero  = document.querySelector('header.hero');
+  if(!modal || !hero) return;
+  var shown = false;
+  var obs = new IntersectionObserver(function(entries){
+    if(!shown && !entries[0].isIntersecting){
+      shown = true;
+      modal.classList.add('visible');
+      obs.disconnect();
+    }
+  },{threshold:0});
+  obs.observe(hero);
+})();
 </script>
 </body>
 </html>
