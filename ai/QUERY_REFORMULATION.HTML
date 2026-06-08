@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mastering RAG: The Complete Guide to Query Reformulation</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.19/index.min.css" />
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(180deg, #faf5ff 0%, #fdf2f8 50%, #eff6ff 100%);
+    color: #1e1b4b;
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-gradient {
+    background: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 50%, #bfdbfe 100%);
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.15);
+    transition: all 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px -10px rgba(139, 92, 246, 0.25);
+  }
+  .pull-quote {
+    background: linear-gradient(135deg, #fce7f3 0%, #ede9fe 100%);
+    border-left: 6px solid #ec4899;
+    border-radius: 0 1rem 1rem 0;
+    padding: 2rem;
+    font-size: 1.25rem;
+    font-style: italic;
+    color: #4c1d95;
+    line-height: 1.7;
+  }
+  .code-block {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    color: #e0e7ff;
+    border-radius: 1rem;
+    font-family: 'Menlo', 'Monaco', monospace;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    box-shadow: 0 10px 30px -10px rgba(30, 27, 75, 0.4);
+  }
+  .section-number {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: white;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    box-shadow: 0 10px 20px -5px rgba(236, 72, 153, 0.4);
+    flex-shrink: 0;
+  }
+  .toc-link {
+    transition: all 0.2s ease;
+  }
+  .toc-link:hover {
+    background: linear-gradient(135deg, #fce7f3 0%, #ede9fe 100%);
+    transform: translateX(4px);
+  }
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .faq-item {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+  }
+  .faq-item:hover {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 30px -10px rgba(139, 92, 246, 0.15);
+  }
+  .badge {
+    background: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 100%);
+    color: #581c87;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .step-card {
+    background: linear-gradient(135deg, rgba(252, 231, 243, 0.5) 0%, rgba(237, 233, 254, 0.5) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 1rem;
+    padding: 1.5rem;
+  }
+  .technique-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    transition: all 0.3s ease;
+  }
+  .technique-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 25px 50px -10px rgba(139, 92, 246, 0.3);
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #faf5ff; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ec4899, #8b5cf6); border-radius: 5px; }
+  .comparison-table th {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+  }
+  .comparison-table tr:hover td {
+    background: rgba(237, 233, 254, 0.3);
+  }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- Navigation -->
+<nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-purple-100">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">R</div>
+      <span class="font-bold text-lg text-indigo-900">RAG Mastery</span>
+    </div>
+    <div class="hidden md:flex gap-6 text-sm font-medium text-indigo-700">
+      <a href="#why" class="hover:text-pink-600 transition">Why</a>
+      <a href="#techniques" class="hover:text-pink-600 transition">Techniques</a>
+      <a href="#comparison" class="hover:text-pink-600 transition">Compare</a>
+      <a href="#implement" class="hover:text-pink-600 transition">Implement</a>
+      <a href="#faq" class="hover:text-pink-600 transition">FAQ</a>
+    </div>
+    <a href="#conclusion" class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:shadow-lg hover:scale-105 transition">Read Now</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="relative overflow-hidden py-20 px-6">
+  <div class="absolute inset-0 hero-gradient opacity-60"></div>
+  <div class="absolute top-20 left-10 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
+  <div class="absolute bottom-10 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
+  <div class="absolute top-1/2 left-1/2 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+  <div class="relative max-w-4xl mx-auto text-center fade-in">
+    <span class="badge text-sm">RAG Series • Query Optimization</span>
+    <h1 class="text-5xl md:text-6xl font-extrabold mt-6 mb-6 leading-tight">
+      Mastering RAG: The Complete Guide to <span class="gradient-text">Query Reformulation</span>
+    </h1>
+    <p class="text-xl text-indigo-800 mb-8 leading-relaxed max-w-2xl mx-auto">
+      Transform raw user questions into precision-engineered queries. Learn every major technique — from rewriting and multi-query to decomposition, step-back prompting, and multi-hop reasoning.
+    </p>
+    <div class="flex items-center justify-center gap-4 text-sm text-indigo-700">
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white font-bold">MF</div>
+        <div class="text-left">
+          <a href="https://www.linkedin.com/in/dr-muhammadfarooq/" target="_blank" class="font-semibold text-indigo-900 hover:text-purple-700 transition">Dr. Muhammad Farooq</a>
+          <p>AI in Healthcare · <a href="https://github.com/DrFarooqAi" target="_blank" class="text-purple-600 hover:text-pink-600 transition">GitHub</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Table of Contents -->
+<section class="max-w-4xl mx-auto px-6 mb-16 fade-in">
+  <div class="card p-8">
+    <h2 class="text-2xl font-bold text-indigo-900 mb-6 flex items-center gap-3">
+      <span class="text-3xl"></span> Table of Contents
+    </h2>
+    <div class="grid md:grid-cols-2 gap-3">
+      <a href="#intro" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center font-bold">1</span>
+        What is Query Reformulation?
+      </a>
+      <a href="#why" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold">2</span>
+        Why It Matters in RAG
+      </a>
+      <a href="#techniques" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">3</span>
+        6 Core Techniques
+      </a>
+      <a href="#comparison" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center font-bold">4</span>
+        Technique Comparison
+      </a>
+      <a href="#decision" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold">5</span>
+        Decision Framework
+      </a>
+      <a href="#combine" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">6</span>
+        Combining Techniques
+      </a>
+      <a href="#implement" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center font-bold">7</span>
+        Implementation Considerations
+      </a>
+      <a href="#advanced" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold">8</span>
+        Advanced Optimizations
+      </a>
+      <a href="#pitfalls" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">9</span>
+        Common Pitfalls
+      </a>
+      <a href="#tools" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center font-bold">10</span>
+        Tools & Libraries
+      </a>
+      <a href="#future" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold">11</span>
+        The Future
+      </a>
+      <a href="#conclusion" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">12</span>
+        Conclusion
+      </a>
+    </div>
+  </div>
+</section>
+
+<main class="max-w-4xl mx-auto px-6 pb-24 space-y-24">
+
+  <!-- Section 1: Introduction -->
+  <section id="intro" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">1</span>
+      <h2 class="text-4xl font-bold text-indigo-900">What is Query Reformulation?</h2>
+    </div>
+    <p class="text-lg text-indigo-800 mb-6 leading-relaxed">
+      <strong>Query Reformulation</strong> is the process of modifying, expanding, or restructuring a user's original question before it's sent to the retrieval system. The goal is to bridge the gap between how humans naturally ask questions and how retrieval systems best understand them.
+    </p>
+
+    <div class="card p-8 mb-8 bg-gradient-to-br from-pink-50 to-purple-50">
+      <h3 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+        <span class="text-3xl">🌍</span> The Translation Analogy
+      </h3>
+      <p class="text-indigo-800 leading-relaxed">
+        Imagine you're in a foreign country and you ask a local for directions using broken phrases. They might understand your intent, but they could also misinterpret you. Now imagine you have a translator who converts your broken phrases into clear, grammatically correct sentences in the local language. Suddenly, you get much better directions.
+      </p>
+      <p class="text-indigo-800 mt-4 leading-relaxed">
+        <strong>Query reformulation is that translator.</strong> It takes the user's raw input and transforms it into a form that the retrieval system can work with more effectively.
+      </p>
+    </div>
+
+    <div class="pull-quote">
+       <strong>Key Insight:</strong> Query reformulation doesn't change what the user wants — it changes how the system understands what they want.
+    </div>
+  </section>
+
+  <!-- Section 2: Why It Matters -->
+  <section id="why" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">2</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Why Query Reformulation Matters in RAG</h2>
+    </div>
+    <p class="text-lg text-indigo-800 mb-6 leading-relaxed">
+      Traditional RAG systems assume users will ask clear, well-structured questions. In reality, user queries are often messy, ambiguous, or incomplete.
+    </p>
+
+    <div class="grid md:grid-cols-2 gap-4 mb-8">
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white text-2xl mb-3">🌫️</div>
+        <h4 class="font-bold text-indigo-900 mb-2">Vague or Ambiguous</h4>
+        <p class="text-sm text-indigo-700 italic">"Tell me about that thing"</p>
+      </div>
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-2xl mb-3">🎯</div>
+        <h4 class="font-bold text-indigo-900 mb-2">Too Specific or Narrow</h4>
+        <p class="text-sm text-indigo-700 italic">"What is the exact molecular weight of compound X-47B in the 2019 study?"</p>
+      </div>
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl mb-3">🔗</div>
+        <h4 class="font-bold text-indigo-900 mb-2">Multi-part or Complex</h4>
+        <p class="text-sm text-indigo-700 italic">"How does climate change affect agriculture, and what are the economic implications?"</p>
+      </div>
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-white text-2xl mb-3"></div>
+        <h4 class="font-bold text-indigo-900 mb-2">Different Terminology</h4>
+        <p class="text-sm text-indigo-700 italic">"How do I fix a broken screen?" vs. "Display replacement procedure"</p>
+      </div>
+      <div class="technique-card md:col-span-2">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-blue-600 flex items-center justify-center text-white text-2xl mb-3">❓</div>
+        <h4 class="font-bold text-indigo-900 mb-2">Missing Context</h4>
+        <p class="text-sm text-indigo-700 italic">"What did he say?" (Who is "he"? What conversation? When?)</p>
+      </div>
+    </div>
+
+    <div class="pull-quote">
+      Without query reformulation, these messy queries lead to poor retrieval, which leads to poor answers. Query reformulation is the critical preprocessing step that ensures your retrieval system gets the best possible input.
+    </div>
+  </section>
+
+  <!-- Section 3: Core Techniques -->
+  <section id="techniques" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">3</span>
+      <h2 class="text-4xl font-bold text-indigo-900">The 6 Core Techniques</h2>
+    </div>
+    <p class="text-indigo-700 mb-8 leading-relaxed">Let's explore the major techniques, from simplest to most advanced.</p>
+
+    <!-- Technique 1 -->
+    <div class="card p-8 mb-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-500 text-white flex items-center justify-center font-bold text-xl flex-shrink-0">1</div>
+        <div>
+          <h3 class="text-2xl font-bold text-indigo-900">Query Rewriting / Paraphrasing</h3>
+          <span class="badge mt-2 inline-block">Low Complexity • Low Cost</span>
+        </div>
+      </div>
+      <p class="text-indigo-800 mb-4 leading-relaxed">
+        <strong>What it is:</strong> Transforming the original query into a clearer, more precise version while maintaining the same intent. An LLM rewrites the query using better phrasing, clearer terminology, or more explicit language.
+      </p>
+
+      <div class="grid md:grid-cols-2 gap-4 mb-4">
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p class="text-xs font-bold text-red-700 mb-2 uppercase">Original Query</p>
+          <p class="text-sm text-red-900 italic">"How do I fix it when my phone won't charge?"</p>
+        </div>
+        <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+          <p class="text-xs font-bold text-emerald-700 mb-2 uppercase">Rewritten Query</p>
+          <p class="text-sm text-emerald-900">"What are the troubleshooting steps for a smartphone that is not charging properly, including checking the charging cable, cleaning the charging port, and testing with different power sources?"</p>
+        </div>
+      </div>
+
+      <div class="code-block p-5">
+<pre><code class="text-sm">def rewrite_query(original_query: str, llm) -> str:
+    prompt = f"""
+    Rewrite the following user query to be more clear, specific,
+    and suitable for document retrieval.
+    Maintain the original intent but use precise language.
+    
+    Original query: {original_query}
+    
+    Rewritten query:
+    """
+    return llm.generate(prompt)</code></pre>
+      </div>
+
+      <div class="mt-4 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+        <p class="text-sm text-blue-900"><strong> Best for:</strong> Vague, poorly phrased, or informal queries where a single clear rewrite improves retrieval.</p>
+      </div>
+    </div>
+
+    <!-- Technique 2 -->
+    <div class="card p-8 mb-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 text-white flex items-center justify-center font-bold text-xl flex-shrink-0">2</div>
+        <div>
+          <h3 class="text-2xl font-bold text-indigo-900">Multi-Query Approach</h3>
+          <span class="badge mt-2 inline-block">Medium Complexity • Medium Cost</span>
+        </div>
+      </div>
+      <p class="text-indigo-800 mb-4 leading-relaxed">
+        <strong>What it is:</strong> Generating multiple variations of the original query to cast a wider retrieval net. Instead of asking one question, the system generates 3-5 different ways to ask the same question, retrieves documents for each, then deduplicates and ranks the results.
+      </p>
+
+      <div class="bg-slate-50 rounded-lg p-5 mb-4 border border-slate-200">
+        <p class="text-xs font-bold text-slate-700 mb-2 uppercase">Example: "What are the benefits of meditation?"</p>
+        <div class="space-y-2 text-sm text-slate-800">
+          <p>1️⃣ "What are the health benefits of regular meditation practice?"</p>
+          <p>2️⃣ "How does meditation improve mental and physical well-being?"</p>
+          <p>3️⃣ "What scientific evidence supports the positive effects of meditation?"</p>
+          <p>4️⃣ "What are the psychological and physiological advantages of meditation?"</p>
+        </div>
+      </div>
+
+      <div class="code-block p-5">
+<pre><code class="text-sm">def multi_query_approach(original_query: str, llm, num_queries=4):
+    prompt = f"""
+    Generate {num_queries} different versions of the following query.
+    Each version should ask the same question but use different
+    wording and perspectives.
+    
+    Original query: {original_query}
+    
+    Generated queries (one per line):
+    """
+    queries = llm.generate(prompt).strip().split('\n')
+    
+    all_results = []
+    for query in queries:
+        results = vector_search(query)
+        all_results.extend(results)
+    
+    return deduplicate_and_rank(all_results)</code></pre>
+      </div>
+
+      <div class="mt-4 bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+        <p class="text-sm text-amber-900"><strong>️ Trade-off:</strong> Higher recall but increased latency and API costs (multiple LLM calls + multiple searches).</p>
+      </div>
+    </div>
+
+    <!-- Technique 3 -->
+    <div class="card p-8 mb-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 text-white flex items-center justify-center font-bold text-xl flex-shrink-0">3</div>
+        <div>
+          <h3 class="text-2xl font-bold text-indigo-900">Query Decomposition</h3>
+          <span class="badge mt-2 inline-block">Medium Complexity • Medium Cost</span>
+        </div>
+      </div>
+      <p class="text-indigo-800 mb-4 leading-relaxed">
+        <strong>What it is:</strong> Breaking down a complex, multi-part question into simpler sub-questions that can be answered independently. The system identifies that a query contains multiple questions or requires multiple pieces of information, then splits it into separate queries.
+      </p>
+
+      <div class="bg-slate-50 rounded-lg p-5 mb-4 border border-slate-200">
+        <p class="text-xs font-bold text-slate-700 mb-2 uppercase">Original Query</p>
+        <p class="text-sm text-slate-800 italic mb-3">"How does machine learning work, what are its applications in healthcare, and what are the ethical concerns?"</p>
+        <p class="text-xs font-bold text-slate-700 mb-2 uppercase">Decomposed Into:</p>
+        <div class="space-y-2 text-sm text-slate-800">
+          <p> "How does machine learning work? (Explain the basic principles and algorithms)"</p>
+          <p>🔹 "What are the applications of machine learning in healthcare?"</p>
+          <p>🔹 "What are the ethical concerns and challenges associated with machine learning?"</p>
+        </div>
+      </div>
+
+      <div class="code-block p-5">
+<pre><code class="text-sm">def decompose_query(original_query: str, llm):
+    prompt = f"""
+    Analyze the following query. If it contains multiple questions
+    or topics, break it down into separate, simpler sub-questions.
+    If it's already a simple question, return it as-is.
+    
+    Original query: {original_query}
+    
+    Sub-questions (one per line, numbered):
+    """
+    sub_queries = llm.generate(prompt).strip().split('\n')
+    return [q.split('. ', 1)[1] if '. ' in q else q for q in sub_queries]</code></pre>
+      </div>
+    </div>
+
+    <!-- Technique 4 -->
+    <div class="card p-8 mb-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-500 text-white flex items-center justify-center font-bold text-xl flex-shrink-0">4</div>
+        <div>
+          <h3 class="text-2xl font-bold text-indigo-900">Step-Back Prompting</h3>
+          <span class="badge mt-2 inline-block">Medium Complexity • Medium Cost</span>
+        </div>
+      </div>
+      <p class="text-indigo-800 mb-4 leading-relaxed">
+        <strong>What it is:</strong> Asking the LLM to first identify the underlying principles or concepts behind a specific question, then using that broader context to guide retrieval. Instead of directly answering the specific question, the system asks <em>"What general principle or concept does this question relate to?"</em>
+      </p>
+
+      <div class="bg-slate-50 rounded-lg p-5 mb-4 border border-slate-200">
+        <p class="text-xs font-bold text-slate-700 mb-2 uppercase">Example</p>
+        <p class="text-sm text-slate-800 mb-2"><strong>Original:</strong> "Why did the 2008 financial crisis happen?"</p>
+        <p class="text-sm text-slate-800 mb-2"><strong>Step-Back:</strong> "What are the fundamental causes of financial crises in general?"</p>
+        <p class="text-sm text-slate-800"><strong>Result:</strong> Documents about financial crisis theory, economic bubbles, regulatory failures, and systemic risk — combined with 2008-specific context.</p>
+      </div>
+
+      <div class="code-block p-5">
+<pre><code class="text-sm">def step_back_prompting(original_query: str, llm):
+    # Step 1: Generate step-back question
+    step_back_prompt = f"""
+    What general principle, concept, or broader topic does the
+    following question relate to? Formulate a more general
+    question that captures the underlying concept.
+    
+    Original question: {original_query}
+    """
+    step_back_query = llm.generate(step_back_prompt)
+    
+    # Step 2: Retrieve using both queries
+    specific_docs = retrieve_documents(original_query)
+    general_docs = retrieve_documents(step_back_query)
+    
+    # Step 3: Combine and generate answer
+    combined_docs = merge_and_deduplicate(specific_docs, general_docs)
+    return generate_answer(original_query, combined_docs)</code></pre>
+      </div>
+    </div>
+
+    <!-- Technique 5 -->
+    <div class="card p-8 mb-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500 text-white flex items-center justify-center font-bold text-xl flex-shrink-0">5</div>
+        <div>
+          <h3 class="text-2xl font-bold text-indigo-900">HyDE (Hypothetical Document Embeddings)</h3>
+          <span class="badge mt-2 inline-block">Medium Complexity • Medium Cost</span>
+        </div>
+      </div>
+      <p class="text-indigo-800 mb-4 leading-relaxed">
+        <strong>What it is:</strong> Generating a hypothetical answer to the query, then using that hypothetical answer as the search query instead of the original question. The LLM writes what a relevant document <em>would</em> look like if it contained the answer.
+      </p>
+
+      <div class="bg-slate-50 rounded-lg p-5 mb-4 border border-slate-200">
+        <p class="text-xs font-bold text-slate-700 mb-2 uppercase">Example</p>
+        <p class="text-sm text-slate-800 mb-2"><strong>Original:</strong> "What is the capital of France?"</p>
+        <p class="text-sm text-slate-800 italic"><strong>Hypothetical Doc:</strong> "Paris is the capital and largest city of France. Located in the north-central part of the country, Paris has been a major European center for art, fashion, gastronomy, and culture for centuries."</p>
+      </div>
+
+      <div class="code-block p-5">
+<pre><code class="text-sm">def hyde_retrieval(original_query: str, llm, vector_db):
+    # Step 1: Generate hypothetical document
+    hyde_prompt = f"""
+    Write a detailed paragraph that would answer the following
+    question. Focus on being comprehensive and using the same
+    terminology that would appear in relevant documents.
+    
+    Question: {original_query}
+    """
+    hypothetical_doc = llm.generate(hyde_prompt)
+    
+    # Step 2: Embed and retrieve
+    query_embedding = embed(hypothetical_doc)
+    return vector_db.search(query_embedding, top_k=10)</code></pre>
+      </div>
+    </div>
+
+    <!-- Technique 6 -->
+    <div class="card p-8 mb-6">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-500 to-pink-500 text-white flex items-center justify-center font-bold text-xl flex-shrink-0">6</div>
+        <div>
+          <h3 class="text-2xl font-bold text-indigo-900">Multi-Hop Reasoning with Dependency Resolution</h3>
+          <span class="badge mt-2 inline-block">High Complexity • High Cost</span>
+        </div>
+      </div>
+      <p class="text-indigo-800 mb-4 leading-relaxed">
+        <strong>What it is:</strong> An advanced form of query decomposition where sub-queries may depend on answers to previous sub-queries, creating a chain of reasoning. The system breaks down a complex question into a sequence where later questions reference answers to earlier ones.
+      </p>
+
+      <div class="bg-slate-50 rounded-lg p-5 mb-4 border border-slate-200">
+        <p class="text-xs font-bold text-slate-700 mb-2 uppercase">Example</p>
+        <p class="text-sm text-slate-800 mb-2"><strong>Original:</strong> "Who is the CEO of the company that acquired GitHub?"</p>
+        <p class="text-sm text-slate-800 mb-2"><strong>Sub-Query 1:</strong> "Which company acquired GitHub?" → <em>Microsoft</em></p>
+        <p class="text-sm text-slate-800 mb-2"><strong>Sub-Query 2:</strong> "Who is the CEO of Microsoft?" → <em>Satya Nadella</em></p>
+        <p class="text-sm text-slate-800"><strong>Final Answer:</strong> "Satya Nadella is the CEO of Microsoft, the company that acquired GitHub."</p>
+      </div>
+
+      <div class="code-block p-5">
+<pre><code class="text-sm">def multi_hop_query(original_query: str, llm, max_hops=3):
+    current_query = original_query
+    context = ""
+    
+    for hop in range(max_hops):
+        sub_query_prompt = f"""
+        Given the original question and any information gathered
+        so far, what is the next specific question we need to
+        answer? If we have enough information, return "DONE".
+        
+        Original question: {original_query}
+        Context so far: {context}
+        """
+        sub_query = llm.generate(sub_query_prompt)
+        
+        if sub_query.strip().upper() == "DONE":
+            break
+        
+        docs = retrieve_documents(sub_query)
+        answer = generate_answer(sub_query, docs)
+        context += f"\n{sub_query}: {answer}"
+    
+    return llm.generate(f"Original: {original_query}\nContext: {context}")</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Comparison -->
+  <section id="comparison" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">4</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Technique Comparison</h2>
+    </div>
+    <p class="text-indigo-700 mb-6 leading-relaxed">How do these techniques stack up against each other?</p>
+
+    <div class="overflow-x-auto mb-8">
+      <table class="w-full bg-white rounded-2xl overflow-hidden shadow-lg comparison-table">
+        <thead>
+          <tr class="text-white">
+            <th class="px-4 py-4 text-left font-semibold text-sm">Technique</th>
+            <th class="px-4 py-4 text-left font-semibold text-sm">Complexity</th>
+            <th class="px-4 py-4 text-left font-semibold text-sm">Latency</th>
+            <th class="px-4 py-4 text-left font-semibold text-sm">Cost</th>
+            <th class="px-4 py-4 text-left font-semibold text-sm">Recall</th>
+            <th class="px-4 py-4 text-left font-semibold text-sm">Precision</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-purple-100">
+          <tr>
+            <td class="px-4 py-4 font-semibold text-indigo-900 text-sm">Query Rewriting</td>
+            <td class="px-4 py-4 text-sm"><span class="badge">Low</span></td>
+            <td class="px-4 py-4 text-sm text-indigo-700">+100-200ms</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">1 LLM call</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">Medium</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">High</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-4 font-semibold text-indigo-900 text-sm">Multi-Query</td>
+            <td class="px-4 py-4 text-sm"><span class="badge">Medium</span></td>
+            <td class="px-4 py-4 text-sm text-indigo-700">+500ms-1s</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">3-5 LLM calls</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">High</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">Medium</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-4 font-semibold text-indigo-900 text-sm">Decomposition</td>
+            <td class="px-4 py-4 text-sm"><span class="badge">Medium</span></td>
+            <td class="px-4 py-4 text-sm text-indigo-700">+500ms-1s</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">2-4 LLM calls</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">High</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">High</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-4 font-semibold text-indigo-900 text-sm">Step-Back</td>
+            <td class="px-4 py-4 text-sm"><span class="badge">Medium</span></td>
+            <td class="px-4 py-4 text-sm text-indigo-700">+400-800ms</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">2 LLM calls</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">Medium</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">High</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-4 font-semibold text-indigo-900 text-sm">HyDE</td>
+            <td class="px-4 py-4 text-sm"><span class="badge">Medium</span></td>
+            <td class="px-4 py-4 text-sm text-indigo-700">+400-800ms</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">1-2 LLM calls</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">High</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">High</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-4 font-semibold text-indigo-900 text-sm">Multi-Hop</td>
+            <td class="px-4 py-4 text-sm"><span class="badge">High</span></td>
+            <td class="px-4 py-4 text-sm text-indigo-700">+1-3s</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">3-6 LLM calls</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">Very High</td>
+            <td class="px-4 py-4 text-sm text-indigo-700">Very High</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Section 5: Decision Framework -->
+  <section id="decision" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">5</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Decision Framework: When to Use What</h2>
+    </div>
+
+    <div class="space-y-4">
+      <div class="technique-card border-l-4 border-l-pink-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">🎯 Use Query Rewriting when:</h4>
+        <ul class="text-sm text-indigo-700 space-y-1">
+          <li>• Users ask vague or poorly-structured questions</li>
+          <li>• You need a simple, low-cost improvement</li>
+          <li>• Latency is critical (real-time applications)</li>
+        </ul>
+      </div>
+
+      <div class="technique-card border-l-4 border-l-purple-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">🌐 Use Multi-Query when:</h4>
+        <ul class="text-sm text-indigo-700 space-y-1">
+          <li>• You want to maximize recall</li>
+          <li>• The query could be interpreted multiple ways</li>
+          <li>• You have budget for additional API calls</li>
+        </ul>
+      </div>
+
+      <div class="technique-card border-l-4 border-l-blue-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2"> Use Query Decomposition when:</h4>
+        <ul class="text-sm text-indigo-700 space-y-1">
+          <li>• Questions contain multiple distinct topics</li>
+          <li>• Users ask compound questions ("and", "or", "also")</li>
+          <li>• Different parts require different document types</li>
+        </ul>
+      </div>
+
+      <div class="technique-card border-l-4 border-l-pink-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">🔭 Use Step-Back Prompting when:</h4>
+        <ul class="text-sm text-indigo-700 space-y-1">
+          <li>• Questions are highly specific but require general context</li>
+          <li>• You need to ensure foundational knowledge is included</li>
+          <li>• The domain requires understanding of underlying principles</li>
+        </ul>
+      </div>
+
+      <div class="technique-card border-l-4 border-l-purple-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">📝 Use HyDE when:</h4>
+        <ul class="text-sm text-indigo-700 space-y-1">
+          <li>• There's a mismatch between question phrasing and document language</li>
+          <li>• You're working with technical or domain-specific content</li>
+          <li>• Standard semantic search isn't finding relevant documents</li>
+        </ul>
+      </div>
+
+      <div class="technique-card border-l-4 border-l-blue-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">🧠 Use Multi-Hop when:</h4>
+        <ul class="text-sm text-indigo-700 space-y-1">
+          <li>• Questions require chaining multiple pieces of information</li>
+          <li>• Users ask "Who/What/Where" questions about entities mentioned in other contexts</li>
+          <li>• You need complex reasoning over multiple documents</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Combining Techniques -->
+  <section id="combine" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">6</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Combining Techniques for Maximum Effect</h2>
+    </div>
+    <p class="text-indigo-700 mb-6 leading-relaxed">
+      The most powerful RAG systems don't rely on a single technique — they combine multiple approaches strategically based on query complexity.
+    </p>
+
+    <div class="code-block p-6">
+<pre><code class="text-sm">def advanced_query_reformulation(original_query, llm, vector_db):
+    # Step 1: Classify query complexity
+    complexity = classify_query_complexity(original_query, llm)
+    
+    if complexity == "simple":
+        # Simple query: just rewrite for clarity
+        rewritten = rewrite_query(original_query, llm)
+        return retrieve_documents(rewritten, vector_db)
+    
+    elif complexity == "compound":
+        # Compound query: decompose and handle each part
+        sub_queries = decompose_query(original_query, llm)
+        all_docs = []
+        for sub_query in sub_queries:
+            # Use multi-query for each sub-query
+            variants = generate_variants(sub_query, llm, num=3)
+            for variant in variants:
+                docs = retrieve_documents(variant, vector_db)
+                all_docs.extend(docs)
+        return deduplicate_and_rank(all_docs)
+    
+    elif complexity == "multi-hop":
+        # Multi-hop: use step-by-step reasoning
+        return multi_hop_query(original_query, llm)
+    
+    else:
+        # Complex/ambiguous: use HyDE + multi-query
+        hypothetical = generate_hypothetical_doc(original_query, llm)
+        variants = generate_variants(hypothetical, llm, num=3)
+        all_docs = []
+        for variant in variants:
+            docs = retrieve_documents(variant, vector_db)
+            all_docs.extend(docs)
+        return deduplicate_and_rank(all_docs)</code></pre>
+    </div>
+  </section>
+
+  <!-- Section 7: Implementation -->
+  <section id="implement" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">7</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Implementation Considerations</h2>
+    </div>
+
+    <div class="card p-8 mb-6">
+      <h3 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+        <span class="text-3xl">⏱️</span> Latency Management
+      </h3>
+      <p class="text-indigo-700 mb-4">Query reformulation adds latency. Here are three strategies to manage it:</p>
+      
+      <div class="space-y-3">
+        <div class="bg-pink-50 border-l-4 border-pink-500 p-4 rounded">
+          <p class="font-bold text-pink-900 text-sm">Strategy 1: Asynchronous Processing</p>
+          <p class="text-sm text-pink-800">Start reformulation while showing loading UI. Users perceive faster response times when they see progress.</p>
+        </div>
+        <div class="bg-purple-50 border-l-4 border-purple-500 p-4 rounded">
+          <p class="font-bold text-purple-900 text-sm">Strategy 2: Caching Reformulated Queries</p>
+          <p class="text-sm text-purple-800">Cache common query patterns. If "how to fix phone" has been reformulated before, reuse the result.</p>
+        </div>
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+          <p class="font-bold text-blue-900 text-sm">Strategy 3: Tiered Approach</p>
+          <p class="text-sm text-blue-800">Try simple retrieval first. If confidence is low, apply reformulation. Only use complex techniques when necessary.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card p-8 mb-6">
+      <h3 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+        <span class="text-3xl">💰</span> Cost Optimization
+      </h3>
+      <div class="code-block p-5">
+<pre><code class="text-sm">def cost_aware_reformulation(query, budget_remaining):
+    if budget_remaining < 0.01:  # Less than 1 cent
+        return query  # Skip reformulation
+    
+    if budget_remaining < 0.05:
+        return rewrite_query(query)  # Cheap option
+    
+    if budget_remaining < 0.20:
+        return multi_query_approach(query, num_queries=3)
+    
+    return advanced_reformulation(query)  # Full pipeline</code></pre>
+      </div>
+    </div>
+
+    <div class="card p-8">
+      <h3 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+        <span class="text-3xl">📊</span> Quality Metrics to Track
+      </h3>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="step-card">
+          <p class="font-bold text-indigo-900"> Retrieval Precision</p>
+          <p class="text-sm text-indigo-700">% of retrieved documents that are relevant</p>
+        </div>
+        <div class="step-card">
+          <p class="font-bold text-indigo-900">🔍 Retrieval Recall</p>
+          <p class="text-sm text-indigo-700">% of relevant documents that are retrieved</p>
+        </div>
+        <div class="step-card">
+          <p class="font-bold text-indigo-900">✨ Answer Quality</p>
+          <p class="text-sm text-indigo-700">Human or LLM-based evaluation of final answers</p>
+        </div>
+        <div class="step-card">
+          <p class="font-bold text-indigo-900">😊 User Satisfaction</p>
+          <p class="text-sm text-indigo-700">Thumbs up/down, follow-up questions</p>
+        </div>
+        <div class="step-card">
+          <p class="font-bold text-indigo-900"> Latency</p>
+          <p class="text-sm text-indigo-700">Time from query to answer</p>
+        </div>
+        <div class="step-card">
+          <p class="font-bold text-indigo-900">💵 Cost</p>
+          <p class="text-sm text-indigo-700">API calls and tokens used per query</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8: Advanced -->
+  <section id="advanced" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">8</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Advanced Optimizations</h2>
+    </div>
+
+    <div class="space-y-4">
+      <div class="card p-6">
+        <h4 class="font-bold text-indigo-900 text-lg mb-3 flex items-center gap-2">
+          <span class="text-2xl">🔄</span> Learning from User Feedback
+        </h4>
+        <div class="code-block p-5">
+<pre><code class="text-sm">def learn_from_feedback(original_query, reformulated_query, user_satisfied):
+    if user_satisfied:
+        # Store successful reformulation pattern
+        store_pattern(original_query, reformulated_query)
+    else:
+        # Try different reformulation next time
+        mark_as_unsuccessful(original_query, reformulated_query)</code></pre>
+        </div>
+      </div>
+
+      <div class="card p-6">
+        <h4 class="font-bold text-indigo-900 text-lg mb-3 flex items-center gap-2">
+          <span class="text-2xl">🏥</span> Domain-Specific Reformulation
+        </h4>
+        <div class="code-block p-5">
+<pre><code class="text-sm">def domain_aware_reformulation(query, domain):
+    if domain == "legal":
+        prompt = """
+        Rewrite this legal query using precise legal terminology.
+        Include relevant legal concepts and citations format.
+        Query: {query}
+        """
+    elif domain == "medical":
+        prompt = """
+        Rewrite this medical query using standard medical terminology.
+        Include relevant medical codes (ICD-10, CPT) where applicable.
+        Query: {query}
+        """
+    return llm.generate(prompt.format(query=query))</code></pre>
+        </div>
+      </div>
+
+      <div class="card p-6">
+        <h4 class="font-bold text-indigo-900 text-lg mb-3 flex items-center gap-2">
+          <span class="text-2xl">🎭</span> Query Intent Classification
+        </h4>
+        <div class="code-block p-5">
+<pre><code class="text-sm">def classify_and_reformulate(query):
+    intent = classify_intent(query)
+    
+    if intent == "factual":
+        return rewrite_for_precision(query)
+    elif intent == "exploratory":
+        return expand_for_breadth(query)
+    elif intent == "comparative":
+        return decompose_for_comparison(query)
+    elif intent == "procedural":
+        return rewrite_for_steps(query)</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 9: Pitfalls -->
+  <section id="pitfalls" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">9</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Common Pitfalls & How to Avoid Them</h2>
+    </div>
+
+    <div class="space-y-4">
+      <div class="card p-6 border-l-4 border-l-red-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">⚠️ Pitfall 1: Over-Reformulation</h4>
+        <p class="text-indigo-700 mb-3"><strong>Problem:</strong> Changing the query so much that it loses the user's original intent.</p>
+        <div class="code-block p-4">
+<pre><code class="text-sm">def validate_reformulation(original, reformulated, min_similarity=0.7):
+    similarity = cosine_similarity(embed(original), embed(reformulated))
+    if similarity < min_similarity:
+        return original  # Fall back to original
+    return reformulated</code></pre>
+        </div>
+      </div>
+
+      <div class="card p-6 border-l-4 border-l-amber-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">⚠️ Pitfall 2: Infinite Loops in Multi-Hop</h4>
+        <p class="text-indigo-700 mb-3"><strong>Problem:</strong> Multi-hop queries that never reach "DONE" and keep generating sub-questions.</p>
+        <div class="code-block p-4">
+<pre><code class="text-sm">def multi_hop_with_safety(original_query, max_hops=5):
+    for hop in range(max_hops):
+        # ... generate and answer sub-query
+        
+        # Check if we're making progress
+        if not making_progress(current_answer, previous_answers):
+            break</code></pre>
+        </div>
+      </div>
+
+      <div class="card p-6 border-l-4 border-l-blue-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">️ Pitfall 3: Ignoring Context Window Limits</h4>
+        <p class="text-indigo-700 mb-3"><strong>Problem:</strong> Generating too many sub-queries or too much context, exceeding the LLM's context window.</p>
+        <div class="code-block p-4">
+<pre><code class="text-sm">def safe_context_management(context, max_tokens=3000):
+    current_tokens = count_tokens(context)
+    if current_tokens > max_tokens:
+        return summarize_context(context, max_tokens * 0.8)
+    return context</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 10: Tools -->
+  <section id="tools" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">10</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Tools & Libraries</h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-4 mb-6">
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white font-bold mb-3">LC</div>
+        <h4 class="font-bold text-indigo-900 mb-2">LangChain</h4>
+        <p class="text-xs text-indigo-700 mb-3">MultiQueryRetriever built-in</p>
+        <div class="code-block p-3 text-xs">
+<pre><code>from langchain.retrievers import MultiQueryRetriever
+retriever = MultiQueryRetriever.from_llm(
+    retriever=vector_store.as_retriever(),
+    llm=llm
+)</code></pre>
+        </div>
+      </div>
+
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold mb-3">LI</div>
+        <h4 class="font-bold text-indigo-900 mb-2">LlamaIndex</h4>
+        <p class="text-xs text-indigo-700 mb-3">QueryFusionRetriever</p>
+        <div class="code-block p-3 text-xs">
+<pre><code>from llama_index.core.retrievers import QueryFusionRetriever
+retriever = QueryFusionRetriever(
+    [vector_retriever, bm25_retriever],
+    num_queries=4, use_async=True
+)</code></pre>
+        </div>
+      </div>
+
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold mb-3">HS</div>
+        <h4 class="font-bold text-indigo-900 mb-2">Haystack</h4>
+        <p class="text-xs text-indigo-700 mb-3">QueryExpander component</p>
+        <div class="code-block p-3 text-xs">
+<pre><code>from haystack.components.query_expansion import QueryExpander
+expander = QueryExpander(llm=openai_generator)
+expanded_queries = expander.run(query=user_query)</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 11: Future -->
+  <section id="future" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">11</span>
+      <h2 class="text-4xl font-bold text-indigo-900">The Future of Query Reformulation</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center text-white text-2xl mb-3">🤖</div>
+        <h4 class="font-bold text-indigo-900 mb-2">1. Adaptive Reformulation</h4>
+        <p class="text-sm text-indigo-700">Systems that learn which reformulation technique works best for different query types and automatically select the optimal approach.</p>
+      </div>
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-blue-600 flex items-center justify-center text-white text-2xl mb-3">🎨</div>
+        <h4 class="font-bold text-indigo-900 mb-2">2. Multi-Modal Reformulation</h4>
+        <p class="text-sm text-indigo-700">Extending reformulation beyond text to handle images, audio, and video queries with cross-modal understanding.</p>
+      </div>
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-pink-600 flex items-center justify-center text-white text-2xl mb-3">👤</div>
+        <h4 class="font-bold text-indigo-900 mb-2">3. Real-Time Personalization</h4>
+        <p class="text-sm text-indigo-700">Reformulating queries based on user history, preferences, and context for hyper-personalized retrieval.</p>
+      </div>
+      <div class="technique-card">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-blue-600 flex items-center justify-center text-white text-2xl mb-3">🧬</div>
+        <h4 class="font-bold text-indigo-900 mb-2">4. Neuro-Symbolic Approaches</h4>
+        <p class="text-sm text-indigo-700">Combining neural LLM-based reformulation with symbolic reasoning for more reliable multi-hop queries.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 12: Conclusion -->
+  <section id="conclusion" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">12</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Conclusion</h2>
+    </div>
+
+    <div class="card p-10 bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 mb-8">
+      <p class="text-lg text-indigo-900 leading-relaxed mb-4">
+        Query reformulation is not just a nice-to-have feature — it's a <strong>critical component</strong> of any production-grade RAG system. By transforming raw user queries into optimized search requests, you can dramatically improve retrieval accuracy and, ultimately, the quality of your AI's responses.
+      </p>
+    </div>
+
+    <h3 class="text-2xl font-bold text-indigo-900 mb-4"> Key Takeaways</h3>
+    <div class="space-y-3 mb-8">
+      <div class="step-card flex gap-4">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 text-white flex items-center justify-center font-bold flex-shrink-0">1</div>
+        <p class="text-indigo-800"><strong>Start Simple:</strong> Begin with query rewriting and measure the impact before adding complexity.</p>
+      </div>
+      <div class="step-card flex gap-4">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white flex items-center justify-center font-bold flex-shrink-0">2</div>
+        <p class="text-indigo-800"><strong>Match Technique to Problem:</strong> Use multi-query for recall, decomposition for complex questions, HyDE for semantic gaps, and multi-hop for reasoning chains.</p>
+      </div>
+      <div class="step-card flex gap-4">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-pink-500 text-white flex items-center justify-center font-bold flex-shrink-0">3</div>
+        <p class="text-indigo-800"><strong>Balance Trade-offs:</strong> Every technique adds latency and cost. Choose based on your specific requirements and constraints.</p>
+      </div>
+      <div class="step-card flex gap-4">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 text-white flex items-center justify-center font-bold flex-shrink-0">4</div>
+        <p class="text-indigo-800"><strong>Combine Strategically:</strong> The most powerful systems use multiple techniques in a tiered, adaptive approach.</p>
+      </div>
+      <div class="step-card flex gap-4">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white flex items-center justify-center font-bold flex-shrink-0">5</div>
+        <p class="text-indigo-800"><strong>Measure Everything:</strong> Track precision, recall, latency, cost, and user satisfaction to continuously improve.</p>
+      </div>
+      <div class="step-card flex gap-4">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-pink-500 text-white flex items-center justify-center font-bold flex-shrink-0">6</div>
+        <p class="text-indigo-800"><strong>Learn from Feedback:</strong> Use user interactions to refine your reformulation strategies over time.</p>
+      </div>
+    </div>
+
+    <div class="pull-quote">
+       <strong>Final Thought:</strong> Query reformulation is the bridge between human intent and machine understanding. Master it, and you master the foundation of effective RAG systems.
+    </div>
+  </section>
+
+  <!-- Ready to Implement -->
+  <section class="fade-in">
+    <div class="card p-8 bg-gradient-to-br from-indigo-50 to-purple-50">
+      <h3 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+        <span class="text-3xl">🚀</span> Ready to Implement?
+      </h3>
+      <div class="space-y-3">
+        <div class="flex gap-3">
+          <span class="w-8 h-8 rounded-lg bg-pink-500 text-white flex items-center justify-center font-bold flex-shrink-0">1</span>
+          <p class="text-indigo-800">Analyze your current query logs to identify common patterns</p>
+        </div>
+        <div class="flex gap-3">
+          <span class="w-8 h-8 rounded-lg bg-purple-500 text-white flex items-center justify-center font-bold flex-shrink-0">2</span>
+          <p class="text-indigo-800">Implement basic query rewriting and measure improvement</p>
+        </div>
+        <div class="flex gap-3">
+          <span class="w-8 h-8 rounded-lg bg-blue-500 text-white flex items-center justify-center font-bold flex-shrink-0">3</span>
+          <p class="text-indigo-800">Add multi-query for your most important use cases</p>
+        </div>
+        <div class="flex gap-3">
+          <span class="w-8 h-8 rounded-lg bg-pink-500 text-white flex items-center justify-center font-bold flex-shrink-0">4</span>
+          <p class="text-indigo-800">Gradually introduce more advanced techniques as needed</p>
+        </div>
+        <div class="flex gap-3">
+          <span class="w-8 h-8 rounded-lg bg-purple-500 text-white flex items-center justify-center font-bold flex-shrink-0">5</span>
+          <p class="text-indigo-800">Continuously monitor and optimize based on metrics</p>
+        </div>
+      </div>
+      <p class="text-indigo-900 font-semibold mt-6 text-center">The journey to perfect retrieval starts with perfect queries. </p>
+    </div>
+  </section>
+
+</main>
+
+<!-- CTA Footer -->
+<section class="max-w-4xl mx-auto px-6 mb-16 fade-in">
+  <div class="card p-10 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 text-white text-center">
+    <h3 class="text-3xl font-bold mb-4">🚀 Become a RAG Member Today!</h3>
+    <p class="text-lg mb-6 opacity-95">Join our engaging community on Slack, get free newsletters, access our Member's-only Chatbot RAG Tutor, and unlock free resources!</p>
+    <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+      <input type="email" placeholder="Your email" class="flex-1 px-5 py-3 rounded-full text-indigo-900 focus:outline-none focus:ring-4 focus:ring-white/50" />
+      <button class="bg-white text-purple-600 px-6 py-3 rounded-full font-bold hover:scale-105 transition shadow-lg">Join Free</button>
+    </div>
+    <p class="text-sm mt-4 opacity-80">Trust us, it's worth the effort. ✨</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white py-12 px-6">
+  <div class="max-w-4xl mx-auto text-center">
+    <p class="mb-2">Written by <strong>Dr. Muhammad Farooq</strong></p>
+    <p class="text-sm opacity-70 mb-6">AI in Healthcare | Privacy-First AI Advocate | Riyadh, KSA</p>
+    <div class="flex justify-center gap-6 text-sm mb-8">
+      <a href="https://github.com/DrFarooqAi" target="_blank" class="hover:text-pink-300 transition">GitHub</a>
+      <a href="https://www.linkedin.com/in/dr-muhammadfarooq/" target="_blank" class="hover:text-pink-300 transition">LinkedIn</a>
+      <a href="https://drfarooqai.github.io/articles/" target="_blank" class="hover:text-pink-300 transition">Articles</a>
+    </div>
+    <p class="text-xs opacity-50">&copy; 2026 RAG Mastery Series. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
+
