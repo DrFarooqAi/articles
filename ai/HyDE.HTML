@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mastering RAG: How HyDE Skyrockets Your Retrieval Accuracy</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.19/index.min.css" />
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(180deg, #faf5ff 0%, #fdf2f8 50%, #eff6ff 100%);
+    color: #1e1b4b;
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 50%, #3b82f6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-gradient {
+    background: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 50%, #bfdbfe 100%);
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 40px -10px rgba(139, 92, 246, 0.15);
+    transition: all 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px -10px rgba(139, 92, 246, 0.25);
+  }
+  .pull-quote {
+    background: linear-gradient(135deg, #fce7f3 0%, #ede9fe 100%);
+    border-left: 6px solid #ec4899;
+    border-radius: 0 1rem 1rem 0;
+    padding: 2rem;
+    font-size: 1.25rem;
+    font-style: italic;
+    color: #4c1d95;
+    line-height: 1.7;
+  }
+  .code-block {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    color: #e0e7ff;
+    border-radius: 1rem;
+    font-family: 'Menlo', 'Monaco', monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    overflow-x: auto;
+    box-shadow: 0 10px 30px -10px rgba(30, 27, 75, 0.4);
+  }
+  .section-number {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    color: white;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    box-shadow: 0 10px 20px -5px rgba(236, 72, 153, 0.4);
+  }
+  .toc-link {
+    transition: all 0.2s ease;
+  }
+  .toc-link:hover {
+    background: linear-gradient(135deg, #fce7f3 0%, #ede9fe 100%);
+    transform: translateX(4px);
+  }
+  .fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .image-container {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 20px 40px -10px rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+  .image-container img {
+    border-radius: 1rem;
+    width: 100%;
+    height: auto;
+  }
+  .faq-item {
+    background: rgba(255, 255, 255, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 1rem;
+    transition: all 0.3s ease;
+  }
+  .faq-item:hover {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 10px 30px -10px rgba(139, 92, 246, 0.15);
+  }
+  .badge {
+    background: linear-gradient(135deg, #fbcfe8 0%, #c4b5fd 100%);
+    color: #581c87;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .step-card {
+    background: linear-gradient(135deg, rgba(252, 231, 243, 0.5) 0%, rgba(237, 233, 254, 0.5) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 1rem;
+    padding: 1.5rem;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #faf5ff; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #ec4899, #8b5cf6); border-radius: 5px; }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- Navigation -->
+<nav class="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-purple-100">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-lg shadow-lg">R</div>
+      <span class="font-bold text-lg text-indigo-900">RAG Mastery</span>
+    </div>
+    <div class="hidden md:flex gap-6 text-sm font-medium text-indigo-700">
+      <a href="#problem" class="hover:text-pink-600 transition">Problem</a>
+      <a href="#hyde" class="hover:text-pink-600 transition">HyDE</a>
+      <a href="#pipeline" class="hover:text-pink-600 transition">Pipeline</a>
+      <a href="#benefits" class="hover:text-pink-600 transition">Benefits</a>
+      <a href="#faq" class="hover:text-pink-600 transition">FAQ</a>
+    </div>
+    <a href="#conclusion" class="bg-gradient-to-r from-pink-500 to-purple-600 text-white px-5 py-2 rounded-full text-sm font-semibold hover:shadow-lg hover:scale-105 transition">Read Now</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="relative overflow-hidden py-20 px-6">
+  <div class="absolute inset-0 hero-gradient opacity-60"></div>
+  <div class="absolute top-20 left-10 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
+  <div class="absolute bottom-10 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-pulse"></div>
+  <div class="relative max-w-4xl mx-auto text-center fade-in">
+    <span class="badge text-sm">RAG Series • Advanced Retrieval</span>
+    <h1 class="text-5xl md:text-6xl font-extrabold mt-6 mb-6 leading-tight">
+      Mastering RAG: How <span class="gradient-text">Query Expansion (HyDE)</span> Skyrockets Your Retrieval Accuracy
+    </h1>
+    <p class="text-xl text-indigo-800 mb-8 leading-relaxed max-w-2xl mx-auto">
+      A step-by-step guide to Hypothetical Document Embeddings — the technique that bridges the semantic gap and transforms vague queries into precision-first retrieval.
+    </p>
+    <div class="flex items-center justify-center gap-4 text-sm text-indigo-700">
+      <div class="flex items-center gap-2">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center text-white font-bold">MF</div>
+        <div class="text-left">
+          <a href="https://www.linkedin.com/in/dr-muhammadfarooq/" target="_blank" class="font-semibold text-indigo-900 hover:text-purple-700 transition">Dr. Muhammad Farooq</a>
+          <p>AI in Healthcare · <a href="https://github.com/DrFarooqAi" target="_blank" class="text-purple-600 hover:text-pink-600 transition">GitHub</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Table of Contents -->
+<section class="max-w-4xl mx-auto px-6 mb-16 fade-in">
+  <div class="card p-8">
+    <h2 class="text-2xl font-bold text-indigo-900 mb-6 flex items-center gap-3">
+      <span class="text-3xl"></span> Table of Contents
+    </h2>
+    <div class="grid md:grid-cols-2 gap-3">
+      <a href="#problem" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center font-bold">1</span>
+        The Core Problem: The "Semantic Gap"
+      </a>
+      <a href="#hyde" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold">2</span>
+        What is HyDE?
+      </a>
+      <a href="#pipeline" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">3</span>
+        Step-by-Step Pipeline
+      </a>
+      <a href="#comparison" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center font-bold">4</span>
+        HyDE vs. Traditional Expansion
+      </a>
+      <a href="#benefits" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold">5</span>
+        The Superpowers of HyDE
+      </a>
+      <a href="#tradeoffs" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold">6</span>
+        Trade-Offs & Limitations
+      </a>
+      <a href="#optimizations" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center font-bold">7</span>
+        Advanced Optimizations & FAQ
+      </a>
+      <a href="#conclusion" class="toc-link flex items-center gap-3 p-3 rounded-lg text-indigo-800">
+        <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center font-bold">8</span>
+        Conclusion
+      </a>
+    </div>
+  </div>
+</section>
+
+<main class="max-w-4xl mx-auto px-6 pb-24 space-y-20">
+
+  <!-- Section 1: Problem -->
+  <section id="problem" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">1</span>
+      <h2 class="text-4xl font-bold text-indigo-900">The Core Problem: The "Semantic Gap"</h2>
+    </div>
+    <p class="text-lg text-indigo-800 mb-6 leading-relaxed">
+      Retrieval-Augmented Generation (RAG) systems are incredible—until they aren't. You write a highly specific query, but the system brings back results that look relevant on the surface and completely miss the mark underneath.
+    </p>
+    <p class="text-indigo-700 mb-6 leading-relaxed">
+      The problem? Traditional retrieval often struggles to understand what you <em>actually</em> meant, especially when the query is vague, complex, or highly domain-specific.
+    </p>
+
+    <div class="pull-quote mb-8">
+      🧩 <strong>The Puzzle Analogy:</strong> Imagine solving a jigsaw puzzle with missing pieces. Traditional RAG tries to force a tiny, 5-word query piece into a massive, 1,000-word document space. It often results in scattered, irrelevant results because a short query simply lacks the contextual weight of a full document.
+    </div>
+
+    <p class="text-indigo-700 mb-8 leading-relaxed">
+      When a user asks, <em>"What are the latest treatments for Alzheimer's?"</em>, a traditional vector search might pull up general documents about neurology or aging, simply because they share a "semantic neighborhood" with the query. It gets you to the right city, but not the right house.
+    </p>
+
+    <!-- Image 2: DPR + BM25 pipeline -->
+    <div class="image-container mb-6">
+      <p class="text-xs text-indigo-500 mb-3 font-semibold uppercase tracking-wide">Figure 1: Traditional Hybrid Retrieval Pipeline (DPR + BM25)</p>
+      <img src="hyde-images/fig1-dpr-bm25-pipeline.png" alt="Hybrid retrieval pipeline showing DPR encoder, FAISS vector search, BM25 retriever, and Elasticsearch working in parallel before ensemble reranking" style="width:100%;border-radius:12px;" />
+      <p class="text-sm text-indigo-600 mt-3 italic">Traditional systems combine dense (DPR) and sparse (BM25) retrievers, then use ensemble reranking to merge results. HyDE improves upon this by enriching the query itself before retrieval.</p>
+    </div>
+  </section>
+
+  <!-- Section 2: What is HyDE -->
+  <section id="hyde" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">2</span>
+      <h2 class="text-4xl font-bold text-indigo-900">What is HyDE?</h2>
+    </div>
+    <p class="text-lg text-indigo-800 mb-6 leading-relaxed">
+      <strong>Hypothetical Document Embeddings (HyDE)</strong> addresses the missing puzzle piece by creating a synthetic one. Instead of embedding the user's short query directly, HyDE uses a Large Language Model (LLM) to generate a <strong>hypothetical document</strong> (or hypothetical answer) that <em>would</em> answer the query. This synthetic document is then embedded into a vector and used to search the database.
+    </p>
+
+    <div class="card p-8 mb-8 bg-gradient-to-br from-pink-50 to-purple-50">
+      <h3 class="text-2xl font-bold text-indigo-900 mb-4 flex items-center gap-2">
+        <span class="text-3xl">📚</span> The Librarian Analogy
+      </h3>
+      <p class="text-indigo-800 mb-4">Imagine you ask a librarian for <em>"books about the economic impact of 19th-century French agriculture."</em></p>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div class="step-card">
+          <p class="font-bold text-pink-700 mb-2">❌ Traditional RAG</p>
+          <p class="text-sm text-indigo-700">The librarian searches the catalog for those exact words and brings you a random mix of history and farming books.</p>
+        </div>
+        <div class="step-card">
+          <p class="font-bold text-purple-700 mb-2">✅ HyDE</p>
+          <p class="text-sm text-indigo-700">The librarian sits down, writes a one-page mock summary of what a perfect book on that topic would look like, then searches the catalog for books that match that exact summary.</p>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-indigo-700 leading-relaxed">
+      By transforming a vague query into a structured, semantically rich narrative, HyDE aligns the user's intent perfectly with the latent structure of the document corpus.
+    </p>
+  </section>
+
+  <!-- Section 3: Pipeline -->
+  <section id="pipeline" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">3</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Step-by-Step: How the HyDE Pipeline Works</h2>
+    </div>
+    <p class="text-indigo-700 mb-8 leading-relaxed">Let's walk through the exact mechanics of a HyDE-enhanced RAG pipeline.</p>
+
+    <div class="space-y-4 mb-8">
+      <div class="step-card flex gap-4">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 text-white flex items-center justify-center font-bold flex-shrink-0">1</div>
+        <div>
+          <h4 class="font-bold text-indigo-900 text-lg">The User Query</h4>
+          <p class="text-indigo-700">The process begins with a user asking a question.</p>
+          <div class="code-block mt-2 p-3 text-sm">Query: "How does quantum decoherence affect qubit stability?"</div>
+        </div>
+      </div>
+
+      <div class="step-card flex gap-4">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white flex items-center justify-center font-bold flex-shrink-0">2</div>
+        <div>
+          <h4 class="font-bold text-indigo-900 text-lg">Generating the Hypothetical Document</h4>
+          <p class="text-indigo-700">The query is sent to an LLM with a specific prompt:</p>
+          <div class="code-block mt-2 p-3 text-sm">"Write a document that answers the following question. Do not worry about factual accuracy; just write what a relevant document would look like."</div>
+          <p class="text-indigo-700 mt-2 text-sm italic">Hypothetical Doc Generated: "Quantum decoherence occurs when a qubit interacts with its environment, causing the loss of quantum superposition..."</p>
+        </div>
+      </div>
+
+      <div class="step-card flex gap-4">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-pink-500 text-white flex items-center justify-center font-bold flex-shrink-0">3</div>
+        <div>
+          <h4 class="font-bold text-indigo-900 text-lg">Embedding the Hypothetical Document</h4>
+          <p class="text-indigo-700">Instead of embedding the 8-word user query, the system embeds the 50-word hypothetical document. Because this text is long, detailed, and rich in domain-specific terminology, its vector representation is incredibly precise.</p>
+        </div>
+      </div>
+
+      <div class="step-card flex gap-4">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 text-white flex items-center justify-center font-bold flex-shrink-0">4</div>
+        <div>
+          <h4 class="font-bold text-indigo-900 text-lg">Vector Search & Reranking</h4>
+          <p class="text-indigo-700">This dense vector is sent to the Vector Database. Because the hypothetical document's vector closely mirrors the vectors of actual scientific papers, the database retrieves highly relevant documents. A Cross-Encoder Reranker then filters these down to the Top 3.</p>
+        </div>
+      </div>
+
+      <div class="step-card flex gap-4">
+        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white flex items-center justify-center font-bold flex-shrink-0">5</div>
+        <div>
+          <h4 class="font-bold text-indigo-900 text-lg">Final Generation</h4>
+          <p class="text-indigo-700">The LLM reads the Top 3 actual retrieved documents and generates the final, factually accurate response for the user.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image 1: Hybrid Search diagram -->
+    <div class="image-container mb-6">
+      <p class="text-xs text-indigo-500 mb-3 font-semibold uppercase tracking-wide">Figure 2: Fusion Retrieval / Hybrid Search Architecture</p>
+      <img src="hyde-images/fig2-fusion-hybrid-search.png" alt="Fusion retrieval diagram showing query branching to vector index and sparse n-grams index (BM25), then merging via Reciprocal Rank Fusion before LLM" style="width:100%;border-radius:12px;" />
+      <p class="text-sm text-indigo-600 mt-3 italic">HyDE integrates into this fusion pipeline by enriching the initial query before it branches into both vector and sparse indices, improving the quality of both retrieval paths.</p>
+    </div>
+
+    <div class="code-block p-6">
+<pre><code class="text-sm">[ User Query ]
+      │
+      ▼
+[ LLM generates Hypothetical Answer/Document ]
+      │
+      ▼
+[ Embed Hypothetical Document into Vector ]
+      │
+      ▼
+[ Vector DB Search ] ➔ [ Cross-Encoder Reranker ] ➔ [ Top 3 Real Docs ]
+      │
+      ▼
+[ LLM generates Final Factual Response ]</code></pre>
+    </div>
+
+    <!-- Image 3: Score normalization -->
+    <div class="image-container mt-6">
+      <p class="text-xs text-indigo-500 mb-3 font-semibold uppercase tracking-wide">Figure 3: Score Normalization in Hybrid Retrieval</p>
+      <img src="hyde-images/fig3-score-normalization.png" alt="Diagram showing vector search and full-text search results being normalized by dividing by max score, then combined and reordered" style="width:100%;border-radius:12px;" />
+      <p class="text-sm text-indigo-600 mt-3 italic">After HyDE produces the enriched query vector, both vector and full-text scores are normalized and combined to return the top-k most relevant nodes.</p>
+    </div>
+  </section>
+
+  <!-- Section 4: Comparison -->
+  <section id="comparison" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">4</span>
+      <h2 class="text-4xl font-bold text-indigo-900">HyDE vs. Traditional Query Expansion</h2>
+    </div>
+    <p class="text-indigo-700 mb-6 leading-relaxed">How does this compare to older methods of query expansion?</p>
+
+    <div class="overflow-x-auto mb-8">
+      <table class="w-full bg-white rounded-2xl overflow-hidden shadow-lg">
+        <thead>
+          <tr class="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white">
+            <th class="px-6 py-4 text-left font-semibold">Feature</th>
+            <th class="px-6 py-4 text-left font-semibold">Traditional Query Expansion</th>
+            <th class="px-6 py-4 text-left font-semibold">HyDE</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-purple-100">
+          <tr class="hover:bg-purple-50/50">
+            <td class="px-6 py-4 font-semibold text-indigo-900">Mechanism</td>
+            <td class="px-6 py-4 text-indigo-700">Rephrasing the query or appending synonyms/keywords.</td>
+            <td class="px-6 py-4 text-indigo-700">Generating a full, synthetic paragraph/document answering the query.</td>
+          </tr>
+          <tr class="hover:bg-purple-50/50">
+            <td class="px-6 py-4 font-semibold text-indigo-900">Semantic Depth</td>
+            <td class="px-6 py-4 text-indigo-700">Low. Still relies on surface-level word manipulation.</td>
+            <td class="px-6 py-4 text-indigo-700">High. Captures deep contextual meaning and latent intent.</td>
+          </tr>
+          <tr class="hover:bg-purple-50/50">
+            <td class="px-6 py-4 font-semibold text-indigo-900">Vector Alignment</td>
+            <td class="px-6 py-4 text-indigo-700">Short query vector vs. Long document vector (Mismatch).</td>
+            <td class="px-6 py-4 text-indigo-700">Long hypothetical vector vs. Long document vector (Perfect Match).</td>
+          </tr>
+          <tr class="hover:bg-purple-50/50">
+            <td class="px-6 py-4 font-semibold text-indigo-900">Best Use Case</td>
+            <td class="px-6 py-4 text-indigo-700">Simple, everyday search queries.</td>
+            <td class="px-6 py-4 text-indigo-700">Complex, domain-specific, or highly ambiguous queries.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pull-quote">
+      "Traditional query expansion dilutes intent with redundant keywords. HyDE reimagines the query, creating a structured semantic proxy that aligns perfectly with the document corpus."
+    </div>
+  </section>
+
+  <!-- Section 5: Benefits -->
+  <section id="benefits" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">5</span>
+      <h2 class="text-4xl font-bold text-indigo-900">The Superpowers of HyDE</h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6 mb-8">
+      <div class="card p-6">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white text-2xl mb-4"></div>
+        <h3 class="font-bold text-indigo-900 text-lg mb-2">Zero-Shot Brilliance</h3>
+        <p class="text-sm text-indigo-700">Traditional dense retrievers require massive labeled datasets. HyDE bypasses this entirely, working out-of-the-box in domains with sparse training data.</p>
+      </div>
+      <div class="card p-6">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white text-2xl mb-4"></div>
+        <h3 class="font-bold text-indigo-900 text-lg mb-2">Multilingual Generalization</h3>
+        <p class="text-sm text-indigo-700">Ask in Spanish, get English documents. HyDE embeddings maintain semantic fidelity across languages without separate models.</p>
+      </div>
+      <div class="card p-6">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl mb-4"></div>
+        <h3 class="font-bold text-indigo-900 text-lg mb-2">Drastic Noise Reduction</h3>
+        <p class="text-sm text-indigo-700">By forcing the system to look for a full narrative rather than isolated keywords, HyDE naturally filters out buzzword-only documents.</p>
+      </div>
+    </div>
+
+    <!-- Image 4: BM25 + FAISS + LLM -->
+    <div class="image-container">
+      <p class="text-xs text-indigo-500 mb-3 font-semibold uppercase tracking-wide">Figure 4: BM25 Retriever + FAISS Vector Store + LLM Pipeline</p>
+      <img src="hyde-images/fig4-bm25-faiss-llm.png" alt="Diagram showing BM25 Retriever processing CSV chunks, FAISS Vector Store with Nearest Neighbor Search, and LLM generating answers" style="width:100%;border-radius:12px;" />
+      <p class="text-sm text-indigo-600 mt-3 italic">HyDE enhances this classic pipeline by transforming the query before it enters the FAISS vector store, ensuring the nearest neighbor search operates on a semantically rich representation.</p>
+    </div>
+  </section>
+
+  <!-- Section 6: Trade-offs -->
+  <section id="tradeoffs" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">6</span>
+      <h2 class="text-4xl font-bold text-indigo-900">The Trade-Offs: A Balanced Perspective</h2>
+    </div>
+    <p class="text-indigo-700 mb-6 leading-relaxed">No technology is a silver bullet. To implement HyDE effectively, you must understand its limitations.</p>
+
+    <div class="space-y-4">
+      <div class="card p-6 border-l-4 border-l-pink-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">⏱️ 1. The Latency and Cost Tax</h4>
+        <p class="text-indigo-700">HyDE requires an extra call to an LLM before the retrieval step. Generating a hypothetical document takes time and compute. If your RAG application requires millisecond latency, the extra <strong>500ms–1000ms</strong> added by HyDE might be unacceptable.</p>
+      </div>
+      <div class="card p-6 border-l-4 border-l-purple-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">🤖 2. Dependency on LLM Quality</h4>
+        <p class="text-indigo-700">HyDE is only as good as the LLM generating the hypothetical document. If the LLM hallucinates wildly or generates a document that completely diverges from the query's true intent, the vector search will follow it down the wrong path.</p>
+      </div>
+      <div class="card p-6 border-l-4 border-l-blue-500">
+        <h4 class="font-bold text-indigo-900 text-lg mb-2">⚠️ 3. The "Hallucination Trap"</h4>
+        <p class="text-indigo-700">If the hypothetical document is too confident in its fake facts, the vector search might retrieve documents that match those fake facts. This is why it is crucial to prompt the LLM to generate the hypothetical document in an objective, academic tone, and to rely on the Reranker to verify the final retrieved documents.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 7: Optimizations & FAQ -->
+  <section id="optimizations" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">7</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Advanced Optimizations & FAQ</h2>
+    </div>
+
+    <div class="card p-8 mb-8">
+      <h3 class="text-2xl font-bold text-indigo-900 mb-4">🚀 Production Optimizations</h3>
+      <div class="space-y-4">
+        <div>
+          <h4 class="font-bold text-purple-700">Domain-Specific Fine-Tuning</h4>
+          <p class="text-indigo-700 text-sm">In healthcare or law, a generic LLM might generate a hypothetical document that lacks clinical or legal granularity. Fine-tuning the LLM on domain-specific data ensures the generated proxy uses the correct jargon (e.g., ICD-10 codes in medicine).</p>
+        </div>
+        <div>
+          <h4 class="font-bold text-purple-700">Reinforcement Learning (RL) Integration</h4>
+          <p class="text-indigo-700 text-sm">Advanced pipelines use RL agents to evaluate the relevance of the retrieved documents. If the retrieval was poor, the RL agent provides feedback to tweak how the LLM generates future hypothetical documents, creating a self-improving loop.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 class="text-2xl font-bold text-indigo-900 mb-6" id="faq">❓ Frequently Asked Questions</h3>
+    <div class="space-y-4">
+      <div class="faq-item p-6">
+        <h4 class="font-bold text-indigo-900 mb-2">Q: How does HyDE use entity relationships in RAG?</h4>
+        <p class="text-indigo-700">When generating the hypothetical document, the LLM naturally includes key entities (names, dates, specific technologies) related to the query. This enriches the vector embedding with entity-level context, making it much easier to retrieve documents that discuss those exact entities.</p>
+      </div>
+      <div class="faq-item p-6">
+        <h4 class="font-bold text-indigo-900 mb-2">Q: What is salience analysis in the context of HyDE?</h4>
+        <p class="text-indigo-700">Salience analysis involves weighing the importance of different sentences within the generated hypothetical document. By identifying the most "salient" (important) parts of the hypothetical text, the system can weight those specific concepts more heavily during the vector similarity search.</p>
+      </div>
+      <div class="faq-item p-6">
+        <h4 class="font-bold text-indigo-900 mb-2">Q: How does co-occurrence optimization reduce noise?</h4>
+        <p class="text-indigo-700">In specialized fields, certain words always appear together (e.g., "myocardial" and "infarction"). HyDE naturally groups these co-occurring terms into the hypothetical document. This prevents the retriever from pulling up documents that mention "myocardial" in a completely unrelated context, drastically reducing noise.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 8: Conclusion -->
+  <section id="conclusion" class="fade-in">
+    <div class="flex items-center gap-4 mb-6">
+      <span class="section-number">8</span>
+      <h2 class="text-4xl font-bold text-indigo-900">Conclusion</h2>
+    </div>
+
+    <div class="card p-10 bg-gradient-to-br from-pink-100 via-purple-100 to-blue-100 mb-8">
+      <p class="text-lg text-indigo-900 leading-relaxed mb-4">
+        Query Expansion using HyDE is fundamentally reshaping how Retrieval-Augmented Generation systems understand complex human intent. By generating hypothetical documents, HyDE captures the context and nuance that keyword-based and standard vector methods miss.
+      </p>
+      <p class="text-lg text-indigo-900 leading-relaxed mb-4">
+        While it introduces trade-offs in latency and cost, the payoff in <strong>retrieval accuracy</strong>—especially in zero-shot, highly technical, or ambiguous scenarios—is undeniable.
+      </p>
+      <p class="text-lg text-indigo-900 leading-relaxed">
+        Think of HyDE not just as a retrieval trick, but as a <strong class="gradient-text">semantic lens</strong>. It doesn't just magnify relevant data; it refines it, ensuring clarity and precision.
+      </p>
+    </div>
+
+    <div class="pull-quote text-center">
+      As RAG systems continue to evolve from simple chatbots to enterprise-grade reasoning engines, HyDE offers a structured, brilliant way to bridge the gap between human language and machine meaning.
+    </div>
+  </section>
+
+</main>
+
+<!-- CTA Footer -->
+<section class="max-w-4xl mx-auto px-6 mb-16 fade-in">
+  <div class="card p-10 bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 text-white text-center">
+    <h3 class="text-3xl font-bold mb-4">🚀 Become a RAG Member Today!</h3>
+    <p class="text-lg mb-6 opacity-95">Join our engaging community on Slack, get free newsletters, access our Member's-only Chatbot RAG Tutor, and unlock free resources!</p>
+    <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+      <input type="email" placeholder="Your email" class="flex-1 px-5 py-3 rounded-full text-indigo-900 focus:outline-none focus:ring-4 focus:ring-white/50" />
+      <button class="bg-white text-purple-600 px-6 py-3 rounded-full font-bold hover:scale-105 transition shadow-lg">Join Free</button>
+    </div>
+    <p class="text-sm mt-4 opacity-80">Trust us, it's worth the effort. ✨</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 text-white py-12 px-6">
+  <div class="max-w-4xl mx-auto text-center">
+    <p class="mb-2">Written by <strong>Dr. Muhammad Farooq</strong></p>
+    <p class="text-sm opacity-70 mb-6">AI in Healthcare | Privacy-First AI Advocate | Riyadh, KSA</p>
+    <div class="flex justify-center gap-6 text-sm mb-8">
+      <a href="https://github.com/DrFarooqAi" target="_blank" class="hover:text-pink-300 transition">GitHub</a>
+      <a href="https://www.linkedin.com/in/dr-muhammadfarooq/" target="_blank" class="hover:text-pink-300 transition">LinkedIn</a>
+      <a href="https://drfarooqai.github.io/articles/" target="_blank" class="hover:text-pink-300 transition">Articles</a>
+    </div>
+    <p class="text-xs opacity-50">&copy; 2026 RAG Mastery Series. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
+
