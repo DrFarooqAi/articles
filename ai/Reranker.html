@@ -77,6 +77,22 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #64748b;
         }
+
+        /* Spirograph canvas */
+        #spiro-left {
+            position: fixed;
+            left: calc(50% - 520px);
+            top: 50%;
+            transform: translateY(-50%);
+            width: 220px;
+            height: 220px;
+            opacity: 0.92;
+            pointer-events: none;
+            z-index: 0;
+        }
+        @media (max-width: 1100px) {
+            #spiro-left { display: none; }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -122,6 +138,9 @@
                 </div>
             </div>
         </div>
+
+        <!-- Spirograph -->
+        <canvas id="spiro-left"></canvas>
     </header>
 
     <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
@@ -620,6 +639,87 @@
             });
         });
     </script>
+
+    <script>
+    (function() {
+        const canvas = document.getElementById('spiro-left');
+        const ctx = canvas.getContext('2d');
+        const W = 220, H = 220;
+        canvas.width = W;
+        canvas.height = H;
+
+        // Spirograph parameters
+        const configs = [
+            { R: 88, r: 23, d: 75 },
+            { R: 80, r: 31, d: 68 },
+            { R: 90, r: 19, d: 80 },
+        ];
+        let cfgIdx = 0;
+        let cfg = configs[cfgIdx];
+
+        const cx = W / 2, cy = H / 2;
+        const steps = 2400;
+
+        function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+        function getTotalAngle() { return Math.PI * 2 * cfg.r / gcd(Math.round(cfg.R), Math.round(cfg.r)); }
+
+        let t = 0;
+        let hue = 0;
+        let trail = [];
+        let drawing = true;
+
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(0, 0, W, H);
+
+        function step() {
+            if (!drawing) return;
+
+            const batchSize = 6;
+            for (let i = 0; i < batchSize; i++) {
+                if (t > steps) {
+                    // Pause, clear, switch config, restart
+                    drawing = false;
+                    setTimeout(() => {
+                        cfgIdx = (cfgIdx + 1) % configs.length;
+                        cfg = configs[cfgIdx];
+                        t = 0;
+                        hue = Math.random() * 360;
+                        trail = [];
+                        ctx.fillStyle = '#f8fafc';
+                        ctx.fillRect(0, 0, W, H);
+                        drawing = true;
+                        requestAnimationFrame(animate);
+                    }, 1400);
+                    return;
+                }
+
+                const angle = (t / steps) * getTotalAngle();
+                const x = cx + (cfg.R - cfg.r) * Math.cos(angle) + cfg.d * Math.cos((cfg.R - cfg.r) / cfg.r * angle);
+                const y = cy + (cfg.R - cfg.r) * Math.sin(angle) - cfg.d * Math.sin((cfg.R - cfg.r) / cfg.r * angle);
+
+                if (t > 0) {
+                    ctx.beginPath();
+                    ctx.moveTo(trail[trail.length - 1].x, trail[trail.length - 1].y);
+                    ctx.lineTo(x, y);
+                    ctx.strokeStyle = `hsl(${hue}, 100%, 58%)`;
+                    ctx.lineWidth = 1.2;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                    hue = (hue + 0.55) % 360;
+                }
+
+                trail.push({ x, y });
+                if (trail.length > 2) trail.shift();
+                t++;
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function animate() { step(); }
+        requestAnimationFrame(animate);
+    })();
+    </script>
+
 </body>
 </html>
 
