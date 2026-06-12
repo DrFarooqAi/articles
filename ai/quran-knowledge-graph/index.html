@@ -4,20 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quran Knowledge Graph — Dr. Muhammad Farooq</title>
-<meta name="description" content="114 surahs of the Clear Quran mapped into an AI-generated knowledge graph. Explore thematic connections, concept clusters, and cross-surah bridges.">
+<meta name="description" content="114 surahs of the Quran (Saheeh International) mapped into an AI-generated knowledge graph. Explore thematic connections, concept clusters, and cross-surah bridges.">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+/* ── CSS PROPERTY REGISTRATION (snake animation) ─────────────── */
+@property --sa {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes snake {
+  to { --sa: 360deg; }
+}
+
 :root {
   --cyan:    #00f5ff;
   --gold:    #f5c518;
-  --green:   #00ff88;
-  --purple:  #a855f7;
-  --bg:      #020b14;
-  --bg2:     #040f1c;
-  --panel:   #0a1f33;
-  --border:  rgba(0,245,255,0.18);
-  --text:    #f9fafb;
-  --muted:   #94a3b8;
+  --gold2:   #ffd700;
+  --green:   #39d353;
+  --bg:      #246902;
+  --bg2:     #1a4f02;
+  --panel:   #0f3000;
+  --dark:    #081a00;
+  --border:  rgba(245,197,24,0.35);
+  --text:    #f5c518;
+  --muted:   #c9a227;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -36,8 +47,8 @@ body::before {
   content: '';
   position: fixed; inset: 0;
   background-image:
-    linear-gradient(rgba(0,245,255,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,245,255,0.025) 1px, transparent 1px);
+    linear-gradient(rgba(245,197,24,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245,197,24,0.06) 1px, transparent 1px);
   background-size: 50px 50px;
   pointer-events: none;
   z-index: 0;
@@ -49,11 +60,30 @@ body::after {
   position: fixed; inset: 0;
   background: repeating-linear-gradient(
     0deg, transparent, transparent 2px,
-    rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px
+    rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px
   );
   pointer-events: none;
   z-index: 1;
 }
+
+/* ── SNAKE BORDER MIXIN ───────────────────────────────────────── */
+.snake {
+  background:
+    var(--panel) padding-box,
+    conic-gradient(from var(--sa),
+      transparent 0deg,
+      transparent 250deg,
+      var(--gold) 290deg,
+      #fff8dc 330deg,
+      transparent 360deg
+    ) border-box;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  animation: snake 3s linear infinite;
+}
+.snake-fast  { animation-duration: 1.8s; }
+.snake-slow  { animation-duration: 4.5s; }
+.snake-vslow { animation-duration: 7s; }
 
 /* ── NAV ─────────────────────────────────────────────────────── */
 nav {
@@ -61,7 +91,7 @@ nav {
   z-index: 100;
   padding: 14px 40px;
   display: flex; justify-content: space-between; align-items: center;
-  background: rgba(2,11,20,0.88);
+  background: rgba(15,48,0,0.92);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
 }
@@ -69,7 +99,7 @@ nav {
 .nav-back {
   font-family: 'Share Tech Mono', monospace;
   font-size: 11px; font-weight: 700;
-  color: var(--cyan); text-decoration: none;
+  color: var(--gold); text-decoration: none;
   letter-spacing: 0.1em; text-transform: uppercase;
   transition: opacity 0.2s;
 }
@@ -84,7 +114,7 @@ nav {
 .nav-badge {
   font-family: 'Share Tech Mono', monospace;
   font-size: 10px; padding: 4px 10px;
-  border: 1px solid rgba(245,197,24,0.4);
+  border: 1px solid rgba(245,197,24,0.5);
   color: var(--gold); letter-spacing: 0.1em;
   border-radius: 2px;
 }
@@ -99,14 +129,14 @@ nav {
 .hero-label {
   font-family: 'Share Tech Mono', monospace;
   font-size: 11px; letter-spacing: 0.18em;
-  color: var(--cyan); text-transform: uppercase;
+  color: var(--gold); text-transform: uppercase;
   margin-bottom: 16px;
   display: flex; align-items: center; gap: 10px;
 }
 .hero-label::before {
   content: ''; display: block;
   width: 30px; height: 1px;
-  background: var(--cyan);
+  background: var(--gold);
 }
 
 .hero h1 {
@@ -114,7 +144,7 @@ nav {
   font-size: clamp(2rem, 5vw, 3.8rem);
   font-weight: 900; line-height: 1.05;
   letter-spacing: -0.01em;
-  background: linear-gradient(135deg, #fff 0%, var(--cyan) 55%, var(--gold) 100%);
+  background: linear-gradient(135deg, #fff8dc 0%, var(--gold) 50%, var(--green) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: 18px;
@@ -135,7 +165,7 @@ nav {
 .stat-value {
   font-family: 'Orbitron', monospace;
   font-size: 1.5rem; font-weight: 700;
-  color: var(--cyan);
+  color: var(--gold);
 }
 .stat-label {
   font-family: 'Share Tech Mono', monospace;
@@ -149,8 +179,7 @@ nav {
   margin: 0 60px 32px;
   max-width: calc(1200px - 120px);
   padding: 14px 20px;
-  border: 1px solid rgba(245,197,24,0.25);
-  background: rgba(245,197,24,0.05);
+  background: var(--dark);
   border-radius: 4px;
   display: flex; align-items: center; gap: 16px;
   font-size: 0.85rem;
@@ -176,7 +205,7 @@ nav {
 }
 .graph-header-title {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 11px; color: var(--cyan);
+  font-size: 11px; color: var(--gold);
   letter-spacing: 0.14em; text-transform: uppercase;
 }
 .graph-hint {
@@ -187,31 +216,20 @@ nav {
 
 .graph-frame-wrap {
   position: relative;
-  border: 1px solid var(--border);
   border-radius: 6px;
-  overflow: hidden;
   background: var(--panel);
   min-height: 80vh;
-}
-
-/* Glow effect on border */
-.graph-frame-wrap::before {
-  content: '';
-  position: absolute; inset: -1px;
-  border-radius: 6px;
-  background: linear-gradient(135deg, rgba(0,245,255,0.15), transparent 60%, rgba(245,197,24,0.08));
-  pointer-events: none;
-  z-index: 0;
 }
 
 iframe#graph {
   display: block;
   width: 100%; height: 80vh;
   border: none;
+  border-radius: 6px;
   position: relative; z-index: 1;
 }
 
-/* ── PLACEHOLDER (shown when graph not yet generated) ────────── */
+/* ── PLACEHOLDER ─────────────────────────────────────────────── */
 .placeholder {
   display: flex;
   flex-direction: column;
@@ -230,12 +248,11 @@ iframe#graph {
 .placeholder h3 {
   font-family: 'Orbitron', monospace;
   font-size: 1.2rem; font-weight: 700;
-  color: var(--cyan);
+  color: var(--gold);
 }
 .placeholder p { color: var(--muted); max-width: 480px; line-height: 1.7; }
 .placeholder pre {
-  background: rgba(0,0,0,0.4);
-  border: 1px solid var(--border);
+  background: var(--dark);
   border-radius: 4px;
   padding: 16px 24px;
   font-family: 'Share Tech Mono', monospace;
@@ -259,17 +276,29 @@ iframe#graph {
 }
 .info-card {
   padding: 24px;
-  border: 1px solid rgba(0,245,255,0.12);
+  background: var(--dark) padding-box,
+    conic-gradient(from var(--sa),
+      transparent 0deg,
+      transparent 250deg,
+      var(--gold) 290deg,
+      #fff8dc 330deg,
+      transparent 360deg
+    ) border-box;
+  border: 2px solid transparent;
   border-radius: 6px;
-  background: rgba(10,31,51,0.5);
+  animation: snake 3s linear infinite;
 }
+.info-card:nth-child(2) { animation-duration: 4.2s; }
+.info-card:nth-child(3) { animation-duration: 2.8s; }
+.info-card:nth-child(4) { animation-duration: 5.5s; }
+
 .info-card-icon {
   font-size: 1.5rem; margin-bottom: 12px;
 }
 .info-card-title {
   font-family: 'Orbitron', monospace;
   font-size: 0.75rem; font-weight: 700;
-  color: var(--cyan); letter-spacing: 0.1em;
+  color: var(--gold); letter-spacing: 0.1em;
   text-transform: uppercase; margin-bottom: 8px;
 }
 .info-card p {
@@ -298,7 +327,7 @@ iframe#graph {
 /* ── FOOTER ──────────────────────────────────────────────────── */
 footer {
   position: relative; z-index: 2;
-  border-top: 1px solid rgba(0,245,255,0.08);
+  border-top: 1px solid rgba(245,197,24,0.15);
   padding: 32px 60px;
   display: flex; justify-content: space-between; align-items: center;
   flex-wrap: wrap; gap: 12px;
@@ -311,7 +340,7 @@ footer p {
 .footer-links { display: flex; gap: 20px; }
 .footer-links a {
   font-family: 'Share Tech Mono', monospace;
-  font-size: 11px; color: var(--cyan);
+  font-size: 11px; color: var(--gold);
   text-decoration: none; letter-spacing: 0.08em;
   transition: opacity 0.2s;
 }
@@ -343,9 +372,9 @@ footer p {
   <div class="hero-label">AI · Knowledge Graph · Quran</div>
   <h1>Quran<br>Knowledge Graph</h1>
   <p class="hero-desc">
-    114 surahs of The Clear Quran mapped into an AI-generated knowledge graph.
+    114 surahs mapped into an AI-generated knowledge graph using graphify.
     Explore thematic clusters, concept connections, prophetic narratives,
-    and cross-surah bridges — surfaced by graphify's LLM extraction engine.
+    and cross-surah bridges — surfaced by Claude's LLM extraction engine.
   </p>
   <div class="hero-stats">
     <div class="stat">
@@ -357,23 +386,23 @@ footer p {
       <span class="stat-label">Verses</span>
     </div>
     <div class="stat">
-      <span class="stat-value">AI</span>
-      <span class="stat-label">Extracted Graph</span>
+      <span class="stat-value">432</span>
+      <span class="stat-label">Graph Nodes</span>
     </div>
     <div class="stat">
-      <span class="stat-value">∞</span>
+      <span class="stat-value">1,063</span>
       <span class="stat-label">Connections</span>
     </div>
   </div>
 </section>
 
 <!-- ATTRIBUTION -->
-<div class="attribution">
+<div class="attribution snake snake-slow">
   <span class="attribution-icon">📖</span>
   <span>
-    Translation: <a href="https://theclearquran.org" target="_blank" rel="noopener">The Clear Quran</a>
-    by Dr. Mustafa Khattab.
-    <span class="muted">Used for educational AI research purposes. All translation rights belong to the author.</span>
+    Translation: <a href="https://quran.com" target="_blank" rel="noopener">Saheeh International</a>
+    via Quran.com API.
+    <span class="muted">Graph built for educational AI research. Inspired by The Clear Quran — Dr. Mustafa Khattab.</span>
   </span>
 </div>
 
@@ -384,8 +413,7 @@ footer p {
     <span class="graph-hint">Click nodes · Zoom · Filter · Search</span>
   </div>
 
-  <div class="graph-frame-wrap" id="frameWrap">
-    <!-- Shown until graphify-out/graph.html is generated -->
+  <div class="graph-frame-wrap snake snake-vslow" id="frameWrap">
     <div class="placeholder" id="placeholder">
       <div class="placeholder-icon">🔭</div>
       <h3>Graph Not Yet Generated</h3>
@@ -393,8 +421,8 @@ footer p {
         Run the data pipeline and graphify to build the knowledge graph.
         Once generated, <code>graphify-out/graph.html</code> will load here automatically.
       </p>
-      <pre>
-# 1 — fetch Clear Quran data (run once)
+      <pre class="snake snake-fast">
+# 1 — fetch Quran data (Saheeh International)
 python fetch_quran.py
 
 # 2 — install graphify
@@ -407,11 +435,10 @@ graphify extract ./quran-data --backend claude
 # 4 — copy output here
 cp -r quran-data/graphify-out ./graphify-out
       </pre>
-      <p style="font-size:0.8rem;">
+      <p style="font-size:0.8rem; color:var(--muted);">
         Estimated cost: ~$1–2 (Anthropic API) · Runtime: ~5 min
       </p>
     </div>
-    <!-- Iframe loads when graph exists -->
     <iframe id="graph" title="Quran Knowledge Graph" style="display:none;"></iframe>
   </div>
 </section>
@@ -424,7 +451,7 @@ cp -r quran-data/graphify-out ./graphify-out
     <div class="info-card">
       <div class="info-card-icon">📥</div>
       <div class="info-card-title">Data Pipeline</div>
-      <p>The Clear Quran text is fetched from the Quran.com API and structured into 114 Markdown files — one per surah — with metadata headers (revelation place, verse count) for richer context.</p>
+      <p>Quran text (Saheeh International) is fetched from the Quran.com API and structured into 114 Markdown files — one per surah — with metadata headers (revelation place, verse count) for richer context.</p>
     </div>
     <div class="info-card">
       <div class="info-card-icon">🧠</div>
@@ -449,13 +476,12 @@ cp -r quran-data/graphify-out ./graphify-out
   <p>Dr. Muhammad Farooq — AI Research · Riyadh, KSA</p>
   <div class="footer-links">
     <a href="https://github.com/safishamsi/graphify" target="_blank" rel="noopener">graphify ↗</a>
-    <a href="https://theclearquran.org" target="_blank" rel="noopener">The Clear Quran ↗</a>
+    <a href="https://quran.com" target="_blank" rel="noopener">Quran.com ↗</a>
     <a href="../../index.html">← All Articles</a>
   </div>
 </footer>
 
 <script>
-  // Try to load the graph iframe; fall back to placeholder if file doesn't exist
   (function () {
     const graphPath = "graphify-out/graph.html";
     const iframe = document.getElementById("graph");
@@ -469,9 +495,7 @@ cp -r quran-data/graphify-out ./graphify-out
           placeholder.style.display = "none";
         }
       })
-      .catch(() => {
-        // Graph not available — placeholder stays visible
-      });
+      .catch(() => {});
   })();
 </script>
 
