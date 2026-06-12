@@ -18,17 +18,17 @@
 }
 
 :root {
-  --cyan:    #00f5ff;
-  --gold:    #f5c518;
-  --gold2:   #ffd700;
-  --green:   #39d353;
-  --bg:      #246902;
-  --bg2:     #1a4f02;
-  --panel:   #0f3000;
-  --dark:    #081a00;
-  --border:  rgba(245,197,24,0.35);
-  --text:    #f5c518;
-  --muted:   #c9a227;
+  --cyan:    #00b8c8;
+  --gold:    #b8860b;
+  --gold2:   #d4a017;
+  --green:   #2e8b57;
+  --bg:      #fefcf8;
+  --bg2:     #f9f6ee;
+  --panel:   #1a1200;
+  --dark:    #0d0a00;
+  --border:  rgba(184,134,11,0.4);
+  --text:    #7a5c00;
+  --muted:   #a07830;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -47,8 +47,8 @@ body::before {
   content: '';
   position: fixed; inset: 0;
   background-image:
-    linear-gradient(rgba(245,197,24,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(245,197,24,0.06) 1px, transparent 1px);
+    linear-gradient(rgba(184,134,11,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184,134,11,0.08) 1px, transparent 1px);
   background-size: 50px 50px;
   pointer-events: none;
   z-index: 0;
@@ -69,12 +69,12 @@ body::after {
 /* ── SNAKE BORDER MIXIN ───────────────────────────────────────── */
 .snake {
   background:
-    var(--panel) padding-box,
+    var(--bg2) padding-box,
     conic-gradient(from var(--sa),
       transparent 0deg,
       transparent 250deg,
       var(--gold) 290deg,
-      #fff8dc 330deg,
+      #fff0a0 330deg,
       transparent 360deg
     ) border-box;
   border: 2px solid transparent;
@@ -91,9 +91,10 @@ nav {
   z-index: 100;
   padding: 14px 40px;
   display: flex; justify-content: space-between; align-items: center;
-  background: rgba(15,48,0,0.92);
+  background: rgba(254,252,248,0.95);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 20px rgba(184,134,11,0.12);
 }
 
 .nav-back {
@@ -144,7 +145,7 @@ nav {
   font-size: clamp(2rem, 5vw, 3.8rem);
   font-weight: 900; line-height: 1.05;
   letter-spacing: -0.01em;
-  background: linear-gradient(135deg, #fff8dc 0%, var(--gold) 50%, var(--green) 100%);
+  background: linear-gradient(135deg, #8b6914 0%, var(--gold) 50%, #5c7a00 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: 18px;
@@ -217,7 +218,7 @@ nav {
 .graph-frame-wrap {
   position: relative;
   border-radius: 6px;
-  background: var(--panel);
+  background: var(--bg2);
   min-height: 80vh;
 }
 
@@ -252,7 +253,7 @@ iframe#graph {
 }
 .placeholder p { color: var(--muted); max-width: 480px; line-height: 1.7; }
 .placeholder pre {
-  background: var(--dark);
+  background: var(--bg2);
   border-radius: 4px;
   padding: 16px 24px;
   font-family: 'Share Tech Mono', monospace;
@@ -276,12 +277,12 @@ iframe#graph {
 }
 .info-card {
   padding: 24px;
-  background: var(--dark) padding-box,
+  background: var(--bg2) padding-box,
     conic-gradient(from var(--sa),
       transparent 0deg,
       transparent 250deg,
       var(--gold) 290deg,
-      #fff8dc 330deg,
+      #fff0a0 330deg,
       transparent 360deg
     ) border-box;
   border: 2px solid transparent;
