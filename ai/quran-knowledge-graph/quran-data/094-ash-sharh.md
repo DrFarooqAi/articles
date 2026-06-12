@@ -1,0 +1,14 @@
+# Surah 94: Ash-Sharh (Ash-Sharĥ)
+**Arabic Name:** الشرح | **Revelation:** Makkah | **Verses:** 8
+**Translation:** Saheeh International
+
+## Verses
+
+1. Did We not expand for you, [O Muḥammad], your breast?1
+2. And We removed from you your burden1
+3. Which had weighed upon your back
+4. And raised high for you your repute.
+5. For indeed, with hardship [will be] ease [i.e., relief].
+6. Indeed, with hardship [will be] ease.
+7. So when you have finished [your duties], then stand up [for worship].
+8. And to your Lord direct [your] longing.

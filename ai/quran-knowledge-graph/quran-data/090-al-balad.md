@@ -1,0 +1,26 @@
+# Surah 90: Al-Balad (Al-Balad)
+**Arabic Name:** البلد | **Revelation:** Makkah | **Verses:** 20
+**Translation:** Saheeh International
+
+## Verses
+
+1. I swear by this city [i.e., Makkah]
+2. And you, [O Muḥammad], are free of restriction in this city
+3. And [by] the father1 and that which was born [of him],
+4. We have certainly created man into hardship.
+5. Does he think that never will anyone overcome him?
+6. He says, "I have spent wealth in abundance."
+7. Does he think that no one has seen him?
+8. Have We not made for him two eyes?
+9. And a tongue and two lips?
+10. And have shown him the two ways?1
+11. But he has not broken through the difficult pass.1
+12. And what can make you know what is [breaking through] the difficult pass?
+13. It is the freeing of a slave
+14. Or feeding on a day of severe hunger
+15. An orphan of near relationship
+16. Or a needy person in misery
+17. And then being among those who believed and advised one another to patience and advised one another to compassion.
+18. Those are the companions of the right.1
+19. But they who disbelieved in Our signs - those are the companions of the left.1
+20. Over them will be fire closed in.1

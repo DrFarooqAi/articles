@@ -1,0 +1,14 @@
+# Surah 99: Az-Zalzalah (Az-Zalzalah)
+**Arabic Name:** الزلزلة | **Revelation:** Madinah | **Verses:** 8
+**Translation:** Saheeh International
+
+## Verses
+
+1. When the earth is shaken with its [final] earthquake
+2. And the earth discharges its burdens1
+3. And man says,1 "What is [wrong] with it?" -
+4. That Day, it will report its news
+5. Because your Lord has inspired [i.e., commanded] it.
+6. That Day, the people will depart1 separated [into categories] to be shown [the result of] their deeds.
+7. So whoever does an atom's weight1 of good will see it,
+8. And whoever does an atom's weight of evil will see it.

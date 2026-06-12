@@ -1,0 +1,52 @@
+# Surah 79: An-Nazi'at (An-Nāzi`āt)
+**Arabic Name:** النازعات | **Revelation:** Makkah | **Verses:** 46
+**Translation:** Saheeh International
+
+## Verses
+
+1. By those [angels] who extract with violence1
+2. And [by] those who remove with ease1
+3. And [by] those who glide [as if] swimming1
+4. And those who race each other in a race1
+5. And those who arrange [each] matter,1
+6. On the Day the blast [of the Horn] will convulse [creation],
+7. There will follow it the subsequent [one].
+8. Hearts,1 that Day, will tremble,
+9. Their eyes1 humbled.
+10. They are [presently] saying, "Will we indeed be returned to [our] former state [of life]?
+11. Even if we should be decayed bones?"1
+12. They say, "That, then, would be a losing return."1
+13. Indeed, it will be but one shout,
+14. And suddenly they will be [alert] upon the earth's surface.
+15. Has there reached you the story of Moses? -
+16. When his Lord called to him in the sacred valley of Ṭuwā,
+17. "Go to Pharaoh. Indeed, he has transgressed.
+18. And say to him, 'Would you [be willing to] purify yourself
+19. And let me guide you to your Lord so you would fear [Him]?'"
+20. And he showed him the greatest sign,1
+21. But he [i.e., Pharaoh] denied and disobeyed.
+22. Then he turned his back, striving [i.e., plotting].1
+23. And he gathered [his people] and called out.
+24. And said, "I am your most exalted lord."
+25. So Allāh seized him in exemplary punishment for the last and the first [transgression].1.
+26. Indeed in that is a lesson [i.e., warning] for whoever would fear [Allāh].
+27. Are you a more difficult creation or is the heaven? He [i.e., Allāh] constructed it.
+28. He raised its ceiling and proportioned it.
+29. And He darkened its night and extracted its brightness.1
+30. And after that He spread the earth.
+31. He extracted from it its water and its pasture,
+32. And the mountains He set firmly
+33. As enjoyment [i.e., provision] for you and your grazing livestock.
+34. But when there comes the greatest Overwhelming Calamity1 -
+35. The Day when man will remember that for which he strove,
+36. And Hellfire will be exposed for [all] those who see -
+37. So as for he who transgressed
+38. And preferred the life of the world,
+39. Then indeed, Hellfire will be [his] refuge.
+40. But as for he who feared the position of his Lord1 and prevented the soul from [unlawful] inclination,
+41. Then indeed, Paradise will be [his] refuge.
+42. They ask you, [O Muḥammad], about the Hour: when is its arrival?1
+43. In what [position] are you that you should mention it?1
+44. To your Lord is its finality.1
+45. You are only a warner for those who fear it.
+46. It will be, on the Day they see it,1 as though they had not remained [in the world] except for an afternoon or a morning thereof.
