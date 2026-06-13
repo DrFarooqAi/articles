@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quran Concept Web · Dr. Farooq AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=DM+Sans:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+<style>
+@property --sa{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes snake{to{--sa:360deg}}
+:root{
+  --bg:#fefcf8;--bg2:#f9f6ee;--panel:#1a1200;
+  --gold:#b8860b;--gold2:#d4a017;--gold3:#8b6914;
+  --text:#5a3a00;--muted:#a07830;--dim:#c8a055;
+  --border:rgba(184,134,11,.35);--border2:rgba(184,134,11,.6);
+  --radius:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+
+/* ── Nav ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;height:46px;
+  display:flex;align-items:center;gap:12px;padding:0 20px;
+  background:var(--panel);border-bottom:1px solid var(--border2);
+}
+nav a{color:var(--gold2);text-decoration:none;font-size:.8rem;font-weight:500;
+  padding:3px 9px;border:1px solid var(--border);border-radius:4px;transition:all .2s}
+nav a:hover{background:rgba(212,160,23,.15);color:#fff0a0}
+nav h1{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700;
+  color:var(--gold2);letter-spacing:.06em;flex:1;text-align:center}
+nav .badge{font-size:.68rem;padding:2px 8px;border-radius:12px;
+  background:rgba(184,134,11,.2);color:var(--gold2);border:1px solid var(--border)}
+
+/* ── Controls bar ── */
+#controls{
+  position:fixed;top:46px;left:0;right:0;z-index:90;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:8px 20px;background:var(--bg2);border-bottom:1px solid var(--border);
+  font-size:.8rem;color:var(--muted);
+}
+#controls label{display:flex;align-items:center;gap:6px;white-space:nowrap}
+#threshold-val{font-weight:700;color:var(--gold3);min-width:20px}
+input[type=range]{accent-color:var(--gold);width:110px}
+#stats{margin-left:auto;color:var(--dim);font-size:.75rem}
+.cat-filter{display:flex;gap:5px;flex-wrap:wrap}
+.cat-chip{
+  padding:2px 8px;border-radius:12px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:.72rem;cursor:pointer;
+  transition:all .2s;font-family:'DM Sans',sans-serif;
+}
+.cat-chip.active{background:rgba(184,134,11,.2);color:var(--gold2);border-color:var(--gold2)}
+
+/* ── Graph SVG ── */
+#graph-wrap{
+  position:fixed;top:90px;left:0;right:0;bottom:0;
+  overflow:hidden;
+}
+svg#graph{width:100%;height:100%;cursor:grab}
+svg#graph:active{cursor:grabbing}
+.link{stroke:rgba(184,134,11,.25);stroke-linecap:round;transition:stroke .2s}
+.link.highlight{stroke:var(--gold2);stroke-opacity:.8}
+.node circle{
+  stroke:#fff8e8;stroke-width:2px;cursor:pointer;
+  transition:opacity .2s,filter .2s;
+}
+.node circle:hover{filter:brightness(1.2)}
+.node.faded circle,.link.faded{opacity:.12}
+.node.faded text{opacity:.1}
+.node text{
+  font-family:'DM Sans',sans-serif;font-size:10px;
+  fill:var(--text);pointer-events:none;
+  paint-order:stroke;stroke:#fefcf8;stroke-width:3px;
+}
+.node.selected circle{stroke:var(--gold2);stroke-width:3px;filter:drop-shadow(0 0 6px var(--gold2))}
+
+/* ── Tooltip ── */
+#tooltip{
+  position:fixed;z-index:200;pointer-events:none;
+  background:var(--panel);border:1px solid var(--border2);
+  border-radius:var(--radius);padding:10px 14px;
+  color:var(--gold2);font-size:.82rem;line-height:1.5;
+  box-shadow:0 4px 20px rgba(0,0,0,.3);
+  opacity:0;transition:opacity .15s;max-width:220px;
+}
+#tooltip strong{display:block;font-family:'Orbitron',sans-serif;font-size:.78rem;
+  color:#fff0a0;margin-bottom:4px}
+#tooltip .tt-meta{color:var(--dim);font-size:.75rem}
+
+/* ── Info panel ── */
+#info-panel{
+  position:fixed;right:0;top:90px;bottom:0;width:280px;
+  background:var(--bg2);border-left:1px solid var(--border);
+  padding:18px 16px;overflow-y:auto;
+  transform:translateX(100%);transition:transform .25s ease;
+  z-index:80;
+}
+#info-panel.open{transform:translateX(0)}
+#info-panel h2{font-family:'Orbitron',sans-serif;font-size:1rem;
+  color:var(--gold);margin-bottom:10px;line-height:1.3}
+#info-panel .ip-meta{font-size:.78rem;color:var(--muted);margin-bottom:12px;line-height:1.8}
+#info-panel .ip-meta strong{color:var(--gold3)}
+#info-panel h3{font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--dim);margin:10px 0 6px}
+#info-panel .neighbor-list{display:flex;flex-direction:column;gap:4px}
+.neighbor-item{
+  display:flex;align-items:center;gap:7px;padding:5px 8px;
+  border-radius:5px;border:1px solid var(--border);
+  font-size:.78rem;cursor:pointer;transition:all .2s;
+}
+.neighbor-item:hover{background:rgba(184,134,11,.1);border-color:var(--gold2)}
+.nb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.nb-name{flex:1;color:var(--text)}
+.nb-weight{font-size:.7rem;color:var(--dim)}
+#info-close{
+  position:absolute;top:10px;right:12px;
+  background:transparent;border:none;color:var(--muted);
+  font-size:1.1rem;cursor:pointer;transition:color .2s;line-height:1
+}
+#info-close:hover{color:var(--gold2)}
+.ip-explore{
+  display:inline-block;margin-top:12px;
+  padding:6px 14px;border-radius:var(--radius);
+  border:1px solid var(--border2);background:rgba(184,134,11,.1);
+  color:var(--gold2);text-decoration:none;font-size:.78rem;
+  transition:all .2s;
+}
+.ip-explore:hover{background:rgba(184,134,11,.25);color:#fff0a0}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../../">← Articles</a>
+  <h1>Quran Concept Web</h1>
+  <a href="../quran-topic-explorer/" class="badge">Topic Explorer →</a>
+</nav>
+
+<div id="controls">
+  <label>
+    Connection strength ≥
+    <input type="range" id="threshold" min="1" max="30" value="5">
+    <span id="threshold-val">5</span> shared verses
+  </label>
+  <div class="cat-filter" id="cat-filter"></div>
+  <span id="stats"></span>
+</div>
+
+<div id="graph-wrap">
+  <svg id="graph"></svg>
+</div>
+
+<div id="tooltip"></div>
+
+<div id="info-panel">
+  <button id="info-close" title="Close">✕</button>
+  <div id="info-content"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+let allConcepts = [];
+let threshold   = 5;
+let hiddenCats  = new Set();
+let selected    = null;
+
+// ── Bootstrap ────────────────────────────────────────────────────────────────
+(async () => {
+  const res = await fetch('../quran-topic-explorer/graphify-out/concepts.json');
+  allConcepts = await res.json();
+  buildCatFilter();
+  buildGraph();
+})();
+
+// ── Category filter ──────────────────────────────────────────────────────────
+function buildCatFilter() {
+  const cats = [...new Set(allConcepts.map(c => c.category))];
+  const el = document.getElementById('cat-filter');
+  el.innerHTML = cats.map(c =>
+    `<button class="cat-chip active" data-cat="${c}">${c}</button>`
+  ).join('');
+  el.addEventListener('click', e => {
+    const btn = e.target.closest('.cat-chip');
+    if (!btn) return;
+    const cat = btn.dataset.cat;
+    if (hiddenCats.has(cat)) { hiddenCats.delete(cat); btn.classList.add('active'); }
+    else                     { hiddenCats.add(cat);    btn.classList.remove('active'); }
+    buildGraph();
+  });
+}
+
+// ── Co-occurrence ────────────────────────────────────────────────────────────
+function computeLinks(concepts, minShared) {
+  const links = [];
+  for (let i = 0; i < concepts.length; i++) {
+    const setA = new Set(concepts[i].verse_refs || []);
+    for (let j = i + 1; j < concepts.length; j++) {
+      let shared = 0;
+      for (const v of (concepts[j].verse_refs || [])) {
+        if (setA.has(v)) shared++;
+      }
+      if (shared >= minShared) {
+        links.push({ source: concepts[i].id, target: concepts[j].id, weight: shared });
+      }
+    }
+  }
+  return links;
+}
+
+// ── D3 Graph ──────────────────────────────────────────────────────────────────
+let simulation = null;
+
+function buildGraph() {
+  // Filter visible concepts
+  const nodes = allConcepts
+    .filter(c => !hiddenCats.has(c.category))
+    .map(c => ({ ...c }));  // shallow copy so D3 can mutate x,y
+
+  const links = computeLinks(nodes, threshold);
+
+  // Update stats
+  document.getElementById('stats').textContent =
+    `${nodes.length} concepts · ${links.length} connections`;
+
+  const svg  = d3.select('#graph');
+  const wrap = document.getElementById('graph-wrap');
+  const W    = wrap.clientWidth;
+  const H    = wrap.clientHeight;
+
+  svg.attr('viewBox', `0 0 ${W} ${H}`);
+
+  // Stop previous simulation
+  if (simulation) simulation.stop();
+  svg.selectAll('*').remove();
+
+  // ── Zoom / pan ────────────────────────────────────────────────────────────
+  const g = svg.append('g');
+  svg.call(
+    d3.zoom().scaleExtent([0.3, 3]).on('zoom', e => g.attr('transform', e.transform))
+  ).on('dblclick.zoom', null);
+
+  // ── Scales ────────────────────────────────────────────────────────────────
+  const maxVC  = d3.max(nodes, d => d.verse_count) || 1;
+  const rScale = d3.scaleSqrt().domain([0, maxVC]).range([8, 34]);
+  const wScale = d3.scaleLinear()
+    .domain([threshold, d3.max(links, d => d.weight) || 1])
+    .range([0.6, 4]);
+
+  // ── Edges ─────────────────────────────────────────────────────────────────
+  const linkSel = g.append('g').selectAll('line')
+    .data(links).join('line')
+    .attr('class', 'link')
+    .attr('stroke-width', d => wScale(d.weight));
+
+  // ── Nodes ─────────────────────────────────────────────────────────────────
+  const nodeSel = g.append('g').selectAll('.node')
+    .data(nodes, d => d.id)
+    .join(enter => {
+      const grp = enter.append('g').attr('class', 'node').call(
+        d3.drag()
+          .on('start', dragStart)
+          .on('drag',  dragged)
+          .on('end',   dragEnd)
+      );
+      grp.append('circle');
+      grp.append('text').attr('text-anchor', 'middle').attr('dy', '0.35em');
+      return grp;
+    });
+
+  nodeSel.select('circle')
+    .attr('r', d => rScale(d.verse_count))
+    .attr('fill', d => d.color || '#b8860b')
+    .on('mouseover', (e, d) => showTooltip(e, d))
+    .on('mousemove', e => moveTooltip(e))
+    .on('mouseout', hideTooltip)
+    .on('click', (e, d) => { e.stopPropagation(); selectNode(d, nodeSel, linkSel, nodes, links); });
+
+  nodeSel.select('text')
+    .text(d => d.label)
+    .attr('dy', d => rScale(d.verse_count) + 13);
+
+  // Click on background deselects
+  svg.on('click', () => {
+    clearSelection(nodeSel, linkSel);
+    closeInfoPanel();
+  });
+
+  // ── Simulation ────────────────────────────────────────────────────────────
+  simulation = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id)
+      .distance(d => 120 - Math.min(d.weight * 2, 60))
+      .strength(d => Math.min(d.weight / 30, 0.6)))
+    .force('charge', d3.forceManyBody().strength(-260))
+    .force('center', d3.forceCenter(W / 2, H / 2))
+    .force('collide', d3.forceCollide().radius(d => rScale(d.verse_count) + 6))
+    .on('tick', () => {
+      linkSel
+        .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+        .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+      nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+    });
+}
+
+// ── Threshold slider ─────────────────────────────────────────────────────────
+document.getElementById('threshold').addEventListener('input', e => {
+  threshold = +e.target.value;
+  document.getElementById('threshold-val').textContent = threshold;
+  buildGraph();
+});
+
+// ── Drag ─────────────────────────────────────────────────────────────────────
+function dragStart(e, d) {
+  if (!e.active) simulation.alphaTarget(0.3).restart();
+  d.fx = d.x; d.fy = d.y;
+}
+function dragged(e, d)  { d.fx = e.x; d.fy = e.y; }
+function dragEnd(e, d)  {
+  if (!e.active) simulation.alphaTarget(0);
+  d.fx = null; d.fy = null;
+}
+
+// ── Tooltip ──────────────────────────────────────────────────────────────────
+const tooltip = document.getElementById('tooltip');
+function showTooltip(e, d) {
+  tooltip.innerHTML = `
+    <strong>${d.label}</strong>
+    <span class="tt-meta">${d.category}<br>
+    ${d.verse_count} verses · ${d.ruku_count} sections</span>`;
+  tooltip.style.opacity = '1';
+  moveTooltip(e);
+}
+function moveTooltip(e) {
+  const x = e.clientX + 14, y = e.clientY - 10;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top  = y + 'px';
+}
+function hideTooltip() { tooltip.style.opacity = '0'; }
+
+// ── Node selection ────────────────────────────────────────────────────────────
+function selectNode(d, nodeSel, linkSel, nodes, links) {
+  selected = d.id;
+
+  // Find connected node ids and link weights
+  const neighborMap = {};
+  links.forEach(l => {
+    const sid = typeof l.source === 'object' ? l.source.id : l.source;
+    const tid = typeof l.target === 'object' ? l.target.id : l.target;
+    if (sid === d.id) neighborMap[tid] = l.weight;
+    if (tid === d.id) neighborMap[sid] = l.weight;
+  });
+  const neighbors = new Set(Object.keys(neighborMap));
+
+  // Fade/highlight
+  nodeSel
+    .classed('faded',    n => n.id !== d.id && !neighbors.has(n.id))
+    .classed('selected', n => n.id === d.id);
+  linkSel
+    .classed('faded',     l => {
+      const s = typeof l.source==='object' ? l.source.id : l.source;
+      const t = typeof l.target==='object' ? l.target.id : l.target;
+      return s !== d.id && t !== d.id;
+    })
+    .classed('highlight', l => {
+      const s = typeof l.source==='object' ? l.source.id : l.source;
+      const t = typeof l.target==='object' ? l.target.id : l.target;
+      return s === d.id || t === d.id;
+    });
+
+  // Info panel
+  const neighbors_sorted = Object.entries(neighborMap)
+    .sort((a, b) => b[1] - a[1]);
+  const neighborItems = neighbors_sorted.map(([nid, w]) => {
+    const nc = nodes.find(n => n.id === nid);
+    if (!nc) return '';
+    return `<div class="neighbor-item" onclick="jumpTo('${nid}')">
+      <span class="nb-dot" style="background:${nc.color}"></span>
+      <span class="nb-name">${nc.label}</span>
+      <span class="nb-weight">${w} shared</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('info-content').innerHTML = `
+    <h2>${d.label}</h2>
+    <div class="ip-meta">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${d.color};vertical-align:middle;margin-right:5px"></span>
+      ${d.category}<br>
+      <strong>${d.verse_count}</strong> verse references<br>
+      <strong>${d.ruku_count}</strong> sections · <strong>${neighbors.size}</strong> connections
+    </div>
+    <a class="ip-explore" href="../quran-topic-explorer/?topic=${encodeURIComponent(d.label)}">
+      View all verses →
+    </a>
+    ${neighbors.size ? `<h3>Connected to (${neighbors.size})</h3><div class="neighbor-list">${neighborItems}</div>` : ''}
+  `;
+  document.getElementById('info-panel').classList.add('open');
+}
+
+function clearSelection(nodeSel, linkSel) {
+  selected = null;
+  if (nodeSel) nodeSel.classed('faded selected', false);
+  if (linkSel) linkSel.classed('faded highlight', false);
+}
+function closeInfoPanel() {
+  document.getElementById('info-panel').classList.remove('open');
+}
+document.getElementById('info-close').addEventListener('click', () => {
+  closeInfoPanel();
+  const nodeSel = d3.select('#graph').selectAll('.node');
+  const linkSel = d3.select('#graph').selectAll('.link');
+  clearSelection(nodeSel, linkSel);
+});
+
+// Jump to a neighbor node when clicked in panel
+function jumpTo(nid) {
+  const nodeSel = d3.select('#graph').selectAll('.node');
+  const linkSel = d3.select('#graph').selectAll('.link');
+  const allNodes = nodeSel.data();
+  const allLinks = linkSel.data();
+  const nd = allNodes.find(n => n.id === nid);
+  if (nd) selectNode(nd, nodeSel, linkSel, allNodes, allLinks);
+}
+</script>
+</body>
+</html>
