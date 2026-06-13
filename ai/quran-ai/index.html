@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Artificial Intelligence for Quran · Dr. Farooq AI</title>
+<meta name="description" content="A suite of four AI-powered tools for exploring the Quran — knowledge graph, topic explorer, concept web, and structure map.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Amiri:wght@400;700&family=DM+Sans:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+<style>
+@property --sa{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes snake{to{--sa:360deg}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+:root{
+  --bg:#fefcf8;--bg2:#f9f6ee;--panel:#0a3d22;
+  --green:#0d7a42;--green2:#0a5c33;--green-dk:#063d22;
+  --gold:#b8860b;--gold2:#d4a017;--gold3:#8b6914;--gold-lt:#f5d77a;
+  --text:#5a3a00;--muted:#a07830;--dim:#c8a055;
+  --border:rgba(184,134,11,.35);--border2:rgba(184,134,11,.6);
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── Nav ── */
+nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;gap:12px;padding:11px 24px;
+  background:var(--panel);border-bottom:2px solid var(--gold2);
+}
+nav a.back{color:var(--gold-lt);text-decoration:none;font-size:.82rem;font-weight:500;
+  padding:4px 10px;border:1px solid rgba(245,215,122,.3);border-radius:4px;transition:all .2s}
+nav a.back:hover{background:rgba(245,215,122,.15)}
+nav h1{font-family:'Orbitron',sans-serif;font-size:.92rem;font-weight:700;
+  color:var(--gold-lt);letter-spacing:.05em;flex:1;text-align:center}
+nav .badge{font-size:.68rem;padding:3px 9px;border-radius:12px;
+  background:rgba(245,215,122,.18);color:var(--gold-lt);border:1px solid rgba(245,215,122,.3)}
+
+/* ── Hero ── */
+.hero{
+  position:relative;overflow:hidden;
+  padding:60px 24px 50px;text-align:center;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(13,122,66,.12), transparent 60%),
+    linear-gradient(to bottom,var(--bg2),var(--bg));
+  border-bottom:1px solid var(--border);
+}
+.hero .arabic{
+  font-family:'Amiri',serif;font-size:2.4rem;color:var(--green);
+  margin-bottom:10px;direction:rtl;opacity:.92;
+}
+.hero h2{
+  font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;
+  color:var(--green2);letter-spacing:.02em;margin-bottom:14px;line-height:1.2;
+}
+.hero h2 .ai{color:var(--gold2)}
+.hero p{color:var(--muted);font-size:1rem;max-width:560px;margin:0 auto 22px;line-height:1.7}
+.hero-stats{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.hstat{display:flex;flex-direction:column;align-items:center;padding:8px 18px;
+  border-radius:10px;border:1px solid var(--border);background:rgba(184,134,11,.06)}
+.hstat b{font-family:'Orbitron',sans-serif;font-size:1.15rem;color:var(--green)}
+.hstat span{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+
+/* decorative book watermark */
+.hero::before{
+  content:'';position:absolute;right:-80px;top:50%;transform:translateY(-50%);
+  width:420px;height:420px;background:url('quran-book.svg') no-repeat center/contain;
+  opacity:.10;pointer-events:none;
+}
+.hero::after{
+  content:'';position:absolute;left:-100px;bottom:-120px;
+  width:340px;height:340px;background:url('quran-book.svg') no-repeat center/contain;
+  opacity:.06;transform:rotate(12deg);pointer-events:none;
+}
+
+/* ── Tool grid ── */
+.wrap{max-width:1040px;margin:0 auto;padding:44px 24px 70px}
+.section-label{
+  font-family:'Orbitron',sans-serif;font-size:.78rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--gold3);text-align:center;margin-bottom:8px;
+}
+.section-sub{text-align:center;color:var(--muted);font-size:.92rem;margin-bottom:34px}
+.tools{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+@media(max-width:760px){.tools{grid-template-columns:1fr}}
+
+.tool-card{
+  position:relative;display:flex;flex-direction:column;gap:10px;
+  padding:26px;border-radius:var(--radius);text-decoration:none;
+  background:var(--bg2) padding-box;
+  border:1px solid var(--border);
+  transition:transform .22s,box-shadow .22s,border-color .22s;
+  animation:fadeUp .5s ease backwards;overflow:hidden;
+}
+.tool-card:nth-child(1){animation-delay:.05s}
+.tool-card:nth-child(2){animation-delay:.12s}
+.tool-card:nth-child(3){animation-delay:.19s}
+.tool-card:nth-child(4){animation-delay:.26s}
+.tool-card:hover{
+  transform:translateY(-5px);
+  border-color:transparent;
+  background:var(--bg2) padding-box,
+    conic-gradient(from var(--sa),transparent 0deg,transparent 250deg,
+      var(--green) 290deg,var(--gold-lt) 330deg,transparent 360deg) border-box;
+  border:2px solid transparent;
+  animation:snake 3s linear infinite;
+  box-shadow:0 14px 44px rgba(13,122,66,.14);
+}
+.tc-icon{
+  width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;background:linear-gradient(135deg,var(--green),var(--green-dk));
+  color:var(--gold-lt);box-shadow:0 4px 14px rgba(13,122,66,.3);
+}
+.tc-num{
+  position:absolute;top:18px;right:22px;font-family:'Orbitron',sans-serif;
+  font-size:2.4rem;font-weight:900;color:rgba(13,122,66,.08);line-height:1;
+}
+.tc-cat{font-family:'Orbitron',sans-serif;font-size:.66rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--gold3)}
+.tc-title{font-family:'Orbitron',sans-serif;font-size:1.12rem;font-weight:700;color:var(--green2);line-height:1.3}
+.tc-desc{font-size:.88rem;color:var(--muted);line-height:1.65;flex:1}
+.tc-go{display:inline-flex;align-items:center;gap:6px;margin-top:4px;
+  font-size:.82rem;font-weight:600;color:var(--gold2)}
+.tc-go::after{content:'→';transition:transform .2s}
+.tool-card:hover .tc-go::after{transform:translateX(4px)}
+
+/* ── Footer ── */
+footer{padding:24px;text-align:center;border-top:1px solid var(--border);
+  background:var(--bg2);font-size:.8rem;color:var(--dim)}
+footer a{color:var(--gold3);text-decoration:none}
+footer a:hover{color:var(--gold2)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../../" class="back">← Articles</a>
+  <h1>Artificial Intelligence for Quran</h1>
+  <span class="badge">4 Tools</span>
+</nav>
+
+<div class="hero">
+  <div class="arabic">ٱلْقُرْآن</div>
+  <h2>Artificial Intelligence<br>for the <span class="ai">Quran</span></h2>
+  <p>Four AI-powered lenses on the same sacred text — extract its themes, retrieve verses by topic, map how concepts connect, and see the architecture of all 114 surahs.</p>
+  <div class="hero-stats">
+    <div class="hstat"><b>114</b><span>Surahs</span></div>
+    <div class="hstat"><b>6,236</b><span>Verses</span></div>
+    <div class="hstat"><b>558</b><span>Sections</span></div>
+    <div class="hstat"><b>56</b><span>Concepts</span></div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="section-label">Choose a Tool</div>
+  <div class="section-sub">Each explores the Quran a different way — all share the same Saheeh International data</div>
+
+  <div class="tools">
+
+    <a href="../quran-knowledge-graph/" class="tool-card">
+      <span class="tc-num">01</span>
+      <div class="tc-icon">🕸️</div>
+      <div class="tc-cat">Knowledge Graph</div>
+      <div class="tc-title">Surah-Level Graph</div>
+      <p class="tc-desc">All 114 surahs mapped into an AI-generated knowledge graph. Explore thematic clusters, prophetic narratives, and cross-surah bridges surfaced by extraction.</p>
+      <span class="tc-go">Open tool</span>
+    </a>
+
+    <a href="../quran-topic-explorer/" class="tool-card">
+      <span class="tc-num">02</span>
+      <div class="tc-icon">📖</div>
+      <div class="tc-cat">Topic Explorer</div>
+      <div class="tc-title">All Verses by Topic</div>
+      <p class="tc-desc">Click any topic — Prayer, Moses, Day of Judgment, Justice — and instantly see every relevant verse from across all 114 surahs collected in one place.</p>
+      <span class="tc-go">Open tool</span>
+    </a>
+
+    <a href="../quran-concept-graph/" class="tool-card">
+      <span class="tc-num">03</span>
+      <div class="tc-icon">🔗</div>
+      <div class="tc-cat">Concept Web</div>
+      <div class="tc-title">How Topics Connect</div>
+      <p class="tc-desc">A force-directed graph of 56 Quranic concepts connected by verse co-occurrence. Discover which topics always appear together and which stand alone.</p>
+      <span class="tc-go">Open tool</span>
+    </a>
+
+    <a href="../quran-bipartite-map/" class="tool-card">
+      <span class="tc-num">04</span>
+      <div class="tc-icon">🗺️</div>
+      <div class="tc-cat">Structure Map</div>
+      <div class="tc-title">Concepts × Surahs</div>
+      <p class="tc-desc">A bipartite map: 56 concepts on one side, all 114 surahs on the other. Hover any concept to trace its surahs, or any surah to reveal its themes.</p>
+      <span class="tc-go">Open tool</span>
+    </a>
+
+  </div>
+</div>
+
+<footer>
+  Translation: <strong>Saheeh International</strong> via Quran.com API &nbsp;|&nbsp;
+  Built by <a href="../../">Dr. Muhammad Farooq</a>
+</footer>
+
+</body>
+</html>
