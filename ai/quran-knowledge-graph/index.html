@@ -19,16 +19,17 @@
 
 :root {
   --cyan:    #00b8c8;
-  --gold:    #b8860b;
-  --gold2:   #d4a017;
-  --green:   #2e8b57;
-  --bg:      #fefcf8;
-  --bg2:     #f9f6ee;
-  --panel:   #1a1200;
-  --dark:    #0d0a00;
-  --border:  rgba(184,134,11,0.4);
-  --text:    #7a5c00;
-  --muted:   #a07830;
+  --gold:    #d4a017;
+  --gold2:   #f5d77a;
+  --gold-lt: #ffe9a8;
+  --green:   #4fc88a;
+  --bg:      #06281a;
+  --bg2:     rgba(10,48,29,0.66);
+  --panel:   rgba(4,28,17,0.9);
+  --dark:    #03190f;
+  --border:  rgba(212,160,23,0.45);
+  --text:    #f3e8c8;
+  --muted:   #c9b889;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -36,23 +37,42 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Exo 2', 'DM Sans', sans-serif;
-  background: var(--bg);
+  background:
+    radial-gradient(ellipse at 80% 18%, rgba(26,168,96,0.20), transparent 52%),
+    radial-gradient(ellipse at 12% 88%, rgba(26,168,96,0.14), transparent 48%),
+    linear-gradient(155deg, #07301f 0%, #0a3d26 42%, #052012 100%);
+  background-attachment: fixed;
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
 }
 
-/* Grid overlay — removed */
-body::before { display: none; }
+/* Islamic geometric pattern overlay */
+body::before {
+  content: '';
+  display: block;
+  position: fixed; inset: 0;
+  background: url('islamic-pattern.svg') repeat;
+  background-size: 150px 150px;
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+}
 
-/* Scanlines */
+/* Gold diagonal "awards" accents + light streaks */
 body::after {
   content: '';
   position: fixed; inset: 0;
-  background: repeating-linear-gradient(
-    0deg, transparent, transparent 2px,
-    rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px
-  );
+  background:
+    /* concentrated gold streaks — top-right corner */
+    linear-gradient(125deg, transparent 62%, rgba(245,215,122,0.22) 63%, transparent 64%) right top / 70% 100% no-repeat,
+    linear-gradient(125deg, transparent 70%, rgba(245,215,122,0.14) 71%, transparent 72%) right top / 70% 100% no-repeat,
+    linear-gradient(125deg, transparent 78%, rgba(79,200,138,0.18) 79%, transparent 80%) right top / 80% 100% no-repeat,
+    /* concentrated gold streaks — bottom-left corner */
+    linear-gradient(125deg, transparent 22%, rgba(245,215,122,0.16) 23%, transparent 24%) left bottom / 60% 100% no-repeat,
+    linear-gradient(125deg, transparent 30%, rgba(79,200,138,0.14) 31%, transparent 32%) left bottom / 60% 100% no-repeat,
+    /* faint full-field diagonal pinstripe sheen */
+    repeating-linear-gradient(125deg, transparent 0 46px, rgba(245,215,122,0.025) 46px 47px);
   pointer-events: none;
   z-index: 1;
 }
@@ -82,10 +102,10 @@ nav {
   z-index: 100;
   padding: 14px 40px;
   display: flex; justify-content: space-between; align-items: center;
-  background: rgba(254,252,248,0.95);
+  background: rgba(4,28,17,0.92);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--border);
-  box-shadow: 0 1px 20px rgba(184,134,11,0.12);
+  box-shadow: 0 1px 24px rgba(0,0,0,0.4);
 }
 
 .nav-back {
@@ -147,7 +167,7 @@ nav {
   font-size: clamp(2rem, 5vw, 3.8rem);
   font-weight: 900; line-height: 1.05;
   letter-spacing: -0.01em;
-  background: linear-gradient(135deg, #8b6914 0%, var(--gold) 50%, #5c7a00 100%);
+  background: linear-gradient(135deg, #d4a017 0%, #ffe9a8 48%, #4fc88a 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text;
   margin-bottom: 18px;
@@ -219,9 +239,13 @@ nav {
 
 .graph-frame-wrap {
   position: relative;
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--bg2);
+  backdrop-filter: blur(6px);
   min-height: 80vh;
+  border: 1px solid var(--border);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(245,215,122,0.08);
+  overflow: hidden;
 }
 
 iframe#graph {
@@ -289,6 +313,7 @@ iframe#graph {
     ) border-box;
   border: 2px solid transparent;
   border-radius: 6px;
+  backdrop-filter: blur(6px);
   animation: snake 3s linear infinite;
 }
 .info-card:nth-child(2) { animation-duration: 4.2s; }

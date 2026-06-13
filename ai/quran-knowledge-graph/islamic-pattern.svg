@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+  <defs>
+    <g id="rosette">
+      <!-- 8-petal floral rosette -->
+      <g fill="none" stroke="#3fa07a" stroke-width="1.1" stroke-opacity="0.5">
+        <circle cx="0" cy="0" r="7"/>
+        <g>
+          <ellipse cx="0" cy="-15" rx="5" ry="9"/>
+        </g>
+        <g transform="rotate(45)"><ellipse cx="0" cy="-15" rx="5" ry="9"/></g>
+        <g transform="rotate(90)"><ellipse cx="0" cy="-15" rx="5" ry="9"/></g>
+        <g transform="rotate(135)"><ellipse cx="0" cy="-15" rx="5" ry="9"/></g>
+        <g transform="rotate(180)"><ellipse cx="0" cy="-15" rx="5" ry="9"/></g>
+        <g transform="rotate(225)"><ellipse cx="0" cy="-15" rx="5" ry="9"/></g>
+        <g transform="rotate(270)"><ellipse cx="0" cy="-15" rx="5" ry="9"/></g>
+        <g transform="rotate(315)"><ellipse cx="0" cy="-15" rx="5" ry="9"/></g>
+      </g>
+    </g>
+    <g id="star8">
+      <!-- 8-point interlaced star -->
+      <g fill="none" stroke="#caa53a" stroke-width="1" stroke-opacity="0.32">
+        <polygon points="0,-22 6,-6 22,0 6,6 0,22 -6,6 -22,0 -6,-6"/>
+        <polygon points="0,-22 6,-6 22,0 6,6 0,22 -6,6 -22,0 -6,-6" transform="rotate(45)"/>
+      </g>
+    </g>
+  </defs>
+
+  <!-- transparent base so the page gradient shows through -->
+  <rect width="160" height="160" fill="none"/>
+
+  <!-- lattice connecting lines -->
+  <g stroke="#2f8a66" stroke-width="0.8" stroke-opacity="0.25" fill="none">
+    <path d="M0 0 L80 80 L160 0 M0 160 L80 80 L160 160"/>
+    <path d="M80 0 L0 80 L80 160 L160 80 Z"/>
+  </g>
+
+  <!-- rosettes at corners + center (tileable) -->
+  <use href="#rosette" x="0"   y="0"/>
+  <use href="#rosette" x="160" y="0"/>
+  <use href="#rosette" x="0"   y="160"/>
+  <use href="#rosette" x="160" y="160"/>
+  <use href="#rosette" x="80"  y="80"/>
+
+  <!-- 8-point stars at edge midpoints -->
+  <use href="#star8" x="80"  y="0"/>
+  <use href="#star8" x="0"   y="80"/>
+  <use href="#star8" x="160" y="80"/>
+  <use href="#star8" x="80"  y="160"/>
+</svg>
