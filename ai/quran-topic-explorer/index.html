@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quran Topic Explorer · Dr. Farooq AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+/* ── Design tokens ─────────────────────────────────────────────── */
+@property --sa { syntax:'<angle>'; initial-value:0deg; inherits:false; }
+@keyframes snake { to { --sa: 360deg; } }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+:root{
+  --bg:#fefcf8; --bg2:#f9f6ee; --bg3:#f3edd8;
+  --panel:#1a1200; --dark:#0d0a00;
+  --gold:#b8860b; --gold2:#d4a017; --gold3:#8b6914;
+  --text:#5a3a00; --muted:#a07830; --dim:#c8a055;
+  --border:rgba(184,134,11,.35); --border2:rgba(184,134,11,.6);
+  --radius:8px; --sidebar:320px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── Nav ──────────────────────────────────────────────────────── */
+nav{
+  position:sticky;top:0;z-index:100;
+  display:flex;align-items:center;gap:12px;
+  padding:10px 24px;
+  background:var(--panel);border-bottom:1px solid var(--border2);
+}
+nav a{color:var(--gold2);text-decoration:none;font-size:.85rem;font-weight:500;
+  padding:4px 10px;border:1px solid var(--border);border-radius:4px;transition:all .2s}
+nav a:hover{background:rgba(212,160,23,.15);color:#fff0a0}
+nav h1{font-family:'Orbitron',sans-serif;font-size:.95rem;font-weight:700;
+  color:var(--gold2);letter-spacing:.06em;flex:1;text-align:center}
+nav .badge{font-size:.7rem;padding:3px 8px;border-radius:20px;
+  background:rgba(184,134,11,.2);color:var(--gold2);border:1px solid var(--border)}
+
+/* ── Hero ─────────────────────────────────────────────────────── */
+.hero{
+  padding:32px 24px 24px;text-align:center;
+  background:linear-gradient(to bottom,var(--bg2),var(--bg));
+  border-bottom:1px solid var(--border);
+}
+.hero h2{font-family:'Orbitron',sans-serif;font-size:1.7rem;font-weight:700;
+  color:var(--gold);letter-spacing:.04em;margin-bottom:8px}
+.hero p{color:var(--muted);font-size:.95rem;margin-bottom:16px}
+.stats{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.stat{display:flex;flex-direction:column;align-items:center;
+  padding:8px 20px;border-radius:var(--radius);
+  border:1px solid var(--border);background:rgba(184,134,11,.08)}
+.stat-val{font-family:'Orbitron',sans-serif;font-size:1.2rem;font-weight:700;color:var(--gold)}
+.stat-lbl{font-size:.72rem;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+
+/* ── Controls ─────────────────────────────────────────────────── */
+.controls{
+  padding:14px 24px;display:flex;flex-direction:column;gap:10px;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  position:sticky;top:49px;z-index:90;
+}
+#search{
+  width:100%;max-width:480px;
+  padding:9px 14px;border:1px solid var(--border2);border-radius:var(--radius);
+  background:var(--bg);color:var(--text);font-size:.9rem;
+  outline:none;transition:border-color .2s;
+}
+#search:focus{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(212,160,23,.15)}
+#search::placeholder{color:var(--dim)}
+.cats{display:flex;flex-wrap:wrap;gap:6px}
+.cat-btn{
+  padding:4px 12px;border-radius:20px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer;
+  transition:all .2s;font-family:'DM Sans',sans-serif;
+}
+.cat-btn:hover,.cat-btn.active{
+  background:rgba(184,134,11,.18);color:var(--gold2);border-color:var(--gold2)
+}
+
+/* ── Explorer layout ─────────────────────────────────────────── */
+.explorer{display:flex;min-height:calc(100vh - 200px)}
+
+/* ── Concept sidebar ─────────────────────────────────────────── */
+.sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);
+  border-right:1px solid var(--border);
+  overflow-y:auto;background:var(--bg2);
+}
+.sidebar-header{
+  padding:10px 14px 6px;font-size:.72rem;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--dim);border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--bg2);z-index:10;
+}
+.concept-list{padding:6px}
+.concept-card{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 10px;margin-bottom:3px;border-radius:6px;
+  cursor:pointer;transition:all .2s;border:1px solid transparent;
+}
+.concept-card:hover{background:rgba(184,134,11,.1);border-color:var(--border)}
+.concept-card.active{
+  border-color:transparent;
+  background:var(--bg) padding-box,
+    conic-gradient(from var(--sa),transparent 0deg,transparent 250deg,
+      var(--gold) 290deg,#fff0a0 330deg,transparent 360deg) border-box;
+  border:2px solid transparent;
+  animation:snake 3s linear infinite;
+}
+.c-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.c-name{flex:1;font-size:.88rem;font-weight:500;color:var(--text)}
+.concept-card.active .c-name{color:var(--gold);font-weight:600}
+.c-count{
+  font-size:.72rem;font-weight:600;padding:2px 7px;
+  border-radius:12px;background:rgba(184,134,11,.15);color:var(--gold3);
+  flex-shrink:0;
+}
+.concept-card.active .c-count{background:rgba(184,134,11,.3);color:var(--gold)}
+.c-hidden{display:none}
+
+/* ── Verse panel ─────────────────────────────────────────────── */
+.verse-panel{flex:1;overflow-y:auto;padding:0}
+.vp-empty{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:60%;gap:16px;padding:40px;text-align:center;
+  animation:fadeIn .4s ease;
+}
+.vp-empty .icon{font-size:2.5rem;opacity:.3}
+.vp-empty h3{font-family:'Orbitron',sans-serif;font-size:1.1rem;color:var(--gold);opacity:.7}
+.vp-empty p{color:var(--dim);font-size:.9rem;max-width:340px;line-height:1.6}
+.vp-loading{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:60%;gap:12px;animation:pulse 1s infinite;
+}
+.vp-loading p{color:var(--muted);font-size:.9rem}
+.vp-content{animation:fadeIn .3s ease}
+
+/* concept header in verse panel */
+.vp-header{
+  padding:20px 24px 16px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg2);
+  position:sticky;top:0;z-index:5;
+}
+.vp-header h2{font-family:'Orbitron',sans-serif;font-size:1.3rem;font-weight:700;color:var(--gold);margin-bottom:4px}
+.vp-meta{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.vp-badge{
+  font-size:.72rem;padding:3px 9px;border-radius:12px;
+  border:1px solid var(--border);color:var(--muted);
+}
+.vp-badge strong{color:var(--gold3)}
+
+/* Surah group */
+.surah-group{margin:0;border-bottom:1px solid rgba(184,134,11,.12)}
+.surah-group-header{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 24px;background:rgba(184,134,11,.05);
+  cursor:pointer;user-select:none;
+  border-bottom:1px solid rgba(184,134,11,.12);
+}
+.surah-group-header:hover{background:rgba(184,134,11,.1)}
+.sg-num{
+  font-family:'Orbitron',sans-serif;font-size:.72rem;font-weight:700;
+  color:var(--gold3);opacity:.7;min-width:24px;
+}
+.sg-name{font-weight:600;font-size:.9rem;color:var(--text)}
+.sg-count{font-size:.75rem;color:var(--dim);margin-left:auto}
+.sg-toggle{font-size:.8rem;color:var(--dim);transition:transform .2s}
+.sg-toggle.open{transform:rotate(90deg)}
+.verse-list{padding:0 24px 8px}
+.verse-row{
+  padding:10px 0;border-bottom:1px solid rgba(184,134,11,.07);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.verse-row:last-child{border-bottom:none}
+.vr-key{
+  font-family:'Orbitron',sans-serif;font-size:.68rem;font-weight:700;
+  color:var(--gold3);min-width:48px;padding-top:2px;flex-shrink:0;
+  opacity:.8;
+}
+.vr-text{font-size:.92rem;line-height:1.65;color:var(--text)}
+.vr-text em{color:var(--muted);font-style:italic;font-size:.85em}
+
+/* ── Footer ───────────────────────────────────────────────────── */
+footer{
+  padding:20px 24px;text-align:center;
+  border-top:1px solid var(--border);
+  font-size:.78rem;color:var(--dim);
+  background:var(--bg2);
+}
+footer a{color:var(--gold3);text-decoration:none}
+footer a:hover{color:var(--gold2)}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media(max-width:640px){
+  :root{--sidebar:100vw}
+  .explorer{flex-direction:column}
+  .sidebar{width:100%;min-width:unset;max-height:260px;border-right:none;border-bottom:1px solid var(--border)}
+  .verse-panel{min-height:50vh}
+  .hero h2{font-size:1.25rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../../">← Articles</a>
+  <h1>Quran Topic Explorer</h1>
+  <span class="badge">AI Tool</span>
+</nav>
+
+<div class="hero">
+  <h2>Quran Topic Explorer</h2>
+  <p>Click any topic to see every verse from across the full Quran — in one place</p>
+  <div class="stats">
+    <div class="stat"><span class="stat-val" id="stat-topics">56</span><span class="stat-lbl">Topics</span></div>
+    <div class="stat"><span class="stat-val">6,236</span><span class="stat-lbl">Total Verses</span></div>
+    <div class="stat"><span class="stat-val">558</span><span class="stat-lbl">Sections</span></div>
+    <div class="stat"><span class="stat-val">114</span><span class="stat-lbl">Surahs</span></div>
+  </div>
+</div>
+
+<div class="controls">
+  <input type="search" id="search" placeholder="Search topics (e.g. Prayer, Moses, Justice…)">
+  <div class="cats" id="cats"></div>
+</div>
+
+<div class="explorer">
+  <aside class="sidebar">
+    <div class="sidebar-header"><span id="sidebar-count">56 topics</span></div>
+    <div class="concept-list" id="concept-list"></div>
+  </aside>
+  <div class="verse-panel" id="verse-panel">
+    <div class="vp-empty">
+      <div class="icon">📖</div>
+      <h3>Select a Topic</h3>
+      <p>Choose any topic from the left panel to see all relevant verses across the full Quran collected in one place.</p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Translation: <strong>Saheeh International</strong> via Quran.com API &nbsp;|&nbsp;
+  Built by <a href="../../">Dr. Muhammad Farooq</a> &nbsp;|&nbsp;
+  Graph: keyword-based concept mapping across 558 ruku sections
+</footer>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let concepts = [];          // from concepts.json
+let verseCache = null;      // lazy-loaded from verse_cache.json
+let verseCacheLoading = false;
+let activeId = null;
+let activeCategory = 'All';
+let searchTerm = '';
+
+// Surah names for display
+const SURAH_NAMES = {
+  1:'Al-Fatihah',2:'Al-Baqarah',3:"Ali 'Imran",4:"An-Nisa",5:"Al-Ma'idah",
+  6:"Al-An'am",7:"Al-A'raf",8:'Al-Anfal',9:'At-Tawbah',10:'Yunus',
+  11:'Hud',12:'Yusuf',13:"Ar-Ra'd",14:'Ibrahim',15:'Al-Hijr',
+  16:'An-Nahl',17:"Al-Isra",18:'Al-Kahf',19:'Maryam',20:'Taha',
+  21:"Al-Anbya",22:'Al-Hajj',23:"Al-Mu'minun",24:'An-Nur',25:'Al-Furqan',
+  26:"Ash-Shu'ara",27:'An-Naml',28:'Al-Qasas',29:"Al-'Ankabut",30:'Ar-Rum',
+  31:'Luqman',32:'As-Sajdah',33:'Al-Ahzab',34:'Saba',35:'Fatir',
+  36:'Ya-Sin',37:'As-Saffat',38:'Sad',39:'Az-Zumar',40:'Ghafir',
+  41:'Fussilat',42:"Ash-Shuraa",43:'Az-Zukhruf',44:'Ad-Dukhan',45:'Al-Jathiyah',
+  46:'Al-Ahqaf',47:'Muhammad',48:'Al-Fath',49:'Al-Hujurat',50:'Qaf',
+  51:'Adh-Dhariyat',52:'At-Tur',53:'An-Najm',54:'Al-Qamar',55:'Ar-Rahman',
+  56:"Al-Waqi'ah",57:'Al-Hadid',58:'Al-Mujadila',59:'Al-Hashr',60:'Al-Mumtahanah',
+  61:'As-Saf',62:"Al-Jumu'ah",63:'Al-Munafiqun',64:'At-Taghabun',65:'At-Talaq',
+  66:'At-Tahrim',67:'Al-Mulk',68:'Al-Qalam',69:'Al-Haqqah',70:"Al-Ma'arij",
+  71:'Nuh',72:'Al-Jinn',73:'Al-Muzzammil',74:'Al-Muddaththir',75:'Al-Qiyamah',
+  76:'Al-Insan',77:'Al-Mursalat',78:'An-Naba',79:"An-Nazi'at",80:"'Abasa",
+  81:'At-Takwir',82:'Al-Infitar',83:'Al-Mutaffifin',84:'Al-Inshiqaq',85:'Al-Buruj',
+  86:'At-Tariq',87:"Al-A'la",88:'Al-Ghashiyah',89:'Al-Fajr',90:'Al-Balad',
+  91:'Ash-Shams',92:'Al-Layl',93:'Ad-Duhaa',94:'Ash-Sharh',95:'At-Tin',
+  96:"Al-'Alaq",97:'Al-Qadr',98:'Al-Bayyinah',99:'Az-Zalzalah',100:"Al-'Adiyat",
+  101:"Al-Qari'ah",102:'At-Takathur',103:"Al-'Asr",104:'Al-Humazah',105:'Al-Fil',
+  106:'Quraysh',107:"Al-Ma'un",108:'Al-Kawthar',109:'Al-Kafirun',110:'An-Nasr',
+  111:'Al-Masad',112:'Al-Ikhlas',113:'Al-Falaq',114:'An-Nas',
+};
+
+// ── Bootstrap ─────────────────────────────────────────────────────────────────
+(async () => {
+  try {
+    const res = await fetch('graphify-out/concepts.json');
+    concepts = await res.json();
+    buildCategoryTabs();
+    renderList();
+  } catch(e) {
+    document.getElementById('concept-list').innerHTML =
+      '<p style="padding:16px;color:#c00;font-size:.85rem">Failed to load concepts.json</p>';
+  }
+})();
+
+// ── Verse cache loader ────────────────────────────────────────────────────────
+async function ensureVerseCache() {
+  if (verseCache) return true;
+  if (verseCacheLoading) {
+    // wait
+    while (verseCacheLoading) await new Promise(r => setTimeout(r, 50));
+    return !!verseCache;
+  }
+  verseCacheLoading = true;
+  try {
+    const res = await fetch('verse_cache.json');
+    verseCache = await res.json();
+    return true;
+  } catch(e) {
+    verseCacheLoading = false;
+    return false;
+  } finally {
+    verseCacheLoading = false;
+  }
+}
+
+// ── Category tabs ─────────────────────────────────────────────────────────────
+function buildCategoryTabs() {
+  const cats = ['All', ...new Set(concepts.map(c => c.category))];
+  const el = document.getElementById('cats');
+  el.innerHTML = cats.map(c =>
+    `<button class="cat-btn${c==='All'?' active':''}" data-cat="${c}">${c}</button>`
+  ).join('');
+  el.addEventListener('click', e => {
+    const btn = e.target.closest('.cat-btn');
+    if (!btn) return;
+    activeCategory = btn.dataset.cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderList();
+  });
+}
+
+// ── Concept list render ───────────────────────────────────────────────────────
+function renderList() {
+  const q = searchTerm.toLowerCase();
+  const visible = concepts.filter(c => {
+    const matchCat = activeCategory === 'All' || c.category === activeCategory;
+    const matchQ   = !q || c.label.toLowerCase().includes(q) || c.category.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+
+  document.getElementById('sidebar-count').textContent =
+    `${visible.length} topic${visible.length!==1?'s':''}`;
+
+  const el = document.getElementById('concept-list');
+  el.innerHTML = visible.map(c => `
+    <div class="concept-card${c.id===activeId?' active':''}"
+         data-id="${c.id}" title="${c.category} · ${c.verse_count} verses">
+      <span class="c-dot" style="background:${c.color}"></span>
+      <span class="c-name">${c.label}</span>
+      <span class="c-count">${c.verse_count}</span>
+    </div>
+  `).join('');
+
+  el.querySelectorAll('.concept-card').forEach(card => {
+    card.addEventListener('click', () => selectConcept(card.dataset.id));
+  });
+}
+
+// ── Select concept ────────────────────────────────────────────────────────────
+async function selectConcept(id) {
+  activeId = id;
+  renderList(); // re-render to update active state
+
+  const concept = concepts.find(c => c.id === id);
+  if (!concept) return;
+
+  const panel = document.getElementById('verse-panel');
+  panel.innerHTML = `
+    <div class="vp-loading">
+      <p>Loading ${concept.verse_count} verses…</p>
+    </div>`;
+
+  const ok = await ensureVerseCache();
+  if (!ok) {
+    panel.innerHTML = `<p style="padding:24px;color:#c00">Could not load verse text.</p>`;
+    return;
+  }
+
+  renderVersePanel(concept);
+}
+
+// ── Render verse panel ────────────────────────────────────────────────────────
+function renderVersePanel(concept) {
+  const panel = document.getElementById('verse-panel');
+
+  // Group verse_refs by surah
+  const bySurah = {};
+  for (const vk of concept.verse_refs || []) {
+    const [s] = vk.split(':');
+    const sn = parseInt(s);
+    if (!bySurah[sn]) bySurah[sn] = [];
+    bySurah[sn].push(vk);
+  }
+  const surahNums = Object.keys(bySurah).map(Number).sort((a,b) => a-b);
+
+  const surahHtml = surahNums.map(sn => {
+    const keys = bySurah[sn];
+    const name = SURAH_NAMES[sn] || `Surah ${sn}`;
+    const verses = keys.map(vk => {
+      const text = verseCache[vk] || '<em>Text unavailable</em>';
+      return `<div class="verse-row">
+        <span class="vr-key">${vk}</span>
+        <span class="vr-text">${escHtml(text)}</span>
+      </div>`;
+    }).join('');
+    return `
+      <div class="surah-group">
+        <div class="surah-group-header" onclick="toggleGroup(this)">
+          <span class="sg-num">${sn}</span>
+          <span class="sg-name">${name}</span>
+          <span class="sg-count">${keys.length} verse${keys.length!==1?'s':''}</span>
+          <span class="sg-toggle open">▶</span>
+        </div>
+        <div class="verse-list">${verses}</div>
+      </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="vp-content">
+      <div class="vp-header">
+        <h2>${escHtml(concept.label)}</h2>
+        <div class="vp-meta">
+          <span class="vp-badge"><strong>${concept.verse_count}</strong> verse references</span>
+          <span class="vp-badge"><strong>${concept.ruku_count}</strong> sections</span>
+          <span class="vp-badge">${escHtml(concept.category)}</span>
+          <span class="vp-badge"><strong>${surahNums.length}</strong> surahs</span>
+        </div>
+      </div>
+      ${surahHtml}
+    </div>`;
+}
+
+function toggleGroup(header) {
+  const list = header.nextElementSibling;
+  const tog  = header.querySelector('.sg-toggle');
+  const open = tog.classList.toggle('open');
+  list.style.display = open ? '' : 'none';
+}
+
+function cleanVerse(s) {
+  // Strip inline footnote numbers (e.g. "Allāh,1" → "Allāh,")
+  return String(s).replace(/(\w[,.'!?]?)(\d+)(?=\s|$)/g, '$1');
+}
+function escHtml(s) {
+  return cleanVerse(String(s))
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Search ────────────────────────────────────────────────────────────────────
+document.getElementById('search').addEventListener('input', e => {
+  searchTerm = e.target.value;
+  renderList();
+});
+</script>
+</body>
+</html>
