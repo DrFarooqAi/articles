@@ -10,6 +10,15 @@ import os
 import re
 from collections import defaultdict
 
+# Pre-compile keyword patterns with word-boundary at start
+# (no trailing \b so "pray" still matches "prayer", "fast" matches "fasting")
+_KW_CACHE: dict = {}
+
+def _compile(kw: str):
+    if kw not in _KW_CACHE:
+        _KW_CACHE[kw] = re.compile(r'\b' + re.escape(kw.lower()))
+    return _KW_CACHE[kw]
+
 BASE = os.path.dirname(os.path.abspath(__file__))
 RUKU_DIR     = os.path.join(BASE, "quran-data-ruku")
 OUT_DIR      = os.path.join(BASE, "graphify-out")
@@ -28,7 +37,7 @@ CONCEPTS = [
             "prostrat", "bowing", "place of prayer", "night prayer", "dawn prayer",
             "friday prayer", "congregation", "call to prayer", "ritual prayer",
             "standing in prayer", "fajr", "dhuhr", "asr", "maghrib", "isha",
-            "qiblah", "qibla", "mosque", "masjid",
+            "qiblah", "qibla", "masjid",
         ],
         "category": "Pillars of Islam", "color": "#1B5E20",
     },
@@ -54,7 +63,7 @@ CONCEPTS = [
         "keywords": [
             "hajj", "pilgrimage", "umrah", "ka'bah", "kaaba",
             "sacred mosque", "al-masjid al-haram", "ihram",
-            "makkah", "mecca", "tawaf", "sa'y", "arafah",
+            "tawaf", "sa'y", "arafah",
             "sacred house", "ancient house",
         ],
         "category": "Pillars of Islam", "color": "#BF360C",
@@ -210,8 +219,7 @@ CONCEPTS = [
         "id": "marriage", "label": "Marriage",
         "keywords": [
             "marriage", "marry", "married", "nikah", "wedlock", "spouse",
-            "husband", "wife", "wives", "mahr", "dowry",
-            "matrimony", "wed",
+            "husband", "wife", "wives", "mahr", "dowry", "matrimony",
         ],
         "category": "Social & Legal", "color": "#AD1457",
     },
@@ -550,9 +558,9 @@ def parse_ruku_file(path: str) -> dict:
 
 
 def concept_matches(concept: dict, content_lower: str) -> bool:
-    """Return True if any keyword appears in the ruku content."""
+    """Return True if any keyword appears in the ruku content (word-boundary safe)."""
     for kw in concept["keywords"]:
-        if kw.lower() in content_lower:
+        if _compile(kw).search(content_lower):
             return True
     return False
 
