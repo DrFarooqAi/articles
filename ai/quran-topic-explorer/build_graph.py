@@ -616,35 +616,45 @@ def main():
             "color":     c["color"],
         })
 
-    # ── Build edges and aggregate verse_refs ─────────────────────────────────
-    edges = []
-    concept_verse_refs: dict[str, list] = defaultdict(list)
-    concept_ruku_count: dict[str, int]  = defaultdict(int)
+    # ── Verse-level matching ──────────────────────────────────────────────────
+    # Build verse_key → ruku_num lookup
+    verse_to_ruku: dict[str, int] = {}
+    for d in ruku_data.values():
+        for vk in d["verse_keys"]:
+            verse_to_ruku[vk] = d["ruku_num"]
 
-    for fname, d in ruku_data.items():
-        ruku_node_id = ruku_id_map[d["ruku_num"]]
+    # Match each individual verse against every concept
+    concept_verse_sets: dict[str, set] = defaultdict(set)
+    for vk, text in verse_cache.items():
+        text_lower = text.lower()
         for c in CONCEPTS:
-            if concept_matches(c, d["content"]):
-                cid = f"concept_{c['id']}"
-                edges.append({
-                    "source":   cid,
-                    "target":   ruku_node_id,
-                    "relation": "appears_in",
-                })
-                # Aggregate verse refs — keep insertion order, deduplicate
-                seen = set(concept_verse_refs[cid])
-                for vk in d["verse_keys"]:
-                    if vk not in seen:
-                        concept_verse_refs[cid].append(vk)
-                        seen.add(vk)
-                concept_ruku_count[cid] += 1
+            if concept_matches(c, text_lower):
+                concept_verse_sets[f"concept_{c['id']}"].add(vk)
 
-    # Attach aggregated verse_refs to concept nodes
+    # Build edges: concept → ruku when at least one verse matched
+    edges = []
+    seen_edges: set = set()
+    concept_ruku_count: dict[str, int] = defaultdict(int)
+
+    def vk_sort(vk: str):
+        s, v = vk.split(":")
+        return (int(s), int(v))
+
     for n in concept_nodes:
-        vr = concept_verse_refs.get(n["id"], [])
-        n["verse_refs"]  = vr
-        n["verse_count"] = len(vr)
-        n["ruku_count"]  = concept_ruku_count.get(n["id"], 0)
+        cid = n["id"]
+        matched_verses = concept_verse_sets.get(cid, set())
+        matching_rukus = {verse_to_ruku[vk] for vk in matched_verses if vk in verse_to_ruku}
+
+        for rn in sorted(matching_rukus):
+            rid = ruku_id_map.get(rn)
+            if rid and (cid, rid) not in seen_edges:
+                seen_edges.add((cid, rid))
+                edges.append({"source": cid, "target": rid, "relation": "appears_in"})
+
+        n["verse_refs"]  = sorted(matched_verses, key=vk_sort)
+        n["verse_count"] = len(matched_verses)
+        n["ruku_count"]  = len(matching_rukus)
+        concept_ruku_count[cid] = len(matching_rukus)
 
     all_nodes = concept_nodes + doc_nodes
     print(f"Nodes: {len(all_nodes)} ({len(concept_nodes)} concepts + {len(doc_nodes)} rukus)")
