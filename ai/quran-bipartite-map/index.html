@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quran Structure Map · Dr. Farooq AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=DM+Sans:ital,wght@0,400;0,500;0,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fefcf8;--bg2:#f9f6ee;--panel:#1a1200;
+  --gold:#b8860b;--gold2:#d4a017;--gold3:#8b6914;
+  --text:#5a3a00;--muted:#a07830;--dim:#c8a055;
+  --border:rgba(184,134,11,.35);--border2:rgba(184,134,11,.6);
+  --radius:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text)}
+
+/* ── Nav ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;height:46px;
+  display:flex;align-items:center;gap:12px;padding:0 20px;
+  background:var(--panel);border-bottom:1px solid var(--border2);
+}
+nav a{color:var(--gold2);text-decoration:none;font-size:.8rem;font-weight:500;
+  padding:3px 9px;border:1px solid var(--border);border-radius:4px;transition:all .2s}
+nav a:hover{background:rgba(212,160,23,.15);color:#fff0a0}
+nav h1{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700;
+  color:var(--gold2);letter-spacing:.06em;flex:1;text-align:center}
+nav .badge{font-size:.68rem;padding:2px 8px;border-radius:12px;
+  background:rgba(184,134,11,.2);color:var(--gold2);border:1px solid var(--border)}
+
+/* ── Controls ── */
+#controls{
+  position:fixed;top:46px;left:0;right:0;z-index:90;height:44px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  padding:8px 20px;background:var(--bg2);border-bottom:1px solid var(--border);
+  font-size:.8rem;color:var(--muted);
+}
+#controls input[type=search]{
+  padding:5px 10px;border:1px solid var(--border2);border-radius:6px;
+  background:var(--bg);color:var(--text);font-size:.8rem;outline:none;width:200px;
+}
+#controls input[type=search]:focus{border-color:var(--gold2)}
+.hint{color:var(--dim);font-size:.74rem}
+#stats{margin-left:auto;color:var(--dim);font-size:.74rem}
+.toggle-btn{
+  padding:4px 11px;border-radius:6px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);font-size:.76rem;cursor:pointer;
+  font-family:'DM Sans',sans-serif;transition:all .2s;
+}
+.toggle-btn.active{background:rgba(184,134,11,.2);color:var(--gold2);border-color:var(--gold2)}
+
+/* ── SVG ── */
+#map-wrap{position:fixed;top:90px;left:0;right:0;bottom:0;overflow:hidden}
+svg#map{width:100%;height:100%}
+
+.col-label{
+  font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;
+  fill:var(--gold3);text-transform:uppercase;letter-spacing:.1em;
+}
+.edge{fill:none;stroke:rgba(184,134,11,.13);transition:stroke .15s,stroke-width .15s}
+.edge.hl{stroke:var(--gold2);stroke-opacity:.85}
+.edge.dim{stroke:rgba(184,134,11,.04)}
+
+.row{cursor:pointer}
+.row-bg{fill:transparent}
+.row:hover .row-bg{fill:rgba(184,134,11,.08)}
+.row.active .row-bg{fill:rgba(184,134,11,.16)}
+.row.dim{opacity:.25}
+.node-dot{stroke:#fff8e8;stroke-width:1.5px}
+.row-label{font-size:11px;fill:var(--text);dominant-baseline:middle}
+.row.active .row-label{fill:var(--gold);font-weight:600}
+.row-count{font-size:9px;fill:var(--dim);dominant-baseline:middle}
+
+/* ── Tooltip ── */
+#tooltip{
+  position:fixed;z-index:200;pointer-events:none;
+  background:var(--panel);border:1px solid var(--border2);border-radius:var(--radius);
+  padding:9px 13px;color:var(--gold2);font-size:.8rem;line-height:1.5;
+  box-shadow:0 4px 20px rgba(0,0,0,.3);opacity:0;transition:opacity .15s;max-width:240px;
+}
+#tooltip strong{display:block;font-family:'Orbitron',sans-serif;font-size:.76rem;color:#fff0a0;margin-bottom:3px}
+#tooltip .tt-meta{color:var(--dim);font-size:.74rem}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="../../">← Articles</a>
+  <h1>Quran Structure Map</h1>
+  <a href="../quran-concept-graph/" class="badge">Concept Web →</a>
+</nav>
+
+<div id="controls">
+  <input type="search" id="search" placeholder="Filter concepts or surahs…">
+  <button class="toggle-btn" id="toggle-all">Show all edges</button>
+  <span class="hint">Hover or click a row to trace its connections</span>
+  <span id="stats"></span>
+</div>
+
+<div id="map-wrap">
+  <svg id="map"></svg>
+</div>
+
+<div id="tooltip"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script>
+// ── Surah names ──────────────────────────────────────────────────────────────
+const SURAH_NAMES = {
+  1:'Al-Fatihah',2:'Al-Baqarah',3:"Ali 'Imran",4:'An-Nisa',5:"Al-Ma'idah",
+  6:"Al-An'am",7:"Al-A'raf",8:'Al-Anfal',9:'At-Tawbah',10:'Yunus',
+  11:'Hud',12:'Yusuf',13:"Ar-Ra'd",14:'Ibrahim',15:'Al-Hijr',
+  16:'An-Nahl',17:'Al-Isra',18:'Al-Kahf',19:'Maryam',20:'Taha',
+  21:'Al-Anbya',22:'Al-Hajj',23:"Al-Mu'minun",24:'An-Nur',25:'Al-Furqan',
+  26:"Ash-Shu'ara",27:'An-Naml',28:'Al-Qasas',29:"Al-'Ankabut",30:'Ar-Rum',
+  31:'Luqman',32:'As-Sajdah',33:'Al-Ahzab',34:'Saba',35:'Fatir',
+  36:'Ya-Sin',37:'As-Saffat',38:'Sad',39:'Az-Zumar',40:'Ghafir',
+  41:'Fussilat',42:'Ash-Shuraa',43:'Az-Zukhruf',44:'Ad-Dukhan',45:'Al-Jathiyah',
+  46:'Al-Ahqaf',47:'Muhammad',48:'Al-Fath',49:'Al-Hujurat',50:'Qaf',
+  51:'Adh-Dhariyat',52:'At-Tur',53:'An-Najm',54:'Al-Qamar',55:'Ar-Rahman',
+  56:"Al-Waqi'ah",57:'Al-Hadid',58:'Al-Mujadila',59:'Al-Hashr',60:'Al-Mumtahanah',
+  61:'As-Saf',62:"Al-Jumu'ah",63:'Al-Munafiqun',64:'At-Taghabun',65:'At-Talaq',
+  66:'At-Tahrim',67:'Al-Mulk',68:'Al-Qalam',69:'Al-Haqqah',70:"Al-Ma'arij",
+  71:'Nuh',72:'Al-Jinn',73:'Al-Muzzammil',74:'Al-Muddaththir',75:'Al-Qiyamah',
+  76:'Al-Insan',77:'Al-Mursalat',78:'An-Naba',79:"An-Nazi'at",80:"'Abasa",
+  81:'At-Takwir',82:'Al-Infitar',83:'Al-Mutaffifin',84:'Al-Inshiqaq',85:'Al-Buruj',
+  86:'At-Tariq',87:"Al-A'la",88:'Al-Ghashiyah',89:'Al-Fajr',90:'Al-Balad',
+  91:'Ash-Shams',92:'Al-Layl',93:'Ad-Duhaa',94:'Ash-Sharh',95:'At-Tin',
+  96:"Al-'Alaq",97:'Al-Qadr',98:'Al-Bayyinah',99:'Az-Zalzalah',100:"Al-'Adiyat",
+  101:"Al-Qari'ah",102:'At-Takathur',103:"Al-'Asr",104:'Al-Humazah',105:'Al-Fil',
+  106:'Quraysh',107:"Al-Ma'un",108:'Al-Kawthar',109:'Al-Kafirun',110:'An-Nasr',
+  111:'Al-Masad',112:'Al-Ikhlas',113:'Al-Falaq',114:'An-Nas',
+};
+
+// ── State ────────────────────────────────────────────────────────────────────
+let concepts = [];   // {id,label,color,category,verse_refs,...}
+let surahs   = [];   // {num,name,conceptCounts:{}}
+let edges    = [];   // {cId, sNum, weight}
+let showAll  = false;
+let activeKey = null; // 'c:<id>' or 's:<num>'
+let searchTerm = '';
+
+// ── Bootstrap ────────────────────────────────────────────────────────────────
+(async () => {
+  const res = await fetch('../quran-topic-explorer/graphify-out/concepts.json');
+  concepts = await res.json();
+  concepts.sort((a,b) => (b.verse_count||0) - (a.verse_count||0));
+  computeBipartite();
+  render();
+  window.addEventListener('resize', render);
+})();
+
+function computeBipartite() {
+  // For each concept, count verses per surah
+  const surahSet = {};
+  edges = [];
+  concepts.forEach(c => {
+    const perSurah = {};
+    (c.verse_refs || []).forEach(vk => {
+      const s = parseInt(vk.split(':')[0]);
+      perSurah[s] = (perSurah[s] || 0) + 1;
+    });
+    Object.entries(perSurah).forEach(([s, w]) => {
+      const sNum = +s;
+      edges.push({ cId: c.id, sNum, weight: w });
+      if (!surahSet[sNum]) surahSet[sNum] = { num:sNum, name:SURAH_NAMES[sNum]||('Surah '+sNum), total:0, concepts:0 };
+      surahSet[sNum].total += w;
+      surahSet[sNum].concepts += 1;
+    });
+  });
+  surahs = Object.values(surahSet).sort((a,b) => a.num - b.num);
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+const tooltip = document.getElementById('tooltip');
+
+function render() {
+  const wrap = document.getElementById('map-wrap');
+  const W = wrap.clientWidth, H = wrap.clientHeight;
+  const svg = d3.select('#map').attr('viewBox',`0 0 ${W} ${H}`);
+  svg.selectAll('*').remove();
+
+  const topPad = 40, botPad = 20;
+  const leftX  = Math.max(160, W*0.26);
+  const rightX = Math.min(W-160, W*0.74);
+  const usableH = H - topPad - botPad;
+
+  // Layout positions
+  const cStep = usableH / Math.max(concepts.length, 1);
+  const sStep = usableH / Math.max(surahs.length, 1);
+  const cPos = {}, sPos = {};
+  concepts.forEach((c,i) => cPos[c.id]  = topPad + cStep*(i+0.5));
+  surahs.forEach((s,i)   => sPos[s.num] = topPad + sStep*(i+0.5));
+
+  // Column headers
+  svg.append('text').attr('class','col-label').attr('x',leftX).attr('y',24)
+    .attr('text-anchor','end').text('Concepts ('+concepts.length+')');
+  svg.append('text').attr('class','col-label').attr('x',rightX).attr('y',24)
+    .attr('text-anchor','start').text('Surahs ('+surahs.length+')');
+
+  const maxW = d3.max(edges, e => e.weight) || 1;
+  const ewScale = d3.scaleSqrt().domain([1,maxW]).range([0.5,3.5]);
+
+  // ── Edges layer ──
+  const edgeLayer = svg.append('g').attr('class','edges');
+  const link = d3.linkHorizontal().x(d=>d[0]).y(d=>d[1]);
+  const edgeSel = edgeLayer.selectAll('path').data(edges).join('path')
+    .attr('class','edge')
+    .attr('stroke-width', e => ewScale(e.weight))
+    .attr('d', e => link({source:[leftX, cPos[e.cId]], target:[rightX, sPos[e.sNum]]}))
+    .style('display', showAll ? null : 'none');
+
+  // ── Concept rows ──
+  const conceptColor = {};
+  concepts.forEach(c => conceptColor[c.id] = c.color || '#b8860b');
+
+  const cRows = svg.append('g').selectAll('.row.concept')
+    .data(concepts).join('g')
+    .attr('class','row concept')
+    .attr('data-key', d => 'c:'+d.id);
+  cRows.append('rect').attr('class','row-bg')
+    .attr('x',0).attr('y',d=>cPos[d.id]-cStep/2)
+    .attr('width',leftX+8).attr('height',cStep);
+  cRows.append('circle').attr('class','node-dot')
+    .attr('cx',leftX).attr('cy',d=>cPos[d.id])
+    .attr('r', d => Math.max(3, Math.min(7, Math.sqrt(d.verse_count)/2)))
+    .attr('fill',d=>conceptColor[d.id]);
+  cRows.append('text').attr('class','row-label')
+    .attr('x',leftX-12).attr('y',d=>cPos[d.id]).attr('text-anchor','end')
+    .text(d=>d.label);
+  cRows.append('text').attr('class','row-count')
+    .attr('x',leftX+12).attr('y',d=>cPos[d.id]).attr('text-anchor','start')
+    .text(d=>d.verse_count);
+
+  // ── Surah rows ──
+  const maxSTotal = d3.max(surahs,s=>s.total)||1;
+  const sRows = svg.append('g').selectAll('.row.surah')
+    .data(surahs).join('g')
+    .attr('class','row surah')
+    .attr('data-key', d => 's:'+d.num);
+  sRows.append('rect').attr('class','row-bg')
+    .attr('x',rightX-8).attr('y',d=>sPos[d.num]-sStep/2)
+    .attr('width',W-rightX+8).attr('height',sStep);
+  sRows.append('circle').attr('class','node-dot')
+    .attr('cx',rightX).attr('cy',d=>sPos[d.num])
+    .attr('r', d => Math.max(2.5, Math.min(7, Math.sqrt(d.total)/2)))
+    .attr('fill','#8b6914');
+  sRows.append('text').attr('class','row-count')
+    .attr('x',rightX-12).attr('y',d=>sPos[d.num]).attr('text-anchor','end')
+    .text(d=>d.num);
+  sRows.append('text').attr('class','row-label')
+    .attr('x',rightX+12).attr('y',d=>sPos[d.num]).attr('text-anchor','start')
+    .text(d => sStep > 8 ? d.name : '');
+
+  // ── Interaction ──
+  function highlightConcept(c) {
+    const mySurahs = new Set(edges.filter(e=>e.cId===c.id).map(e=>e.sNum));
+    edgeSel.classed('hl', e=>e.cId===c.id).classed('dim', e=>e.cId!==c.id)
+      .style('display', e => e.cId===c.id ? null : (showAll?null:'none'));
+    cRows.classed('dim', d=>d.id!==c.id);
+    sRows.classed('dim', d=>!mySurahs.has(d.num));
+    cRows.filter(d=>d.id===c.id).classed('active',true);
+  }
+  function highlightSurah(s) {
+    const myConcepts = new Set(edges.filter(e=>e.sNum===s.num).map(e=>e.cId));
+    edgeSel.classed('hl', e=>e.sNum===s.num).classed('dim', e=>e.sNum!==s.num)
+      .style('display', e => e.sNum===s.num ? null : (showAll?null:'none'));
+    sRows.classed('dim', d=>d.num!==s.num);
+    cRows.classed('dim', d=>!myConcepts.has(d.id));
+    sRows.filter(d=>d.num===s.num).classed('active',true);
+  }
+  function clearHL() {
+    edgeSel.classed('hl dim',false).style('display', showAll?null:'none');
+    cRows.classed('dim active',false);
+    sRows.classed('dim active',false);
+    applySearch();
+  }
+
+  cRows.on('mouseenter',(e,d)=>{ if(!activeKey) highlightConcept(d); showTipC(e,d); })
+    .on('mousemove',moveTip).on('mouseleave',()=>{ if(!activeKey) clearHL(); hideTip(); })
+    .on('click',(e,d)=>{ e.stopPropagation();
+      if(activeKey==='c:'+d.id){activeKey=null;clearHL();}
+      else{activeKey='c:'+d.id;highlightConcept(d);} });
+
+  sRows.on('mouseenter',(e,d)=>{ if(!activeKey) highlightSurah(d); showTipS(e,d); })
+    .on('mousemove',moveTip).on('mouseleave',()=>{ if(!activeKey) clearHL(); hideTip(); })
+    .on('click',(e,d)=>{ e.stopPropagation();
+      if(activeKey==='s:'+d.num){activeKey=null;clearHL();}
+      else{activeKey='s:'+d.num;highlightSurah(d);} });
+
+  d3.select('#map').on('click',()=>{ activeKey=null; clearHL(); });
+
+  // re-apply active state on re-render
+  if (activeKey) {
+    if (activeKey.startsWith('c:')) {
+      const c = concepts.find(x=>'c:'+x.id===activeKey);
+      if(c) highlightConcept(c);
+    } else {
+      const s = surahs.find(x=>'s:'+x.num===activeKey);
+      if(s) highlightSurah(s);
+    }
+  } else {
+    applySearch();
+  }
+
+  document.getElementById('stats').textContent =
+    `${concepts.length} concepts · ${surahs.length} surahs · ${edges.length} links`;
+
+  // expose for search
+  window._cRows = cRows; window._sRows = sRows;
+}
+
+// ── Tooltip ──────────────────────────────────────────────────────────────────
+function showTipC(e,d){
+  const surahCount = new Set(edges.filter(x=>x.cId===d.id).map(x=>x.sNum)).size;
+  tooltip.innerHTML = `<strong>${d.label}</strong><span class="tt-meta">${d.category}<br>${d.verse_count} verses across ${surahCount} surahs</span>`;
+  tooltip.style.opacity='1'; moveTip(e);
+}
+function showTipS(e,d){
+  tooltip.innerHTML = `<strong>${d.num}. ${d.name}</strong><span class="tt-meta">${d.concepts} concepts · ${d.total} topic-verse hits</span>`;
+  tooltip.style.opacity='1'; moveTip(e);
+}
+function moveTip(e){ tooltip.style.left=(e.clientX+14)+'px'; tooltip.style.top=(e.clientY-8)+'px'; }
+function hideTip(){ tooltip.style.opacity='0'; }
+
+// ── Toggle all edges ─────────────────────────────────────────────────────────
+document.getElementById('toggle-all').addEventListener('click', function(){
+  showAll = !showAll;
+  this.classList.toggle('active', showAll);
+  this.textContent = showAll ? 'Hide edges' : 'Show all edges';
+  render();
+});
+
+// ── Search ───────────────────────────────────────────────────────────────────
+document.getElementById('search').addEventListener('input', e=>{
+  searchTerm = e.target.value.toLowerCase().trim();
+  applySearch();
+});
+function applySearch(){
+  if(activeKey) return;
+  const cRows = window._cRows, sRows = window._sRows;
+  if(!cRows) return;
+  if(!searchTerm){ cRows.classed('dim',false); sRows.classed('dim',false); return; }
+  cRows.classed('dim', d=>!d.label.toLowerCase().includes(searchTerm));
+  sRows.classed('dim', d=>!(d.name.toLowerCase().includes(searchTerm) || String(d.num)===searchTerm));
+}
+</script>
+</body>
+</html>
