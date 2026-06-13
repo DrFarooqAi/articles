@@ -37,6 +37,13 @@ nav h1{font-family:'Orbitron',sans-serif;font-size:.95rem;font-weight:700;
   color:var(--gold2);letter-spacing:.06em;flex:1;text-align:center}
 nav .badge{font-size:.7rem;padding:3px 8px;border-radius:20px;
   background:rgba(184,134,11,.2);color:var(--gold2);border:1px solid var(--border)}
+.switcher{display:flex;gap:3px;align-items:center}
+.switcher a{font-size:.72rem;padding:3px 8px;border-radius:4px;text-decoration:none;
+  color:var(--muted);border:1px solid transparent;transition:all .2s;white-space:nowrap}
+.switcher a:hover{background:rgba(212,160,23,.14);color:var(--gold2)}
+.switcher a.active{background:rgba(184,134,11,.22);color:var(--gold2);
+  border-color:var(--border2);font-weight:600;cursor:default}
+@media(max-width:640px){.switcher a{font-size:.66rem;padding:3px 5px}nav h1{display:none}}
 
 /* ── Hero ─────────────────────────────────────────────────────── */
 .hero{
@@ -206,7 +213,12 @@ footer a:hover{color:var(--gold2)}
 <nav>
   <a href="../../">← Articles</a>
   <h1>Quran Topic Explorer</h1>
-  <a href="../quran-concept-graph/" class="badge">Concept Web →</a>
+  <div class="switcher">
+    <a href="../quran-knowledge-graph/">Surah Graph</a>
+    <a href="../quran-topic-explorer/" class="active">Topics</a>
+    <a href="../quran-concept-graph/">Concepts</a>
+    <a href="../quran-bipartite-map/">Map</a>
+  </div>
 </nav>
 
 <div class="hero">

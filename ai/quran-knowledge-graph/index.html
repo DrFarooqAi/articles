@@ -111,6 +111,17 @@ nav {
   border-radius: 2px;
 }
 
+.switcher { display:flex; gap:3px; align-items:center; }
+.switcher a {
+  font-family:'Share Tech Mono',monospace; font-size:9px;
+  text-transform:uppercase; letter-spacing:.07em;
+  padding:4px 8px; border-radius:2px; text-decoration:none;
+  color:var(--muted); border:1px solid transparent; transition:all .2s; white-space:nowrap;
+}
+.switcher a:hover { color:var(--gold); border-color:rgba(245,197,24,.4); }
+.switcher a.active { color:var(--gold); border-color:rgba(245,197,24,.5); background:rgba(184,134,11,.12); cursor:default; }
+@media(max-width:640px){ .switcher a{font-size:8px;padding:3px 5px} .nav-title{display:none} }
+
 /* ── HERO ────────────────────────────────────────────────────── */
 .hero {
   position: relative; z-index: 2;
@@ -356,7 +367,12 @@ footer p {
 <nav>
   <a href="../../index.html" class="nav-back">← Articles</a>
   <span class="nav-title">Quran Knowledge Graph</span>
-  <span class="nav-badge">Powered by Graphify</span>
+  <div class="switcher">
+    <a href="../quran-knowledge-graph/" class="active">Surah Graph</a>
+    <a href="../quran-topic-explorer/">Topics</a>
+    <a href="../quran-concept-graph/">Concepts</a>
+    <a href="../quran-bipartite-map/">Map</a>
+  </div>
 </nav>
 
 <!-- HERO -->

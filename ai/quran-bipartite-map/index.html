@@ -31,6 +31,13 @@ nav h1{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:700;
   color:var(--gold2);letter-spacing:.06em;flex:1;text-align:center}
 nav .badge{font-size:.68rem;padding:2px 8px;border-radius:12px;
   background:rgba(184,134,11,.2);color:var(--gold2);border:1px solid var(--border)}
+.switcher{display:flex;gap:3px;align-items:center}
+.switcher a{font-size:.72rem;padding:3px 8px;border-radius:4px;text-decoration:none;
+  color:var(--muted);border:1px solid transparent;transition:all .2s;white-space:nowrap}
+.switcher a:hover{background:rgba(212,160,23,.14);color:var(--gold2)}
+.switcher a.active{background:rgba(184,134,11,.22);color:var(--gold2);
+  border-color:var(--border2);font-weight:600;cursor:default}
+@media(max-width:640px){.switcher a{font-size:.66rem;padding:3px 5px}nav h1{display:none}}
 
 /* ── Controls ── */
 #controls{
@@ -70,6 +77,8 @@ svg#map{width:100%;height:100%}
 .row:hover .row-bg{fill:rgba(184,134,11,.08)}
 .row.active .row-bg{fill:rgba(184,134,11,.16)}
 .row.dim{opacity:.25}
+.row.empty .row-label,.row.empty .row-count{opacity:.4;font-style:italic}
+.row.empty .node-dot{fill:#d8c9a0 !important}
 .node-dot{stroke:#fff8e8;stroke-width:1.5px}
 .row-label{font-size:11px;fill:var(--text);dominant-baseline:middle}
 .row.active .row-label{fill:var(--gold);font-weight:600}
@@ -91,7 +100,12 @@ svg#map{width:100%;height:100%}
 <nav>
   <a href="../../">← Articles</a>
   <h1>Quran Structure Map</h1>
-  <a href="../quran-concept-graph/" class="badge">Concept Web →</a>
+  <div class="switcher">
+    <a href="../quran-knowledge-graph/">Surah Graph</a>
+    <a href="../quran-topic-explorer/">Topics</a>
+    <a href="../quran-concept-graph/">Concepts</a>
+    <a href="../quran-bipartite-map/" class="active">Map</a>
+  </div>
 </nav>
 
 <div id="controls">
@@ -155,8 +169,12 @@ let searchTerm = '';
 })();
 
 function computeBipartite() {
-  // For each concept, count verses per surah
+  // Seed all 114 surahs so the full structure is always shown
   const surahSet = {};
+  for (let n = 1; n <= 114; n++) {
+    surahSet[n] = { num:n, name:SURAH_NAMES[n]||('Surah '+n), total:0, concepts:0 };
+  }
+  // For each concept, count verses per surah
   edges = [];
   concepts.forEach(c => {
     const perSurah = {};
@@ -167,7 +185,6 @@ function computeBipartite() {
     Object.entries(perSurah).forEach(([s, w]) => {
       const sNum = +s;
       edges.push({ cId: c.id, sNum, weight: w });
-      if (!surahSet[sNum]) surahSet[sNum] = { num:sNum, name:SURAH_NAMES[sNum]||('Surah '+sNum), total:0, concepts:0 };
       surahSet[sNum].total += w;
       surahSet[sNum].concepts += 1;
     });
@@ -309,6 +326,9 @@ function render() {
 
   document.getElementById('stats').textContent =
     `${concepts.length} concepts · ${surahs.length} surahs · ${edges.length} links`;
+
+  // dim surahs that have no edges (visual cue, kept in layout)
+  sRows.classed('empty', d => d.concepts === 0);
 
   // expose for search
   window._cRows = cRows; window._sRows = sRows;
