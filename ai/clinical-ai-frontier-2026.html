@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Navigating the Clinical AI Frontier in 2026 — Open-Weight vs Closed-Source for Hospitals</title>
+<title>Navigating the Clinical AI Frontier in 2026: Open-Weight vs Closed-Source for Hospitals</title>
 <meta name="description" content="A strategic advisory for hospital owners, CEOs and CIOs on open-weight versus closed-source AI: data sovereignty, HIPAA, inference economics, malpractice liability, and a deployment playbook.">
 <meta property="og:title" content="Navigating the Clinical AI Frontier in 2026">
-<meta property="og:description" content="Open-weight vs closed-source AI architectures for hospitals — a strategic advisory by Dr. Muhammad Farooq.">
+<meta property="og:description" content="Open-weight vs closed-source AI architectures for hospitals: a strategic advisory by Dr. Muhammad Farooq.">
 <meta property="og:type" content="article">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -251,7 +251,7 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
     <div class="kpibox">
       <div class="kpi reveal"><div class="num"><span data-c="116">0</span><span class="suf">×</span></div><div class="lab">Flagship proprietary cost vs an open-weight baseline, per token</div></div>
       <div class="kpi reveal"><div class="num"><span data-c="100">0</span><span class="suf">M</span></div><div class="lab">Monthly-token threshold above which self-hosting beats cloud APIs</div></div>
-      <div class="kpi reveal"><div class="num"><span data-c="91">0</span><span class="suf">%</span></div><div class="lab">MedGemma 1.5 (4B/27B) MedQA accuracy — beating models 10× larger</div></div>
+      <div class="kpi reveal"><div class="num"><span data-c="91">0</span><span class="suf">%</span></div><div class="lab">MedGemma 1.5 (4B/27B) MedQA accuracy, beating models 10× larger</div></div>
       <div class="kpi reveal"><div class="num"><span data-c="80">0</span><span class="suf">%</span></div><div class="lab">Of an AI project absorbed by integration, not model selection</div></div>
     </div>
   </div>
@@ -262,13 +262,13 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
   <div class="wrap">
     <div class="eyebrow reveal">The Taxonomical Divergence</div>
     <h2 class="reveal">Clarifying "open source" vs <span class="ac">"open weights"</span> in healthcare</h2>
-    <p class="body-copy reveal">A primary source of confusion in healthcare procurement is the marketing-driven label of "open source AI".<span class="ref">1</span> To set a clear boundary, the Open Source Initiative formally approved the <b>Open Source AI Definition (OSAID) 1.0</b> in October 2024.<span class="ref">2</span> OSAID 1.0 mandates that to be truly open source, a system must grant unrestricted freedom to use, study, modify, and share it for any purpose.<span class="ref">3</span> Exercising these freedoms requires the complete "preferred form of modification" — a three-part structural release.</p>
+    <p class="body-copy reveal">A primary source of confusion in healthcare procurement is the marketing-driven label of "open source AI".<span class="ref">1</span> To set a clear boundary, the Open Source Initiative formally approved the <b>Open Source AI Definition (OSAID) 1.0</b> in October 2024.<span class="ref">2</span> OSAID 1.0 mandates that to be truly open source, a system must grant unrestricted freedom to use, study, modify, and share it for any purpose.<span class="ref">3</span> Exercising these freedoms requires the complete "preferred form of modification": a three-part structural release.</p>
     <div class="grid g3">
       <div class="card reveal"><div class="n">PART 01</div><h3>Complete source code</h3><p>All scripts to filter and process training datasets, model training parameters, tokenizers, validation frameworks, and runtime inference code.<span class="ref">3</span></p></div>
       <div class="card reveal"><div class="n">PART 02</div><h3>Model parameters</h3><p>The full set of learned weights, key intermediate training checkpoints, and final optimizer states must be publicly downloadable.<span class="ref">3</span></p></div>
-      <div class="card reveal"><div class="n">PART 03</div><h3>Data information</h3><p>Not raw datasets — but detailed metadata on provenance, scope, and the methods used to collect, label, process and filter the data.<span class="ref">3</span></p></div>
+      <div class="card reveal"><div class="n">PART 03</div><h3>Data information</h3><p>Not raw datasets, but detailed metadata on provenance, scope, and the methods used to collect, label, process and filter the data.<span class="ref">3</span></p></div>
     </div>
-    <p class="body-copy reveal">For hospitals, the "Data Information" compromise is a critical safeguard.<span class="ref">2</span> It lets developers prove compliance and safety without publicly distributing sensitive protected health information (PHI) that may have been present in the original training corpus.<span class="ref">2</span> By this standard, families such as Meta's Llama, Mistral, Google's Gemma, and Qwen are <b>not open source</b><span class="ref">5</span> — they are more precisely <b>open-weight models</b><span class="ref">6</span> that release trained parameters under restrictive, vendor-controlled commercial licenses. Closed-source models remain entirely opaque "black boxes" reachable only via proprietary APIs.</p>
+    <p class="body-copy reveal">For hospitals, the "Data Information" compromise is a critical safeguard.<span class="ref">2</span> It lets developers prove compliance and safety without publicly distributing sensitive protected health information (PHI) that may have been present in the original training corpus.<span class="ref">2</span> By this standard, families such as Meta's Llama, Mistral, Google's Gemma, and Qwen are <b>not open source</b><span class="ref">5</span>. They are more precisely <b>open-weight models</b><span class="ref">6</span> that release trained parameters under restrictive, vendor-controlled commercial licenses. Closed-source models remain entirely opaque "black boxes" reachable only via proprietary APIs.</p>
 
     <div class="tablewrap reveal">
       <table>
@@ -276,8 +276,8 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
         <tbody>
           <tr>
             <td><span class="pill closed">Closed source</span><br><b>Proprietary</b></td>
-            <td>None — completely confidential<span class="ref">8</span></td>
-            <td>None — API only<span class="ref">6</span></td>
+            <td>None; completely confidential<span class="ref">8</span></td>
+            <td>None; API only<span class="ref">6</span></td>
             <td>Strict commercial policy; pay-per-token metering</td>
             <td>Remote cloud API with BAA (Azure OpenAI, Vertex AI)</td>
           </tr>
@@ -327,7 +327,7 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
       <div class="chartcard reveal"><h4>The self-hosting break-even</h4><div class="cd">Monthly cost: cloud API scales with volume; on-prem H100 cluster is flat after CapEx.</div><canvas id="bevChart" height="230"></canvas></div>
     </div>
 
-    <p class="body-copy reveal">Below roughly <b>100 million tokens per month</b>, serverless open-weight APIs on managed platforms often beat self-hosted hardware once idle GPU capacity, cooling, maintenance and failover engineering are priced in. But once a health system crosses that threshold — for example, ambient documentation across hundreds of active physicians — the break-even on self-hosted hardware (an NVIDIA H100 cluster) can arrive in <b>under four months</b>, yielding a <b>70–95% reduction</b> in ongoing operating cost versus cloud-hosted proprietary APIs.</p>
+    <p class="body-copy reveal">Below roughly <b>100 million tokens per month</b>, serverless open-weight APIs on managed platforms often beat self-hosted hardware once idle GPU capacity, cooling, maintenance and failover engineering are priced in. But once a health system crosses that threshold (for example, ambient documentation across hundreds of active physicians), the break-even on self-hosted hardware (an NVIDIA H100 cluster) can arrive in <b>under four months</b>, yielding a <b>70–95% reduction</b> in ongoing operating cost versus cloud-hosted proprietary APIs.</p>
   </div>
 </section>
 
@@ -336,20 +336,20 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
   <div class="wrap">
     <div class="eyebrow reveal">Compliance &amp; Liability</div>
     <h2 class="reveal">HIPAA, the cloud-provider problem, and <span class="ac">malpractice exposure</span></h2>
-    <p class="body-copy reveal">The primary bottleneck for hospital AI adoption is the "compliance wall." Under HIPAA, any vendor processing PHI must sign a <b>Business Associate Agreement (BAA)</b>. Major cloud providers (Azure OpenAI, AWS Bedrock, Google Vertex AI) offer BAA-compliant enterprise tiers, but they demand highly restrictive, complex security configurations. Standard consumer API tiers — such as the base OpenAI API — carry no BAA, so entering any clinical transcript or patient record is a direct HIPAA violation with severe penalties. When a hospital hosts an open-weight model on-premises or inside a tightly governed VPC, patient data stays entirely within the hospital's private network boundary, eliminating third-party logging, data-sharing, and training-leakage risk.</p>
+    <p class="body-copy reveal">The primary bottleneck for hospital AI adoption is the "compliance wall." Under HIPAA, any vendor processing PHI must sign a <b>Business Associate Agreement (BAA)</b>. Major cloud providers (Azure OpenAI, AWS Bedrock, Google Vertex AI) offer BAA-compliant enterprise tiers, but they demand highly restrictive, complex security configurations. Standard consumer API tiers, such as the base OpenAI API, carry no BAA, so entering any clinical transcript or patient record is a direct HIPAA violation with severe penalties. When a hospital hosts an open-weight model on-premises or inside a tightly governed VPC, patient data stays entirely within the hospital's private network boundary, eliminating third-party logging, data-sharing, and training-leakage risk.</p>
 
     <div class="vm">
       <div class="vmbox vision reveal">
         <div class="lbl">AI Malpractice &amp; Automation Bias</div>
-        <p>If an LLM hallucinates a diagnosis or misses a critical radiological finding, the hospital and physician remain primarily liable. Courts will hold clinicians responsible for <b>automation bias</b> — blindly accepting implausible or unverified AI output.</p>
+        <p>If an LLM hallucinates a diagnosis or misses a critical radiological finding, the hospital and physician remain primarily liable. Courts will hold clinicians responsible for <b>automation bias</b>: blindly accepting implausible or unverified AI output.</p>
       </div>
       <div class="vmbox mission reveal">
         <div class="lbl">Negligent Failure to Use AI</div>
-        <p>Conversely, as FDA-cleared tools (e.g. autonomous diabetic retinopathy screening) become standard of care, <b>failing to use</b> an established AI diagnostic may itself breach the standard of care — exposing the hospital to claims.</p>
+        <p>Conversely, as FDA-cleared tools (e.g. autonomous diabetic retinopathy screening) become standard of care, <b>failing to use</b> an established AI diagnostic may itself breach the standard of care, exposing the hospital to claims.</p>
       </div>
     </div>
 
-    <p class="body-copy reveal">Under the European AI Act and similar domestic regimes, clinical decision-support systems cannot run fully autonomously: they are legally "co-decision makers," and physicians must keep an active oversight role. Standard commercial insurance is ill-equipped for this overlap.<span class="ref">11</span> This is <b>"Silent AI" exposure</b> — AI-mediated clinical losses falling under legacy General or Professional Liability lines that never contemplated AI as an instrument of harm.<span class="ref">11</span> Technology E&amp;O policies focus on financial loss and often exclude or sublimit bodily injury. Hospitals deploying clinical LLMs must negotiate <b>affirmative medical-AI coverage</b> that explicitly covers diagnostic hallucinations, algorithmic bias, and physical injury from CDSS failures.</p>
+    <p class="body-copy reveal">Under the European AI Act and similar domestic regimes, clinical decision-support systems cannot run fully autonomously: they are legally "co-decision makers," and physicians must keep an active oversight role. Standard commercial insurance is ill-equipped for this overlap.<span class="ref">11</span> This is <b>"Silent AI" exposure</b>: AI-mediated clinical losses falling under legacy General or Professional Liability lines that never contemplated AI as an instrument of harm.<span class="ref">11</span> Technology E&amp;O policies focus on financial loss and often exclude or sublimit bodily injury. Hospitals deploying clinical LLMs must negotiate <b>affirmative medical-AI coverage</b> that explicitly covers diagnostic hallucinations, algorithmic bias, and physical injury from CDSS failures.</p>
   </div>
 </section>
 
@@ -358,7 +358,7 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
   <div class="wrap">
     <div class="eyebrow reveal">The Implementation Gap</div>
     <h2 class="reveal">The "80/20 rule" of <span class="ac">clinical AI integration</span></h2>
-    <p class="body-copy reveal">A vast gap separates benchmark performance from clinical utility. CIOs must plan for the 80/20 rule: prompt engineering, model selection and tuning consume <b>under 20%</b> of a project, while the remaining <b>80%</b> is sociotechnical — integration, interoperability (HL7 and FHIR mapping), workflow design, and human-oversight gating. Conventional medical benchmarks mislead here: multiple-choice datasets like MedQA or USMLE are saturated and prone to test-set contamination. The ReMedQA benchmark shows high MCQA scores often mask low reliability — models remain highly sensitive to option ordering and phrasing.</p>
+    <p class="body-copy reveal">A vast gap separates benchmark performance from clinical utility. CIOs must plan for the 80/20 rule: prompt engineering, model selection and tuning consume <b>under 20%</b> of a project, while the remaining <b>80%</b> is sociotechnical: integration, interoperability (HL7 and FHIR mapping), workflow design, and human-oversight gating. Conventional medical benchmarks mislead here: multiple-choice datasets like MedQA or USMLE are saturated and prone to test-set contamination. The ReMedQA benchmark shows high MCQA scores often mask low reliability: models remain highly sensitive to option ordering and phrasing.</p>
     <p class="body-copy reveal">Hospitals don't operate via multiple choice. They run long-horizon, multi-step <b>agentic workflows</b>: cross-referencing a new lab against history, generating a discharge summary, writing back a FHIR diagnostic report. In these loops, lightweight open-weight models often hit "representation drift" or tool-calling failures around <b>step 20</b>, and the pipeline fails silently. Because a model that is 90% reliable on a single step is only <b>59% reliable across five sequential steps</b>, unsupervised clinical agent deployment remains a severe safety risk.</p>
 
     <div class="chartgrid">
@@ -367,7 +367,7 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
     </div>
 
     <div class="diagram reveal">
-      <div class="dlbl">A clinical agent pipeline — and where it diverges</div>
+      <div class="dlbl">A clinical agent pipeline, and where it diverges</div>
       <pre class="mermaid" id="m1"></pre>
     </div>
   </div>
@@ -378,10 +378,10 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
   <div class="wrap">
     <div class="eyebrow reveal">Compute Moats &amp; the Distillation Subsidy</div>
     <h2 class="reveal">Why parameter count <span class="ac">is not destiny</span></h2>
-    <p class="body-copy reveal">Hospitals do not need to host massive general models. Specialized open-weight medical models — such as Google's <b>MedGemma 1.5</b> (released January 2026) — prove it. Built on the Gemma 3 architecture in efficient 4B and 27B variants, and deeply pre-trained on curated clinical data (MIMIC-IV de-identified EHR notes, PubMed literature), MedGemma 1.5 reaches roughly <b>91% on MedQA</b>, surpassing zero-shot clinical reasoning of models ten times its size.</p>
-    <p class="body-copy reveal">This highlights the hidden connection in the open-weight ecosystem: the <b>distillation subsidy</b>. Open-weight models approach frontier performance because they are trained on synthetic datasets generated by elite proprietary teacher models (like GPT-5).<span class="ref">12</span> That makes basic text tasks — patient-friendly explanations, summarizing non-confidential policy — accurate and cheap. But the lack of deep native reasoning parameters means open weights still <b>struggle on raw clinical logic and atypical diagnoses</b> compared to premium proprietary reasoning engines.</p>
+    <p class="body-copy reveal">Hospitals do not need to host massive general models. Specialized open-weight medical models, such as Google's <b>MedGemma 1.5</b> (released January 2026), prove it. Built on the Gemma 3 architecture in efficient 4B and 27B variants, and deeply pre-trained on curated clinical data (MIMIC-IV de-identified EHR notes, PubMed literature), MedGemma 1.5 reaches roughly <b>91% on MedQA</b>, surpassing zero-shot clinical reasoning of models ten times its size.</p>
+    <p class="body-copy reveal">This highlights the hidden connection in the open-weight ecosystem: the <b>distillation subsidy</b>. Open-weight models approach frontier performance because they are trained on synthetic datasets generated by elite proprietary teacher models (like GPT-5).<span class="ref">12</span> That makes basic text tasks like patient-friendly explanations and summarizing non-confidential policy accurate and cheap. But the lack of deep native reasoning parameters means open weights still <b>struggle on raw clinical logic and atypical diagnoses</b> compared to premium proprietary reasoning engines.</p>
     <div class="grid g3">
-      <div class="card reveal"><div class="n">EFFICIENT</div><h3>4B &amp; 27B variants</h3><p>Run on local edge hardware or a single GPU node — no multi-billion-parameter general model required.</p></div>
+      <div class="card reveal"><div class="n">EFFICIENT</div><h3>4B &amp; 27B variants</h3><p>Run on local edge hardware or a single GPU node, with no multi-billion-parameter general model required.</p></div>
       <div class="card reveal"><div class="n">GROUNDED</div><h3>Curated clinical pre-training</h3><p>MIMIC-IV de-identified notes + PubMed give domain depth that generic scale cannot buy.</p></div>
       <div class="card reveal"><div class="n">CEILING</div><h3>The reasoning gap remains</h3><p>Distilled knowledge ≠ native reasoning; reserve frontier proprietary models for complex differentials.</p></div>
     </div>
@@ -393,7 +393,7 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
   <div class="wrap">
     <div class="eyebrow reveal">Geopolitics &amp; Data Sovereignty</div>
     <h2 class="reveal">Foreign open weights in <span class="ac">safety-critical hospitals</span></h2>
-    <p class="body-copy reveal">The usual five-lens debate — practitioner, academic, skeptic, economist, historian — often overlooks a critical sixth dimension: <b>geopolitics</b>.<span class="ref">5</span> In 2026, the open-weight landscape is heavily driven by highly capable Chinese architectures including DeepSeek-V4, Qwen3, and Z.ai's GLM-5, which routinely match or exceed American proprietary systems on specific benchmarks.<span class="ref">14</span> DeepSeek-V4-Pro, for instance, fields a 1.6-trillion-parameter Mixture-of-Experts that runs at a fraction of the cost of GPT-5.5 or Claude Sonnet 4.5.<span class="ref">10</span></p>
+    <p class="body-copy reveal">The usual five-lens debate (practitioner, academic, skeptic, economist, historian) often overlooks a critical sixth dimension: <b>geopolitics</b>.<span class="ref">5</span> In 2026, the open-weight landscape is heavily driven by highly capable Chinese architectures including DeepSeek-V4, Qwen3, and Z.ai's GLM-5, which routinely match or exceed American proprietary systems on specific benchmarks.<span class="ref">14</span> DeepSeek-V4-Pro, for instance, fields a 1.6-trillion-parameter Mixture-of-Experts that runs at a fraction of the cost of GPT-5.5 or Claude Sonnet 4.5.<span class="ref">10</span></p>
     <p class="body-copy reveal">For safety-critical, highly regulated hospitals, foreign open weights carry distinct strategic and sovereignty risk. Models governed by foreign jurisdictions or exposed to sudden export controls, sanctions, or national-security restrictions can trigger unexpected service revocations or compliance failures. A hospital building core clinical documentation, triage chatbots, or medical text-to-SQL entirely on Chinese open weights must maintain a robust compliance and <b>"swap-out" contingency plan</b>.</p>
   </div>
 </section>
@@ -403,7 +403,7 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
   <div class="wrap">
     <div class="eyebrow reveal">Strategic Playbook</div>
     <h2 class="reveal">For hospital owners and <span class="ac">chief information officers</span></h2>
-    <p class="sub reveal">Move from ideological debate to an actionable, multi-tiered deployment framework. Four moves — tap a card to read the rationale.</p>
+    <p class="sub reveal">Move from ideological debate to an actionable, multi-tiered deployment framework. Four moves. Tap a card to read the rationale.</p>
 
     <div class="flipgrid">
       <div class="flip flip1"><div class="flip-inner">
@@ -447,8 +447,8 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
     </div>
 
     <div class="closeband reveal">
-      <h3>The strategic choice is no longer <span>a model — it's an architecture.</span></h3>
-      <p>The hospitals that win will not pick the highest benchmark. They will engineer a governed, tiered pipeline — local open weights for containment and cost, proprietary reasoning under BAA for the hard cases, and a human physician accountable at every gate.</p>
+      <h3>The strategic choice is no longer <span>a model: it's an architecture.</span></h3>
+      <p>The hospitals that win will not pick the highest benchmark. They will engineer a governed, tiered pipeline: local open weights for containment and cost, proprietary reasoning under BAA for the hard cases, and a human physician accountable at every gate.</p>
     </div>
   </div>
 </section>
@@ -460,20 +460,20 @@ nav{background:rgba(255,255,255,0.80);border-bottom:1px solid var(--line);}
     <div class="refs reveal">
       <ol>
         <li>Open Source AI, accessed June 19, 2026, <a href="https://opensource.org/ai" target="_blank" rel="noopener">opensource.org/ai</a></li>
-        <li>Report from OSS EU 2025 and AI_dev: What's next for OSAID — Open Source Initiative, <a href="https://opensource.org/blog/report-from-oss-eu-2025-and-ai_dev-whats-next-for-osaid" target="_blank" rel="noopener">opensource.org/blog</a></li>
+        <li>Report from OSS EU 2025 and AI_dev: What's next for OSAID, Open Source Initiative, <a href="https://opensource.org/blog/report-from-oss-eu-2025-and-ai_dev-whats-next-for-osaid" target="_blank" rel="noopener">opensource.org/blog</a></li>
         <li>The Open Source AI Definition – 1.0, <a href="https://opensource.org/ai/open-source-ai-definition" target="_blank" rel="noopener">opensource.org/ai/open-source-ai-definition</a></li>
         <li>Data Governance in Open Source AI, <a href="https://openfuture.eu/wp-content/uploads/2025/01/250123_OSI-Data-Governance-OSAI.pdf" target="_blank" rel="noopener">openfuture.eu</a></li>
-        <li>What Is Open Source AI? — IBM, <a href="https://www.ibm.com/think/topics/open-source-ai" target="_blank" rel="noopener">ibm.com/think/topics/open-source-ai</a></li>
-        <li>What Are Open-Weights Models? — Layer3Labs, <a href="https://www.layer3labs.io/open-weights/what-are-open-weights-models" target="_blank" rel="noopener">layer3labs.io</a></li>
-        <li>Open Source vs Closed LLMs: Choosing the Right Model in 2026 — Let's Data Science, <a href="https://letsdatascience.com/blog/open-source-vs-closed-llms-choosing-the-right-model-in-2026" target="_blank" rel="noopener">letsdatascience.com</a></li>
-        <li>Open vs. Closed-Source AI Guide — Cloud Security Alliance, <a href="https://cloudsecurityalliance.org/articles/open-source-models-vs-closed-source-models-a-simple-guide" target="_blank" rel="noopener">cloudsecurityalliance.org</a></li>
-        <li>AI open models have benefits. So why aren't they more widely used? — MIT Sloan, <a href="https://mitsloan.mit.edu/ideas-made-to-matter/ai-open-models-have-benefits-so-why-arent-they-more-widely-used" target="_blank" rel="noopener">mitsloan.mit.edu</a></li>
-        <li>DeepSeek-V4 arrives with near state-of-the-art intelligence at 1/6th the cost — VentureBeat, <a href="https://venturebeat.com/technology/deepseek-v4-arrives-with-near-state-of-the-art-intelligence-at-1-6th-the-cost-of-opus-4-7-gpt-5-5" target="_blank" rel="noopener">venturebeat.com</a></li>
-        <li>The Insurability Frontier of AI Risk — arXiv, <a href="https://arxiv.org/pdf/2605.18784" target="_blank" rel="noopener">arxiv.org/pdf/2605.18784</a></li>
-        <li>LLM See, LLM Do: Guiding Data Generation to Target Non-Differentiable Objectives — arXiv, <a href="https://arxiv.org/html/2407.01490v1" target="_blank" rel="noopener">arxiv.org/html/2407.01490v1</a></li>
+        <li>What Is Open Source AI?, IBM, <a href="https://www.ibm.com/think/topics/open-source-ai" target="_blank" rel="noopener">ibm.com/think/topics/open-source-ai</a></li>
+        <li>What Are Open-Weights Models?, Layer3Labs, <a href="https://www.layer3labs.io/open-weights/what-are-open-weights-models" target="_blank" rel="noopener">layer3labs.io</a></li>
+        <li>Open Source vs Closed LLMs: Choosing the Right Model in 2026, Let's Data Science, <a href="https://letsdatascience.com/blog/open-source-vs-closed-llms-choosing-the-right-model-in-2026" target="_blank" rel="noopener">letsdatascience.com</a></li>
+        <li>Open vs. Closed-Source AI Guide, Cloud Security Alliance, <a href="https://cloudsecurityalliance.org/articles/open-source-models-vs-closed-source-models-a-simple-guide" target="_blank" rel="noopener">cloudsecurityalliance.org</a></li>
+        <li>AI open models have benefits. So why aren't they more widely used?, MIT Sloan, <a href="https://mitsloan.mit.edu/ideas-made-to-matter/ai-open-models-have-benefits-so-why-arent-they-more-widely-used" target="_blank" rel="noopener">mitsloan.mit.edu</a></li>
+        <li>DeepSeek-V4 arrives with near state-of-the-art intelligence at 1/6th the cost, VentureBeat, <a href="https://venturebeat.com/technology/deepseek-v4-arrives-with-near-state-of-the-art-intelligence-at-1-6th-the-cost-of-opus-4-7-gpt-5-5" target="_blank" rel="noopener">venturebeat.com</a></li>
+        <li>The Insurability Frontier of AI Risk, arXiv, <a href="https://arxiv.org/pdf/2605.18784" target="_blank" rel="noopener">arxiv.org/pdf/2605.18784</a></li>
+        <li>LLM See, LLM Do: Guiding Data Generation to Target Non-Differentiable Objectives, arXiv, <a href="https://arxiv.org/html/2407.01490v1" target="_blank" rel="noopener">arxiv.org/html/2407.01490v1</a></li>
         <li>DeepSeek V4 Guide: Engram Memory, Training Data Strategy &amp; Release Status (2026), <a href="https://kili-technology.com/blog/data-story-deepseek-v4" target="_blank" rel="noopener">kili-technology.com</a></li>
-        <li>Open Models at the Frontier: The Three Leaders of 2026 — DiscreteStack, <a href="https://discretestack.com/blog/beyond-the-frontier-2026-open-weight-leaders" target="_blank" rel="noopener">discretestack.com</a></li>
-        <li>AI Liability, Model Errors, and What Technology E&amp;O Actually Covers — SeedPod Cyber, <a href="https://seedpodcyber.com/tech-eo-in-the-era-of-ai-and-machine-learning/" target="_blank" rel="noopener">seedpodcyber.com</a></li>
+        <li>Open Models at the Frontier: The Three Leaders of 2026, DiscreteStack, <a href="https://discretestack.com/blog/beyond-the-frontier-2026-open-weight-leaders" target="_blank" rel="noopener">discretestack.com</a></li>
+        <li>AI Liability, Model Errors, and What Technology E&amp;O Actually Covers, SeedPod Cyber, <a href="https://seedpodcyber.com/tech-eo-in-the-era-of-ai-and-machine-learning/" target="_blank" rel="noopener">seedpodcyber.com</a></li>
       </ol>
     </div>
   </div>
