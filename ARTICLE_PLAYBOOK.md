@@ -73,7 +73,8 @@ subdirs: `quran-knowledge-graph`, `quran-topic-explorer`, `quran-concept-graph`,
 The main `index.html` keeps **one** `.quran-ai-card` pointing at the suite (no per-tool card).
 
 ## Step 3 — Cross-links (fixed; already wired)
-- New article (from template) carries: nav `← Portfolio`; footer **LinkedIn / Profile & Projects / More Articles**.
+- New article (from template) **nav** carries: brand badge → Portfolio, per-article section links, then persistent **Articles / Portfolio / About / LinkedIn** + a **"View all articles ↗"** CTA button.
+- **Footer** carries: **LinkedIn / Profile & Projects / More Articles**.
 - The hub card and any CV card link **into** the new article URL.
 - Hub ↔ CV are already mutually linked — no extra wiring per article.
 
