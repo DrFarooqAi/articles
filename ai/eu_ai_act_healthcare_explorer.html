@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EU AI Act: Article 5 Healthcare Compliance Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Warm Professional Neutral - Stone and Muted Indigo -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #fafaf9; color: #292524; }
+        .chart-container { position: relative; width: 100%; max-width: 600px; margin-left: auto; margin-right: auto; height: 350px; max-height: 400px; }
+        .clause-card { transition: all 0.3s ease; border: 1px solid #e7e5e4; }
+        .clause-card:hover { border-color: #a8a29e; transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .active-clause { border-left: 4px solid #6366f1; background-color: #f5f5f4; }
+        .prohibited-bg { background-color: #fef2f2; border-left: 4px solid #ef4444; }
+        .permitted-bg { background-color: #f0fdf4; border-left: 4px solid #22c55e; }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Application Structure Plan: 
+        1. Header & Intro: Set the context of Article 5 (The "Red Lines").
+        2. Impact Dashboard: A Chart.js visualization showing the distribution of regulatory focus (Privacy vs. Autonomy vs. Fairness).
+        3. Interactive Explorer: A two-column layout. Left: Navigation list of the 8 clauses. Right: Dynamic detail view showing the "Red Line" (Prohibited) vs "Safe Harbor" (Permitted) examples. 
+        4. Compliance Framework: A summary section on the 4 pillars of legal AI development.
+        This structure is chosen to allow non-linear exploration, enabling a user to jump directly to a specific legal risk (e.g., Emotion Inference) rather than reading a linear report.
+    -->
+
+    <!-- Navigation / Header -->
+    <header class="bg-white border-b border-stone-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center text-white font-bold">AI</div>
+                <h1 class="text-xl font-semibold tracking-tight">EU AI Act <span class="text-stone-500 font-normal">| Healthcare Article 5</span></h1>
+            </div>
+            <nav class="hidden md:flex space-x-8 text-sm font-medium text-stone-600">
+                <a href="#overview" class="hover:text-indigo-600">Overview</a>
+                <a href="#explorer" class="hover:text-indigo-600">Clause Explorer</a>
+                <a href="#compliance" class="hover:text-indigo-600">Compliance Pillars</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Section 1: Overview & Abstract -->
+        <section id="overview" class="mb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-stone-900 mb-6">Navigating the "Red Lines" of Medical AI</h2>
+                    <p class="text-lg text-stone-600 mb-6 leading-relaxed">
+                        Article 5 of the EU AI Act defines practices so inherently risky to human rights and safety that they are strictly prohibited within the Union. For healthcare providers and developers, these boundaries are not just ethical guidelines—they are legal mandates.
+                    </p>
+                    <div class="bg-indigo-50 p-6 rounded-xl border border-indigo-100">
+                        <h3 class="font-semibold text-indigo-900 mb-2">The Information Architect's View</h3>
+                        <p class="text-sm text-indigo-800">
+                            This application translates complex legal jargon from Article 5 into actionable healthcare scenarios. Use the explorer below to distinguish between transformative medical innovation and prohibited manipulation.
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-stone-200">
+                    <h3 class="text-center font-semibold text-stone-700 mb-4">Article 5 Regulatory Focus Distribution</h3>
+                    <div class="chart-container">
+                        <canvas id="focusChart"></canvas>
+                    </div>
+                    <p class="text-xs text-center text-stone-500 mt-4 italic">Categorization of clauses based on the primary human right protected.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Interactive Explorer -->
+        <section id="explorer" class="mb-16">
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold text-stone-900">Clause-by-Clause Analysis</h2>
+                <p class="text-stone-600">Select a clause to compare prohibited practices against permitted healthcare innovations.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+                <!-- Clause List -->
+                <div class="w-full lg:w-1/3 space-y-3" id="clauseNav">
+                    <!-- JS will populate these buttons -->
+                </div>
+
+                <!-- Detail View -->
+                <div class="w-full lg:w-2/3 bg-white rounded-2xl p-6 lg:p-10 border border-stone-200 shadow-sm" id="detailView">
+                    <div id="emptyState" class="flex flex-col items-center justify-center h-64 text-stone-400">
+                        <div class="text-4xl mb-4">↖</div>
+                        <p>Select a clause from the left to explore details.</p>
+                    </div>
+                    
+                    <div id="contentState" class="hidden">
+                        <div class="mb-8">
+                            <span id="clauseTag" class="text-xs font-bold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">Article 5(1)(a)</span>
+                            <h3 id="clauseTitle" class="text-2xl font-bold mt-4 text-stone-900">Subliminal Manipulation</h3>
+                            <p id="clauseDesc" class="text-stone-600 mt-2 italic"></p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="prohibited-bg p-6 rounded-xl">
+                                <h4 class="flex items-center text-red-700 font-bold mb-3 text-sm">
+                                    <span class="mr-2">✕</span> PROHIBITED EXAMPLE
+                                </h4>
+                                <p id="prohibitedText" class="text-stone-800 text-sm leading-relaxed"></p>
+                            </div>
+                            <div class="permitted-bg p-6 rounded-xl">
+                                <h4 class="flex items-center text-green-700 font-bold mb-3 text-sm">
+                                    <span class="mr-2">✓</span> PERMITTED EXAMPLE
+                                </h4>
+                                <p id="permittedText" class="text-stone-800 text-sm leading-relaxed"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: The 4 Pillars -->
+        <section id="compliance" class="bg-stone-900 text-white rounded-3xl p-8 lg:p-12">
+            <div class="max-w-3xl">
+                <h2 class="text-3xl font-bold mb-6">The 4 Pillars of Compliance</h2>
+                <p class="text-stone-400 mb-10 leading-relaxed">
+                    While Article 5 sets the "no-go" zones, these four principles act as your compass for high-risk AI development in medicine. Compliance is a journey of continuous validation.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="border-l border-stone-700 pl-6">
+                    <h4 class="text-indigo-400 font-bold mb-2">Transparency</h4>
+                    <p class="text-sm text-stone-400">Users must always be aware when they are interacting with an AI system. No hidden nudges.</p>
+                </div>
+                <div class="border-l border-stone-700 pl-6">
+                    <h4 class="text-indigo-400 font-bold mb-2">Consent</h4>
+                    <p class="text-sm text-stone-400">Data must be sourced ethically and used only within the scope of patient authorization.</p>
+                </div>
+                <div class="border-l border-stone-700 pl-6">
+                    <h4 class="text-indigo-400 font-bold mb-2">Necessity</h4>
+                    <p class="text-sm text-stone-400">Practices must have a clear, evidence-based clinical purpose validated by professionals.</p>
+                </div>
+                <div class="border-l border-stone-700 pl-6">
+                    <h4 class="text-indigo-400 font-bold mb-2">Context</h4>
+                    <p class="text-sm text-stone-400">Data usage must stay strictly within the original clinical context it was collected for.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="mt-20 py-12 border-t border-stone-200 text-center">
+        <p class="text-stone-500 text-sm italic">Analysis based on the paper by Hannah van Kolfschooten.</p>
+        <p class="text-stone-400 text-xs mt-2">© 2024 AI Healthcare Compliance Guide</p>
+    </footer>
+
+    <!-- Visualization & Content Choices: 
+        - Report Info -> Goal: Compare Prohibited vs Permitted actions.
+        - Viz/Presentation Method: Interactive Clause Cards + Radar/Polar Chart.
+        - Interaction: Users click clauses to dynamically update the detail view. 
+        - Justification: Article 5 is a list of distinct constraints; a card-based explorer prevents information overload and allows direct comparison of "Good" vs "Bad" AI.
+        - Library: Chart.js used for the distribution of regulatory themes.
+        - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. 
+    -->
+
+    <script>
+        const aiActData = [
+            {
+                id: '51a',
+                tag: 'Article 5(1)(a)',
+                title: 'Subliminal Manipulation',
+                desc: 'Use of subliminal techniques or AI exploiting unconscious processes to distort behavior and cause significant harm.',
+                prohibited: 'A mental health chatbot using subliminal cues (beyond user awareness) to drive medication compliance.',
+                permitted: 'AI that motivates behavior as part of a recognized therapeutic intervention, with transparency and safeguards (e.g., in treatment for depression).'
+            },
+            {
+                id: '51b',
+                tag: 'Article 5(1)(b)',
+                title: 'Exploiting Vulnerabilities',
+                desc: 'Exploiting a person\'s age, disability, or socio-economic situation to distort behavior and cause significant harm.',
+                prohibited: 'A digital companion influencing lonely elderly patients to purchase unnecessary health services.',
+                permitted: 'Behavioral support apps that inform without exploiting vulnerability, and do not materially distort behavior or risk harm.'
+            },
+            {
+                id: '51c',
+                tag: 'Article 5(1)(c)',
+                title: 'Social Scoring',
+                desc: 'AI scoring individuals based on behavior or traits, used in unrelated contexts and leading to detrimental treatment.',
+                prohibited: 'Health compliance scores used for public housing eligibility.',
+                permitted: 'Use of health risk scoring for health insurers, as long as risks are confined to the original health context.'
+            },
+            {
+                id: '51d',
+                tag: 'Article 5(1)(d)',
+                title: 'Predictive Profiling',
+                desc: 'Predicting criminal behavior solely on profiling or personal traits.',
+                prohibited: 'AI in psychiatry predicting patient recidivism post-discharge based only on psychological profiling.',
+                permitted: 'Risk assessments based on clinical judgment and past incidents, not solely algorithmic profiling.'
+            },
+            {
+                id: '51e',
+                tag: 'Article 5(1)(e)',
+                title: 'Facial Scraping',
+                desc: 'Creating facial recognition databases via indiscriminate scraping of online images or CCTV footage.',
+                prohibited: 'Patient identification systems via indiscriminate scraping of social media or public cameras.',
+                permitted: 'Systems trained on ethically sourced, consented-based image databases for internal hospital use.'
+            },
+            {
+                id: '51f',
+                tag: 'Article 5(1)(f)',
+                title: 'Emotion Inference',
+                desc: 'Inferring emotions from biometric data such as facial expressions or voice patterns in specific contexts.',
+                prohibited: 'Workplace wellness AI monitoring hospital staff\'s stress levels from speech patterns to manage productivity.',
+                permitted: 'CE marked therapeutic emotion tools used in mental health or autism diagnostics.'
+            },
+            {
+                id: '51g',
+                tag: 'Article 5(1)(g)',
+                title: 'Biometric Categorisation',
+                desc: 'Inferring sensitive attributes (e.g., race, religion, sexual orientation) from biometric data.',
+                prohibited: 'Inferring ethnicity or sexual orientation from facial features for non-medical profiling.',
+                permitted: 'Classifying physical traits (e.g., skin tone for dermatology) if not used to infer sensitive attributes.'
+            },
+            {
+                id: '51h',
+                tag: 'Article 5(1)(h)',
+                title: 'Real-time Remote Biometric ID',
+                desc: 'Real-time facial recognition in public spaces by law enforcement, except under strict conditions.',
+                prohibited: 'Law enforcement using live facial recognition in hospital waiting areas to locate forensic patients.',
+                permitted: 'Facial recognition for patient check-in within hospital premises, not on behalf of law enforcement.'
+            }
+        ];
+
+        function initApp() {
+            const navContainer = document.getElementById('clauseNav');
+            
+            aiActData.forEach((item, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'clause-card w-full text-left p-4 rounded-xl flex items-center justify-between group';
+                btn.innerHTML = `
+                    <div>
+                        <span class="text-[10px] font-bold text-stone-400 block mb-1 uppercase">${item.tag}</span>
+                        <span class="text-sm font-semibold group-hover:text-indigo-600 transition-colors">${item.title}</span>
+                    </div>
+                    <span class="text-stone-300 group-hover:text-indigo-400">→</span>
+                `;
+                btn.onclick = () => showDetail(item, btn);
+                navContainer.appendChild(btn);
+            });
+
+            initChart();
+        }
+
+        function showDetail(item, btnElement) {
+            // UI Updates
+            document.querySelectorAll('.clause-card').forEach(el => el.classList.remove('active-clause'));
+            btnElement.classList.add('active-clause');
+
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('contentState').classList.remove('hidden');
+
+            document.getElementById('clauseTag').innerText = item.tag;
+            document.getElementById('clauseTitle').innerText = item.title;
+            document.getElementById('clauseDesc').innerText = item.desc;
+            document.getElementById('prohibitedText').innerText = item.prohibited;
+            document.getElementById('permittedText').innerText = item.permitted;
+            
+            // Scroll to detail on mobile
+            if (window.innerWidth < 1024) {
+                document.getElementById('detailView').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function initChart() {
+            const ctx = document.getElementById('focusChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'polarArea',
+                data: {
+                    labels: ['Individual Autonomy', 'Non-Discrimination', 'Privacy/Surveillance', 'Human Dignity'],
+                    datasets: [{
+                        data: [3, 2, 2, 1],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.7)',
+                            'rgba(45, 212, 191, 0.7)',
+                            'rgba(244, 63, 94, 0.7)',
+                            'rgba(251, 191, 36, 0.7)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+                    },
+                    scales: {
+                        r: { ticks: { display: false } }
+                    }
+                }
+            });
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
