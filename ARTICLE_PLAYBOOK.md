@@ -78,6 +78,18 @@ The main `index.html` keeps **one** `.quran-ai-card` pointing at the suite (no p
 - The hub card and any CV card link **into** the new article URL.
 - Hub ↔ CV are already mutually linked — no extra wiring per article.
 
+## Pre-publish rule (ALWAYS, before any commit)
+1. **Humanize the text — it must read as human-written, not AI-generated.** Vary
+   sentence length and rhythm; prefer plain, direct wording; cut filler and robotic
+   AI tells ("delve", "in today's fast-paced world", "it's important to note",
+   "moreover/furthermore" stacking, over-hedging, list-of-three reflex). Keep Dr.
+   Farooq's voice: confident, practical, healthcare-grounded.
+2. **Remove ALL em dashes ( — ) — always.** Replace each with the punctuation that
+   actually fits the sentence: colon (introduces), comma/parentheses (aside),
+   or period (two clauses). Do NOT blanket-swap to a hyphen. En dashes in number
+   ranges (e.g. `70–95%`) are fine and stay.
+3. Quick check before commit: search the file for `—`; the count must be **0**.
+
 ## Step 4 — Publish
 Run in each repo you touched (Pages publishes from `main`):
 ```
