@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RAG · CAG · MAG: The AI Architecture Triad in Healthcare</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/source-serif-4@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/source-serif-4@latest/latin-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-500-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@latest/latin-600-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/jetbrains-mono@latest/latin-400-normal.css">
+<style>
+  :root {
+    --bg: #FAFAF7;
+    --bg-alt: #FFFFFF;
+    --ink: #1F2937;
+    --ink-soft: #4B5563;
+    --muted: #6B7280;
+    --line: #E5E7EB;
+    --rag: #1E40AF;
+    --rag-soft: #DBEAFE;
+    --rag-bg: #EFF6FF;
+    --cag: #047857;
+    --cag-soft: #D1FAE5;
+    --cag-bg: #ECFDF5;
+    --mag: #7C3AED;
+    --mag-soft: #EDE9FE;
+    --mag-bg: #F5F3FF;
+    --hyb: #B45309;
+    --hyb-soft: #FEF3C7;
+    --hyb-bg: #FFFBEB;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.7;
+    font-size: 16px;
+  }
+
+  h1, h2, h3, h4, .serif {
+    font-family: 'Source Serif 4', Georgia, serif;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ===== HERO ===== */
+  header.hero {
+    background:
+      radial-gradient(1200px 400px at 10% -10%, #DBEAFE 0%, transparent 60%),
+      radial-gradient(1000px 400px at 90% -10%, #EDE9FE 0%, transparent 60%),
+      radial-gradient(800px 300px at 50% 100%, #D1FAE5 0%, transparent 60%),
+      #FAFAF7;
+    padding: 80px 0 60px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: rgba(255,255,255,0.7);
+    margin-bottom: 20px;
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    line-height: 1.1;
+    margin: 0 0 18px;
+    font-weight: 700;
+  }
+  .hero h1 .grad {
+    background: linear-gradient(90deg, var(--rag), var(--mag));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hero p.lead {
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    max-width: 780px;
+    margin: 0 0 28px;
+  }
+  .triad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 32px;
+  }
+  .triad .chip {
+    padding: 16px 18px;
+    border-radius: 14px;
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  }
+  .triad .chip strong { display:block; font-size: 1.05rem; margin-bottom: 4px; }
+  .triad .chip span { font-size: 0.88rem; color: var(--muted); }
+  .triad .chip.rag strong { color: var(--rag); }
+  .triad .chip.cag strong { color: var(--cag); }
+  .triad .chip.mag strong { color: var(--mag); }
+
+  /* ===== NAV ===== */
+  nav.toc {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: rgba(250, 250, 247, 0.85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+    margin-top: 0;
+  }
+  nav.toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 12px 0;
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    flex-wrap: wrap;
+  }
+  nav.toc a {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  nav.toc a:hover {
+    background: var(--bg-alt);
+    border-color: var(--line);
+    color: var(--ink);
+  }
+  nav.toc a.rag:hover { color: var(--rag); border-color: var(--rag-soft); }
+  nav.toc a.cag:hover { color: var(--cag); border-color: var(--cag-soft); }
+  nav.toc a.mag:hover { color: var(--mag); border-color: var(--mag-soft); }
+  nav.toc a.hyb:hover { color: var(--hyb); border-color: var(--hyb-soft); }
+
+  /* ===== SECTIONS ===== */
+  section {
+    padding: 72px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.78rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+  }
+  .section-label.rag { background: var(--rag-soft); color: var(--rag); }
+  .section-label.cag { background: var(--cag-soft); color: var(--cag); }
+  .section-label.mag { background: var(--mag-soft); color: var(--mag); }
+  .section-label.hyb { background: var(--hyb-soft); color: var(--hyb); }
+
+  section h2 {
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    margin: 0 0 10px;
+    line-height: 1.15;
+  }
+  section .subtitle {
+    font-size: 1.1rem;
+    color: var(--ink-soft);
+    max-width: 780px;
+    margin: 0 0 36px;
+  }
+
+  h3 {
+    font-size: 1.35rem;
+    margin: 32px 0 12px;
+  }
+  h4 {
+    font-size: 1.05rem;
+    margin: 20px 0 8px;
+    color: var(--ink);
+  }
+
+  p { margin: 0 0 14px; color: var(--ink-soft); }
+
+  /* ===== CALLOUT / DEFINITION BOX ===== */
+  .def-box {
+    border-radius: 16px;
+    padding: 24px 26px;
+    margin: 24px 0;
+    border: 1px solid var(--line);
+    background: var(--bg-alt);
+    position: relative;
+  }
+  .def-box.rag { background: var(--rag-bg); border-color: #BFDBFE; }
+  .def-box.cag { background: var(--cag-bg); border-color: #A7F3D0; }
+  .def-box.mag { background: var(--mag-bg); border-color: #DDD6FE; }
+  .def-box .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .def-box h3 { margin: 0 0 10px; font-size: 1.4rem; }
+  .def-box .formula {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.95rem;
+    color: var(--ink);
+    background: rgba(255,255,255,0.7);
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px dashed var(--line);
+    margin-top: 14px;
+    display: inline-block;
+  }
+
+  /* ===== GRID CARDS ===== */
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  @media (max-width: 820px) {
+    .grid-2, .grid-3, .triad { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px -12px rgba(0,0,0,0.12); }
+  .card .icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .card.rag .icon { background: var(--rag-soft); color: var(--rag); }
+  .card.cag .icon { background: var(--cag-soft); color: var(--cag); }
+  .card.mag .icon { background: var(--mag-soft); color: var(--mag); }
+  .card h4 { margin: 0 0 8px; font-size: 1.05rem; }
+  .card p { margin: 0; font-size: 0.93rem; }
+
+  /* ===== USE CASE BLOCK ===== */
+  .use-case {
+    border-radius: 16px;
+    padding: 26px 28px;
+    margin: 22px 0;
+    border-left: 5px solid;
+    background: var(--bg-alt);
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  }
+  .use-case.rag { border-color: var(--rag); background: linear-gradient(180deg, #F8FAFF 0%, #FFFFFF 100%); }
+  .use-case.cag { border-color: var(--cag); background: linear-gradient(180deg, #F4FDF8 0%, #FFFFFF 100%); }
+  .use-case.mag { border-color: var(--mag); background: linear-gradient(180deg, #FBF8FF 0%, #FFFFFF 100%); }
+  .use-case .meta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+  }
+  .use-case .meta span {
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .use-case.rag .meta span { background: var(--rag-soft); color: var(--rag); }
+  .use-case.cag .meta span { background: var(--cag-soft); color: var(--cag); }
+  .use-case.mag .meta span { background: var(--mag-soft); color: var(--mag); }
+  .use-case h4 {
+    font-size: 1.2rem;
+    margin: 0 0 6px;
+    font-family: 'Source Serif 4', serif;
+  }
+  .use-case .role {
+    font-size: 0.88rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 14px;
+  }
+  .use-case .dialog {
+    background: #F9FAFB;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 14px 0;
+    font-size: 0.93rem;
+  }
+  .use-case .dialog .q { color: var(--ink); font-weight: 500; margin-bottom: 6px; }
+  .use-case .dialog .q::before { content: "→ "; color: var(--muted); }
+  .use-case .dialog .a { color: var(--ink-soft); }
+
+  /* ===== BULLETS ===== */
+  ul.clean {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 16px;
+  }
+  ul.clean li {
+    position: relative;
+    padding: 6px 0 6px 26px;
+    color: var(--ink-soft);
+  }
+  ul.clean li::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 14px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--line);
+  }
+  ul.clean.rag li::before { background: var(--rag); }
+  ul.clean.cag li::before { background: var(--cag); }
+  ul.clean.mag li::before { background: var(--mag); }
+
+  /* ===== DIAGRAM ===== */
+  .diagram-wrap {
+    background: var(--bg-alt);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 24px;
+    margin: 24px 0;
+    overflow-x: auto;
+  }
+  .diagram-wrap .caption {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-style: italic;
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  /* ===== TRADEOFFS ===== */
+  .tradeoffs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  @media (max-width: 720px) { .tradeoffs { grid-template-columns: 1fr; } }
+  .tradeoffs .col {
+    border-radius: 12px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+  }
+  .tradeoffs .col.good { background: #F0FDF4; border-color: #BBF7D0; }
+  .tradeoffs .col.bad  { background: #FEF2F2; border-color: #FECACA; }
+  .tradeoffs .col h5 {
+    margin: 0 0 10px;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .tradeoffs .col.good h5 { color: #166534; }
+  .tradeoffs .col.bad h5 { color: #991B1B; }
+  .tradeoffs .col ul { margin: 0; padding-left: 18px; color: var(--ink-soft); font-size: 0.93rem; }
+  .tradeoffs .col li { margin: 4px 0; }
+
+  /* ===== TABLE ===== */
+  table.compare {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background: var(--bg-alt);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    font-size: 0.93rem;
+  }
+  table.compare th, table.compare td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  table.compare th {
+    background: #F9FAFB;
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 0.85rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  table.compare tr:last-child td { border-bottom: none; }
+  table.compare td.rag-col { border-left: 3px solid var(--rag); }
+  table.compare td.cag-col { border-left: 3px solid var(--cag); }
+  table.compare td.mag-col { border-left: 3px solid var(--mag); }
+
+  /* ===== DECISION FLOW ===== */
+  .decision {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 24px 0;
+  }
+  @media (max-width: 820px) { .decision { grid-template-columns: 1fr; } }
+  .decision .step {
+    border-radius: 14px;
+    padding: 22px;
+    border: 1px solid var(--line);
+    background: var(--bg-alt);
+  }
+  .decision .step .q {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .decision .step .a { font-size: 0.92rem; color: var(--ink-soft); }
+  .decision .step.rag { border-top: 4px solid var(--rag); }
+  .decision .step.cag { border-top: 4px solid var(--cag); }
+  .decision .step.mag { border-top: 4px solid var(--mag); }
+
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 40px 0;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+  footer a { color: var(--rag); text-decoration: none; font-weight: 500; }
+  footer a:hover { text-decoration: underline; }
+
+  /* ===== QUOTE ===== */
+  blockquote.pull {
+    font-family: 'Source Serif 4', serif;
+    font-size: 1.3rem;
+    line-height: 1.4;
+    color: var(--ink);
+    border-left: 4px solid var(--ink);
+    padding: 10px 0 10px 22px;
+    margin: 30px 0;
+    font-style: italic;
+  }
+
+  /* ===== NUMBER BADGE ===== */
+  .num-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-family: 'Source Serif 4', serif;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-right: 10px;
+    vertical-align: middle;
+  }
+  .num-badge.rag { background: var(--rag); color: white; }
+  .num-badge.cag { background: var(--cag); color: white; }
+  .num-badge.mag { background: var(--mag); color: white; }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="container">
+    <span class="eyebrow">Enterprise AI · Healthcare Architecture · Deep Dive</span>
+    <h1>The AI Architecture Triad:<br/><span class="grad">RAG · CAG · MAG</span></h1>
+    <p class="lead">
+      A sequential guide to the three foundational architectures behind modern AI systems, with detailed use cases drawn from enterprise hospitals. The future is not about picking one. It is about knowing when to reach for each.
+    </p>
+    <div class="triad">
+      <div class="chip rag">
+        <strong>① RAG</strong>
+        <span>Retrieval-Augmented Generation: access knowledge</span>
+      </div>
+      <div class="chip cag">
+        <strong>② CAG</strong>
+        <span>Cache-Augmented Generation: cache knowledge</span>
+      </div>
+      <div class="chip mag">
+        <strong>③ MAG</strong>
+        <span>Memory-Augmented Generation: remember knowledge</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ NAV ============ -->
+<nav class="toc">
+  <div class="container">
+    <ul>
+      <li><a href="#rag" class="rag">① RAG Deep Dive</a></li>
+      <li><a href="#cag" class="cag">② CAG Deep Dive</a></li>
+      <li><a href="#mag" class="mag">③ MAG Deep Dive</a></li>
+      <li><a href="#compare" class="hyb">Comparison</a></li>
+      <li><a href="#hybrid" class="hyb">Hybrid Architecture</a></li>
+      <li><a href="#decision" class="hyb">Decision Framework</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+
+<!-- ================================================================ -->
+<!-- ========================= RAG SECTION ========================== -->
+<!-- ================================================================ -->
+<section id="rag">
+  <div class="container">
+    <span class="section-label rag">Section 01 · Retrieval-Augmented Generation</span>
+    <h2><span class="num-badge rag">1</span>RAG: Access Knowledge at Query Time</h2>
+    <p class="subtitle">
+      RAG solves the <em>knowledge scale problem</em>. When your information is vast, dynamic, and constantly evolving, like every medical journal published this week, every hospital policy update, and every patient lab result from yesterday, you cannot fit it into a model's context window. You have to retrieve it, on demand, at the exact moment it is needed.
+    </p>
+
+    <div class="def-box rag">
+      <div class="tag">Core Definition</div>
+      <h3>Retrieval-Augmented Generation (RAG)</h3>
+      <p style="margin:0">
+        An architecture where the LLM queries an external knowledge base (vector DB, SQL, document store) <strong>at inference time</strong>, retrieves the most relevant chunks, and uses them as grounded context to generate its answer. The model never memorizes the knowledge. It looks it up every single time.
+      </p>
+      <div class="formula">Query → Retrieve(top-k) → Augment(prompt) → Generate</div>
+    </div>
+
+    <h3>How RAG Works, Step by Step</h3>
+    <ul class="clean rag">
+      <li><strong>Indexing phase (offline):</strong> Documents (PDFs, EHR notes, guidelines) are chunked, embedded into vectors via a model like <span class="mono">text-embedding-3-large</span>, and stored in a vector database (Pinecone, Weaviate, Qdrant, pgvector).</li>
+      <li><strong>Query phase (online):</strong> The user's question is embedded using the same model, then compared against the vector store using cosine similarity or ANN search.</li>
+      <li><strong>Retrieval:</strong> The top-k most semantically similar chunks are fetched (typically 3–10 chunks).</li>
+      <li><strong>Augmentation:</strong> These chunks are injected into the LLM prompt as context, alongside the user's question.</li>
+      <li><strong>Generation:</strong> The LLM produces an answer grounded in the retrieved evidence, often with citations.</li>
+    </ul>
+
+    <!-- RAG DIAGRAM -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 900 260" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family: Inter, sans-serif;">
+        <!-- User -->
+        <rect x="10" y="100" width="110" height="60" rx="10" fill="#DBEAFE" stroke="#1E40AF" stroke-width="2"/>
+        <text x="65" y="128" text-anchor="middle" font-size="13" font-weight="600" fill="#1E40AF">User / Clinician</text>
+        <text x="65" y="146" text-anchor="middle" font-size="11" fill="#4B5563">Query</text>
+
+        <!-- Arrow -->
+        <line x1="120" y1="130" x2="175" y2="130" stroke="#1E40AF" stroke-width="2" marker-end="url(#arr)"/>
+
+        <!-- Embedding -->
+        <rect x="180" y="100" width="110" height="60" rx="10" fill="#EFF6FF" stroke="#1E40AF" stroke-width="1.5"/>
+        <text x="235" y="128" text-anchor="middle" font-size="12" font-weight="600" fill="#1E40AF">Embedding</text>
+        <text x="235" y="144" text-anchor="middle" font-size="10" fill="#4B5563">Model</text>
+
+        <line x1="290" y1="130" x2="345" y2="130" stroke="#1E40AF" stroke-width="2" marker-end="url(#arr)"/>
+
+        <!-- Vector DB -->
+        <rect x="350" y="70" width="140" height="120" rx="10" fill="#FFFFFF" stroke="#1E40AF" stroke-width="2"/>
+        <text x="420" y="92" text-anchor="middle" font-size="12" font-weight="600" fill="#1E40AF">Vector Database</text>
+        <circle cx="380" cy="125" r="5" fill="#1E40AF"/>
+        <circle cx="400" cy="140" r="5" fill="#1E40AF"/>
+        <circle cx="420" cy="115" r="5" fill="#1E40AF"/>
+        <circle cx="440" cy="150" r="5" fill="#1E40AF"/>
+        <circle cx="460" cy="130" r="5" fill="#1E40AF"/>
+        <text x="420" y="178" text-anchor="middle" font-size="10" fill="#4B5563">EHR · Journals · Policies</text>
+
+        <line x1="490" y1="130" x2="545" y2="130" stroke="#1E40AF" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="518" y="122" text-anchor="middle" font-size="10" fill="#1E40AF">top-k chunks</text>
+
+        <!-- LLM -->
+        <rect x="550" y="100" width="130" height="60" rx="10" fill="#1E40AF"/>
+        <text x="615" y="128" text-anchor="middle" font-size="13" font-weight="600" fill="white">LLM</text>
+        <text x="615" y="146" text-anchor="middle" font-size="10" fill="#DBEAFE">Generator</text>
+
+        <line x1="680" y1="130" x2="735" y2="130" stroke="#1E40AF" stroke-width="2" marker-end="url(#arr)"/>
+
+        <!-- Answer -->
+        <rect x="740" y="100" width="140" height="60" rx="10" fill="#DBEAFE" stroke="#1E40AF" stroke-width="2"/>
+        <text x="810" y="128" text-anchor="middle" font-size="13" font-weight="600" fill="#1E40AF">Grounded Answer</text>
+        <text x="810" y="146" text-anchor="middle" font-size="11" fill="#4B5563">+ Citations</text>
+
+        <defs>
+          <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 10 3, 0 6" fill="#1E40AF"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="caption">Figure 1.1 · RAG pipeline: the query is embedded, retrieved from the vector store, and fed to the LLM as context.</div>
+    </div>
+
+    <h3>Key Characteristics of RAG</h3>
+    <div class="grid-3">
+      <div class="card rag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <h4>Massive Scale</h4>
+        <p>Can reach millions of documents: entire medical libraries, decades of patient records, regulatory filings.</p>
+      </div>
+      <div class="card rag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </div>
+        <h4>Always Current</h4>
+        <p>Just update the underlying database. No retraining, no cache invalidation. Yesterday's published study is available today.</p>
+      </div>
+      <div class="card rag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <h4>Citable &amp; Auditable</h4>
+        <p>Every answer can be traced back to a specific source document, which is critical for clinical accountability and compliance.</p>
+      </div>
+    </div>
+
+    <h3>Hospital Use Cases, In Detail</h3>
+
+    <div class="use-case rag">
+      <div class="meta">
+        <span>Oncology</span>
+        <span>Clinical Decision Support</span>
+        <span>High Complexity</span>
+      </div>
+      <h4>Clinical Decision Support for Rare Cancers</h4>
+      <div class="role">Dr. Chen, Medical Oncologist · 9:14 AM · Before rounds</div>
+      <p>
+        A 58-year-old patient has been diagnosed with <strong>Philadelphia chromosome-like acute lymphoblastic leukemia (Ph-like ALL)</strong> carrying a <span class="mono">JAK2 V617F</span> mutation. The patient is also on amlodipine for hypertension and has mild renal impairment (eGFR 52). Dr. Chen needs to know:
+      </p>
+      <ul class="clean rag">
+        <li>What are the latest second-line targeted therapies for this specific mutation?</li>
+        <li>Are there drug-drug interactions with amlodipine via CYP3A4 pathways?</li>
+        <li>What dose adjustments are required for renal impairment?</li>
+        <li>Are there any active clinical trials at our institution?</li>
+      </ul>
+      <div class="dialog">
+        <div class="q">What are the latest second-line treatment protocols for Ph-like ALL with JAK2 V617F, and how do they interact with amlodipine in a patient with eGFR 52?</div>
+        <div class="a"><strong>RAG in action:</strong> The system queries PubMed (last 90 days), the hospital's oncology protocol library, the pharmacy interaction database (Micromedex), and the clinical trials registry. It retrieves 7 relevant chunks: a 2025 NEJM trial on ruxolitinib in Ph-like ALL, a drug interaction alert for CYP3A4 substrates, a renal dosing guideline, and 2 active Phase II trials at the hospital. The LLM synthesizes a cited recommendation.</div>
+      </div>
+      <h4>Why RAG is essential here</h4>
+      <ul class="clean rag">
+        <li>Oncology knowledge changes weekly: new trials, new approvals.</li>
+        <li>The answer requires <em>cross-referencing</em> several dynamic databases at once.</li>
+        <li>A static cache would be outdated before the patient's next appointment.</li>
+      </ul>
+    </div>
+
+    <div class="use-case rag">
+      <div class="meta">
+        <span>Pharmacy</span>
+        <span>Drug Safety</span>
+        <span>Real-Time</span>
+      </div>
+      <h4>Pharmacy Drug Interaction &amp; Formulary Check</h4>
+      <div class="role">Clinical Pharmacist · Dispensing verification · Real-time</div>
+      <p>
+        A prescription arrives for a new patient: <strong>warfarin 5mg daily</strong>. The patient's EHR shows they are already on amiodarone, simvastatin, and recently started St. John's Wort (self-reported in the last nursing intake). The pharmacist needs instant guidance.
+      </p>
+      <div class="dialog">
+        <div class="q">Check interactions for warfarin with the patient's current medications and supplements.</div>
+        <div class="a"><strong>RAG retrieves:</strong> the hospital formulary (warfarin is approved), the interaction database (warfarin + amiodarone is a major interaction, reduce warfarin by 30–50%), warfarin + simvastatin (moderate, monitor INR), warfarin + St. John's Wort (major, induces CYP2C9 and reduces warfarin efficacy). It also pulls the hospital's anticoagulation protocol requiring an INR recheck in 3 days.</div>
+      </div>
+      <h4>Why RAG is essential here</h4>
+      <ul class="clean rag">
+        <li>Formularies update monthly; new generics and biosimilars are added constantly.</li>
+        <li>Interaction databases receive weekly FDA safety alerts.</li>
+        <li>The patient's medication list is <em>dynamic</em>. It changes with every prescription.</li>
+      </ul>
+    </div>
+
+    <div class="use-case rag">
+      <div class="meta">
+        <span>Radiology</span>
+        <span>Report Generation</span>
+        <span>Multi-Modal</span>
+      </div>
+      <h4>Radiology Report Drafting with Prior Studies</h4>
+      <div class="role">Radiologist · Reading a complex chest CT</div>
+      <p>
+        A radiologist is reading a chest CT for a patient with known sarcoidosis. To write an accurate report, they need to compare the current scan against <strong>the last 4 prior CTs spanning 3 years</strong>, reference the latest Fleischner Society guidelines for nodule follow-up, and cross-check the patient's latest PFT (pulmonary function test) results.
+      </p>
+      <div class="dialog">
+        <div class="q">Draft a comparison report of today's chest CT versus prior studies, referencing current Fleischner guidelines and the patient's PFT trend.</div>
+        <div class="a"><strong>RAG retrieves:</strong> the 4 prior radiology reports (from the PACS/DICOM archive), the 2024 Fleischner Society guideline PDF, the patient's last 6 PFT results from the pulmonary lab system, and the hospital's radiology reporting template. The LLM generates a structured comparison with measurements, interval changes, and guideline-concordant recommendations.</div>
+      </div>
+    </div>
+
+    <div class="use-case rag">
+      <div class="meta">
+        <span>Compliance</span>
+        <span>Legal &amp; Regulatory</span>
+        <span>Enterprise</span>
+      </div>
+      <h4>Regulatory &amp; Compliance Query Engine</h4>
+      <div class="role">Hospital Compliance Officer · Preparing for a Joint Commission audit</div>
+      <p>
+        The compliance officer needs to answer: <em>"Show me all policies updated in the last 12 months related to patient restraint use, and flag any that conflict with the latest CMS Conditions of Participation."</em>
+      </p>
+      <div class="dialog">
+        <div class="q">List all restraint-related policies updated since July 2025 and cross-reference with current CMS CoP §482.13.</div>
+        <div class="a"><strong>RAG retrieves:</strong> the hospital's policy management system (11 updated policies), the latest CMS CoP PDF from the federal register, state-specific regulations (for example California Health &amp; Safety Code §1282.8), and Joint Commission standards. The LLM produces a gap analysis with flagged conflicts.</div>
+      </div>
+    </div>
+
+    <h3>Tradeoffs &amp; Risks</h3>
+    <div class="tradeoffs">
+      <div class="col good">
+        <h5>✓ Strengths</h5>
+        <ul>
+          <li>Scales to unlimited knowledge</li>
+          <li>Always uses the latest information</li>
+          <li>Answers are citable and auditable</li>
+          <li>No retraining required for updates</li>
+          <li>Works across heterogeneous data sources</li>
+        </ul>
+      </div>
+      <div class="col bad">
+        <h5>✕ Risks</h5>
+        <ul>
+          <li>Retrieval latency (100–800ms extra)</li>
+          <li>Wrong retrieval means a wrong answer</li>
+          <li>Requires high-quality embeddings and metadata</li>
+          <li>Chunking strategy is critical and non-trivial</li>
+          <li>Vector DB infrastructure cost at scale</li>
+        </ul>
+      </div>
+    </div>
+
+    <blockquote class="pull">
+      "RAG is the right answer when your knowledge is <strong>too large, too dynamic, or too distributed</strong> to fit in any context window, and when being wrong is more dangerous than being slow."
+    </blockquote>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- ========================= CAG SECTION ========================== -->
+<!-- ================================================================ -->
+<section id="cag">
+  <div class="container">
+    <span class="section-label cag">Section 02 · Cache-Augmented Generation</span>
+    <h2><span class="num-badge cag">2</span>CAG: Cache Knowledge for Instant Recall</h2>
+    <p class="subtitle">
+      CAG solves the <em>latency problem</em>. When your knowledge is stable, bounded, and has to be accessed in milliseconds rather than hundreds of milliseconds, you pre-load it directly into the model's context via a precomputed KV cache. There is no retrieval step. The knowledge is <em>already there</em>, waiting.
+    </p>
+
+    <div class="def-box cag">
+      <div class="tag">Core Definition</div>
+      <h3>Cache-Augmented Generation (CAG)</h3>
+      <p style="margin:0">
+        An architecture where all relevant knowledge is loaded into the LLM's context window <strong>upfront</strong>, and the resulting Key-Value (KV) cache is precomputed and stored. At inference time, the model skips retrieval entirely and simply continues generation from the cached context. Latency for the knowledge-access portion drops from hundreds of milliseconds to single-digit milliseconds.
+      </p>
+      <div class="formula">Precompute: Documents → KV Cache → Store<br/>Inference: Query + Cached KV → Generate (instant)</div>
+    </div>
+
+    <h3>How CAG Works, Step by Step</h3>
+    <ul class="clean cag">
+      <li><strong>Offline preparation:</strong> A bounded set of documents (say, a 200-page protocol manual) is loaded into the model's context. The model performs a forward pass, and the resulting KV cache (the internal attention states) is serialized to disk or memory.</li>
+      <li><strong>Cache storage:</strong> The KV cache is held in fast memory (GPU VRAM, Redis, or a dedicated cache server). It can be swapped in and out as needed.</li>
+      <li><strong>Online inference:</strong> When a user asks a question, the cached KV is loaded (or already resident), and the model generates an answer by attending to the pre-loaded knowledge. No embedding, no similarity search, no retrieval.</li>
+      <li><strong>Cache invalidation:</strong> When the underlying knowledge changes, the cache must be rebuilt. This is the critical operational constraint of CAG.</li>
+    </ul>
+
+    <!-- CAG DIAGRAM -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 900 280" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family: Inter, sans-serif;">
+        <!-- Offline phase -->
+        <text x="20" y="24" font-size="11" font-weight="600" fill="#047857" letter-spacing="1">OFFLINE · PRECOMPUTE</text>
+        <rect x="20" y="36" width="120" height="50" rx="8" fill="#D1FAE5" stroke="#047857" stroke-width="1.5"/>
+        <text x="80" y="58" text-anchor="middle" font-size="11" font-weight="600" fill="#047857">Stable Docs</text>
+        <text x="80" y="74" text-anchor="middle" font-size="10" fill="#4B5563">Protocols · Rules</text>
+
+        <line x1="140" y1="61" x2="180" y2="61" stroke="#047857" stroke-width="2" marker-end="url(#arr2)"/>
+
+        <rect x="185" y="36" width="130" height="50" rx="8" fill="#ECFDF5" stroke="#047857" stroke-width="1.5"/>
+        <text x="250" y="58" text-anchor="middle" font-size="11" font-weight="600" fill="#047857">LLM Forward Pass</text>
+        <text x="250" y="74" text-anchor="middle" font-size="10" fill="#4B5563">Compute KV states</text>
+
+        <line x1="315" y1="61" x2="355" y2="61" stroke="#047857" stroke-width="2" marker-end="url(#arr2)"/>
+
+        <rect x="360" y="36" width="140" height="50" rx="8" fill="#047857"/>
+        <text x="430" y="58" text-anchor="middle" font-size="11" font-weight="600" fill="white">KV Cache</text>
+        <text x="430" y="74" text-anchor="middle" font-size="10" fill="#A7F3D0">Precomputed · Stored</text>
+
+        <!-- Online phase -->
+        <text x="20" y="140" font-size="11" font-weight="600" fill="#047857" letter-spacing="1">ONLINE · INFERENCE (milliseconds)</text>
+
+        <rect x="20" y="160" width="120" height="60" rx="8" fill="#D1FAE5" stroke="#047857" stroke-width="1.5"/>
+        <text x="80" y="188" text-anchor="middle" font-size="11" font-weight="600" fill="#047857">User Query</text>
+        <text x="80" y="204" text-anchor="middle" font-size="10" fill="#4B5563">No retrieval step</text>
+
+        <line x1="140" y1="190" x2="200" y2="190" stroke="#047857" stroke-width="2" marker-end="url(#arr2)"/>
+
+        <rect x="205" y="160" width="140" height="60" rx="8" fill="#047857"/>
+        <text x="275" y="188" text-anchor="middle" font-size="11" font-weight="600" fill="white">Load KV Cache</text>
+        <text x="275" y="204" text-anchor="middle" font-size="10" fill="#A7F3D0">Already in memory</text>
+
+        <line x1="345" y1="190" x2="405" y2="190" stroke="#047857" stroke-width="2" marker-end="url(#arr2)"/>
+
+        <rect x="410" y="160" width="130" height="60" rx="8" fill="#ECFDF5" stroke="#047857" stroke-width="2"/>
+        <text x="475" y="188" text-anchor="middle" font-size="11" font-weight="600" fill="#047857">LLM Generate</text>
+        <text x="475" y="204" text-anchor="middle" font-size="10" fill="#4B5563">Instant answer</text>
+
+        <line x1="540" y1="190" x2="600" y2="190" stroke="#047857" stroke-width="2" marker-end="url(#arr2)"/>
+
+        <rect x="605" y="160" width="150" height="60" rx="8" fill="#D1FAE5" stroke="#047857" stroke-width="2"/>
+        <text x="680" y="188" text-anchor="middle" font-size="11" font-weight="600" fill="#047857">Answer in &lt;100ms</text>
+        <text x="680" y="204" text-anchor="middle" font-size="10" fill="#4B5563">Zero retrieval latency</text>
+
+        <!-- Latency comparison -->
+        <rect x="20" y="240" width="860" height="28" rx="6" fill="#F9FAFB" stroke="#E5E7EB"/>
+        <text x="30" y="258" font-size="10" fill="#4B5563">Latency comparison:</text>
+        <rect x="170" y="246" width="60" height="16" rx="3" fill="#047857"/>
+        <text x="240" y="258" font-size="10" fill="#047857" font-weight="600">CAG ~50ms</text>
+        <rect x="340" y="246" width="240" height="16" rx="3" fill="#9CA3AF"/>
+        <text x="590" y="258" font-size="10" fill="#4B5563" font-weight="600">RAG ~300–800ms</text>
+
+        <defs>
+          <marker id="arr2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 10 3, 0 6" fill="#047857"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="caption">Figure 2.1 · CAG pipeline: knowledge is pre-loaded into the KV cache offline; inference is retrieval-free and near-instant.</div>
+    </div>
+
+    <h3>Key Characteristics of CAG</h3>
+    <div class="grid-3">
+      <div class="card cag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <h4>Ultra-Low Latency</h4>
+        <p>Removes the retrieval round-trip entirely. Critical for time-sensitive clinical scenarios.</p>
+      </div>
+      <div class="card cag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h4>Deterministic Access</h4>
+        <p>No risk of retrieving the wrong chunk. The model already holds the full, authoritative document in context.</p>
+      </div>
+      <div class="card cag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <h4>Simpler Infrastructure</h4>
+        <p>No vector DB, no embedding pipeline, no retrieval tuning. Just a cached model and a fast inference server.</p>
+      </div>
+    </div>
+
+    <h3>Hospital Use Cases, In Detail</h3>
+
+    <div class="use-case cag">
+      <div class="meta">
+        <span>Emergency</span>
+        <span>Trauma Bay</span>
+        <span>Mission-Critical Latency</span>
+      </div>
+      <h4>ER Trauma Resuscitation Co-Pilot</h4>
+      <div class="role">Trauma Team Lead · Bay 3 · 2:47 AM · Penetrating chest injury</div>
+      <p>
+        A 34-year-old male arrives via EMS with a stab wound to the left chest. Blood pressure is 78/40, O₂ saturation is dropping to 84% on a non-rebreather, and the trachea is deviated to the right. The trauma team lead needs <strong>instant, authoritative guidance</strong>, not in 500ms but in under 100ms, because every second counts.
+      </p>
+      <div class="dialog">
+        <div class="q">Patient with penetrating left chest trauma, hypotensive, tracheal deviation, desaturating. Immediate intervention sequence?</div>
+        <div class="a"><strong>CAG in action:</strong> the entire ATLS 10th edition, the hospital's trauma bay protocol (v4.2, last updated 3 months ago), the massive transfusion protocol, and the chest tube insertion checklist are <em>already pre-cached</em> in the KV cache. The model answers instantly: "1) Needle decompression 2nd ICS mid-clavicular line. 2) 36Fr chest tube 5th ICS anterior axillary. 3) Activate MTP. 4) If &gt;1500mL blood output, OR for thoracotomy." No retrieval delay. No risk of pulling the wrong guideline.</div>
+      </div>
+      <h4>Why CAG is essential here</h4>
+      <ul class="clean cag">
+        <li>In trauma, <strong>latency kills</strong>. A 500ms retrieval delay during a code is unacceptable.</li>
+        <li>The knowledge (ATLS protocols) is <strong>highly stable</strong>, updated every few years, not every day.</li>
+        <li>The knowledge set is <strong>bounded</strong>. A few hundred pages fit easily in context.</li>
+        <li>Wrong retrieval could mean the wrong intervention. CAG removes that risk.</li>
+      </ul>
+    </div>
+
+    <div class="use-case cag">
+      <div class="meta">
+        <span>Nursing</span>
+        <span>Medication Administration</span>
+        <span>High Frequency</span>
+      </div>
+      <h4>Nursing Medication Administration Assistant</h4>
+      <div class="role">Bedside RN · Med pass · 10:00 AM · 12 patients to cover</div>
+      <p>
+        A nurse is administering medications across 12 patients. For each drug they need to verify the correct dose for the patient's weight and renal function, the administration route, compatibility with the IV line, and the monitoring parameters. They ask 50+ questions per shift. Each one has to be answered in under 200ms so the workflow is not disrupted.
+      </p>
+      <div class="dialog">
+        <div class="q">Vancomycin 1g IV for a 72kg patient with CrCl 38. Dose, rate, and monitoring?</div>
+        <div class="a"><strong>CAG in action:</strong> the hospital's formulary (2,800 drugs), the nursing drug handbook, and the IV compatibility chart are pre-cached. The answer is instant: "1g over 60 min (not faster than 10mg/min to avoid red man syndrome); monitor trough before the 4th dose (target 15–20 for serious infections); check audiology baseline if &gt;5 days; ensure hydration."</div>
+      </div>
+      <h4>Why CAG is essential here</h4>
+      <ul class="clean cag">
+        <li>High frequency: 50+ queries per nurse per shift, so latency compounds.</li>
+        <li>The formulary is stable (monthly updates, cache rebuild takes 5 minutes).</li>
+        <li>Bounded knowledge: the hospital formulary fits in context.</li>
+      </ul>
+    </div>
+
+    <div class="use-case cag">
+      <div class="meta">
+        <span>Billing</span>
+        <span>Medical Coding</span>
+        <span>Repetitive Queries</span>
+      </div>
+      <h4>Medical Coding &amp; Billing Assistant</h4>
+      <div class="role">Certified Coder · Reviewing discharge summaries · Batch processing</div>
+      <p>
+        A medical coder processes 80 discharge summaries per day. For each one they assign ICD-10-CM, CPT, and DRG codes. The rules are complex but <strong>remarkably stable</strong>, updated only annually by CMS (October 1st each year).
+      </p>
+      <div class="dialog">
+        <div class="q">Patient admitted with COPD exacerbation, acute on chronic respiratory failure, intubated for 36 hours. Assign codes.</div>
+        <div class="a"><strong>CAG in action:</strong> the entire ICD-10-CM 2026 codebook, the CPT 2026 manual, and the CMS DRG grouper logic are pre-cached. The answer is instant: "J44.1 (COPD with acute exacerbation), J96.01 (acute respiratory failure), 96.71 (continuous invasive ventilation &lt;96 hrs), MS-DRG 189 (weight 2.1487)."</div>
+      </div>
+      <h4>Why CAG is essential here</h4>
+      <ul class="clean cag">
+        <li>Knowledge is updated <strong>once per year</strong>, perfect for CAG's cache model.</li>
+        <li>High volume: 80 cases/day × ~10 queries each is 800 queries/day.</li>
+        <li>Codebooks are bounded and fit in context.</li>
+      </ul>
+    </div>
+
+    <div class="use-case cag">
+      <div class="meta">
+        <span>Onboarding</span>
+        <span>HR &amp; Policy</span>
+        <span>Internal Knowledge</span>
+      </div>
+      <h4>New Employee Policy &amp; HR Assistant</h4>
+      <div class="role">HR Business Partner · Onboarding week · 40 new hires</div>
+      <p>
+        During onboarding week, 40 new employees each ask 10–15 questions about benefits, PTO accrual, HIPAA training requirements, dress code, expense reimbursement, and more. The answers live in the employee handbook (180 pages), stable and updated annually.
+      </p>
+      <div class="dialog">
+        <div class="q">How many PTO days do I accrue in my first year as a full-time RN?</div>
+        <div class="a"><strong>CAG in action:</strong> the employee handbook is pre-cached. The answer is instant: "15 days in year 1 (accrued bi-weekly at 2.88 hrs/pay period), increasing to 20 days after 5 years of service. Unused PTO carries over up to 80 hours."</div>
+      </div>
+    </div>
+
+    <h3>Tradeoffs &amp; Risks</h3>
+    <div class="tradeoffs">
+      <div class="col good">
+        <h5>✓ Strengths</h5>
+        <ul>
+          <li>Sub-100ms response times</li>
+          <li>No retrieval errors possible</li>
+          <li>Simpler infrastructure (no vector DB)</li>
+          <li>Deterministic, auditable behavior</li>
+          <li>Lower per-query compute cost</li>
+        </ul>
+      </div>
+      <div class="col bad">
+        <h5>✕ Risks</h5>
+        <ul>
+          <li>Cache invalidation is hard; an outdated cache gives wrong answers</li>
+          <li>Knowledge must fit in the context window</li>
+          <li>Not suitable for rapidly changing information</li>
+          <li>GPU memory pressure for large caches</li>
+          <li>Rebuild cost when knowledge changes</li>
+        </ul>
+      </div>
+    </div>
+
+    <blockquote class="pull">
+      "CAG is the right answer when your knowledge is <strong>small enough, stable enough, and latency-sensitive enough</strong> that retrieval overhead is unacceptable."
+    </blockquote>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- ========================= MAG SECTION ========================== -->
+<!-- ================================================================ -->
+<section id="mag">
+  <div class="container">
+    <span class="section-label mag">Section 03 · Memory-Augmented Generation</span>
+    <h2><span class="num-badge mag">3</span>MAG: Remember Users Across Time</h2>
+    <p class="subtitle">
+      MAG solves the <em>continuity problem</em>. Standard AI has amnesia. Every conversation starts from zero. MAG gives the AI a persistent, evolving memory of each user: their preferences, their history, their context. It learns over time, which is what makes truly personalized AI possible.
+    </p>
+
+    <div class="def-box mag">
+      <div class="tag">Core Definition</div>
+      <h3>Memory-Augmented Generation (MAG)</h3>
+      <p style="margin:0">
+        An architecture where the AI maintains a <strong>persistent, structured memory</strong> for each user (patient, clinician, staff). This memory is updated continuously as the user interacts with the system, and it is retrieved and injected into context at inference time. The AI does not just know facts. It knows <em>you</em>.
+      </p>
+      <div class="formula">Interaction → Extract → Update Memory Store → Retrieve at Query → Generate (personalized)</div>
+    </div>
+
+    <h3>The Memory Lifecycle: Four Critical Operations</h3>
+    <div class="grid-2">
+      <div class="card mag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+        </div>
+        <h4>① Remember (Write)</h4>
+        <p>Extract salient facts from each interaction and persist them. "Sarah is afraid of needles." "Dr. Smith prefers bullet-point summaries." "Patient X missed the last 3 appointments."</p>
+      </div>
+      <div class="card mag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <h4>② Retrieve (Read)</h4>
+        <p>At the start of each interaction, pull the user's relevant memories into context. Semantic search over the memory store ensures only pertinent memories surface.</p>
+      </div>
+      <div class="card mag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <h4>③ Update (Refine)</h4>
+        <p>Memories evolve. When new information contradicts old, the system must resolve the conflict: "Sarah now prefers CGM over finger pricks" overwrites the old needle-phobia-driven memory.</p>
+      </div>
+      <div class="card mag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        </div>
+        <h4>④ Forget (Prune)</h4>
+        <p>Critically, the system must know what to forget: outdated facts, irrelevant trivia, or information the user has explicitly asked to remove. Forgetting matters as much as remembering.</p>
+      </div>
+    </div>
+
+    <!-- MAG DIAGRAM -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 900 300" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family: Inter, sans-serif;">
+        <!-- Memory store center -->
+        <ellipse cx="450" cy="150" rx="110" ry="70" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+        <text x="450" y="140" text-anchor="middle" font-size="13" font-weight="600" fill="#7C3AED">User Memory Store</text>
+        <text x="450" y="158" text-anchor="middle" font-size="10" fill="#4B5563">Preferences · History · Context</text>
+        <text x="450" y="174" text-anchor="middle" font-size="10" fill="#4B5563">Per-user · Persistent</text>
+
+        <!-- User -->
+        <rect x="30" y="120" width="130" height="60" rx="10" fill="#EDE9FE" stroke="#7C3AED" stroke-width="2"/>
+        <text x="95" y="148" text-anchor="middle" font-size="12" font-weight="600" fill="#7C3AED">User</text>
+        <text x="95" y="164" text-anchor="middle" font-size="10" fill="#4B5563">(Patient · Clinician)</text>
+
+        <!-- Arrows user - memory -->
+        <path d="M 160 140 Q 250 100 340 130" stroke="#7C3AED" stroke-width="2" fill="none" marker-end="url(#arr3)"/>
+        <text x="230" y="95" font-size="10" fill="#7C3AED" font-weight="600">Write · Update</text>
+
+        <path d="M 340 170 Q 250 200 160 165" stroke="#7C3AED" stroke-width="2" fill="none" marker-end="url(#arr3)"/>
+        <text x="230" y="215" font-size="10" fill="#7C3AED" font-weight="600">Retrieve</text>
+
+        <!-- LLM -->
+        <rect x="720" y="120" width="140" height="60" rx="10" fill="#7C3AED"/>
+        <text x="790" y="148" text-anchor="middle" font-size="12" font-weight="600" fill="white">LLM</text>
+        <text x="790" y="164" text-anchor="middle" font-size="10" fill="#DDD6FE">Personalized Gen</text>
+
+        <path d="M 560 140 Q 640 130 720 140" stroke="#7C3AED" stroke-width="2" fill="none" marker-end="url(#arr3)"/>
+        <text x="640" y="125" font-size="10" fill="#7C3AED" font-weight="600">Memories + Query</text>
+
+        <path d="M 720 165 Q 640 175 560 165" stroke="#7C3AED" stroke-width="2" fill="none" marker-end="url(#arr3)"/>
+        <text x="640" y="195" font-size="10" fill="#7C3AED" font-weight="600">Extract new memories</text>
+
+        <!-- Operations -->
+        <text x="450" y="260" text-anchor="middle" font-size="10" fill="#4B5563" font-style="italic">Four operations: Remember · Retrieve · Update · Forget</text>
+
+        <defs>
+          <marker id="arr3" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 10 3, 0 6" fill="#7C3AED"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="caption">Figure 3.1 · MAG pipeline: a persistent per-user memory store mediates between the user and the LLM, enabling personalization.</div>
+    </div>
+
+    <h3>Key Characteristics of MAG</h3>
+    <div class="grid-3">
+      <div class="card mag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <h4>Per-User Identity</h4>
+        <p>Each user has their own memory graph. The AI knows "Sarah" differently from "John": different histories, different preferences.</p>
+      </div>
+      <div class="card mag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+        </div>
+        <h4>Temporal Evolution</h4>
+        <p>Memories carry timestamps and decay. The AI learns how users change over weeks, months, and years.</p>
+      </div>
+      <div class="card mag">
+        <div class="icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        </div>
+        <h4>Contextual Continuity</h4>
+        <p>Conversations feel continuous, not transactional. The AI picks up where it left off, even across sessions.</p>
+      </div>
+    </div>
+
+    <h3>Hospital Use Cases, In Detail</h3>
+
+    <div class="use-case mag">
+      <div class="meta">
+        <span>Chronic Care</span>
+        <span>Diabetes Management</span>
+        <span>Longitudinal</span>
+      </div>
+      <h4>Personalized Chronic Disease Coaching</h4>
+      <div class="role">Sarah, 42, Type 2 Diabetes · Post-discharge app · Week 6 of coaching</div>
+      <p>
+        Sarah was discharged 6 weeks ago after a diabetes-related hospitalization. She uses the hospital's AI-powered chronic care app every day. Over these 6 weeks the AI has built up a rich memory of her:
+      </p>
+      <ul class="clean mag">
+        <li><strong>Medical memory:</strong> eGFR 52 (stage 3a CKD), A1c 8.4% at discharge, on metformin + empagliflozin</li>
+        <li><strong>Behavioral memory:</strong> severe needle phobia (prefers CGM over fingersticks), works night shifts at a hospital (3pm–3am), struggles with carb-counting after 10pm</li>
+        <li><strong>Preference memory:</strong> prefers voice messages over text, likes simple recipes, finds long educational videos overwhelming</li>
+        <li><strong>Progress memory:</strong> missed 2 medication doses last Tuesday (during a busy shift), walked 4,200 steps on average this week (down from 5,500 last week)</li>
+      </ul>
+      <div class="dialog">
+        <div class="q">Hi Sarah, how are things going this week?</div>
+        <div class="a"><strong>MAG in action:</strong> the AI retrieves Sarah's full memory graph. It knows not to suggest fingerstick checks (needle phobia). It knows she works nights (so "good morning" is wrong at 4pm). It knows her A1c is still elevated but her CGM data shows improvement. It remembers she struggled with carb-counting last week. Response: "Hey Sarah, I noticed your shifts have been hectic this week, and you missed a couple of empagliflozin doses Tuesday. No judgment, nights are tough. I also saw your steps dipped a bit. Want me to send a 10-minute walk reminder between your patient rounds? And I found a 3-ingredient low-carb dinner recipe that takes 15 minutes. Want me to share it?"</div>
+      </div>
+      <h4>Why MAG is essential here</h4>
+      <ul class="clean mag">
+        <li>Generic diabetes advice fails. Patients need <em>personalized</em> guidance.</li>
+        <li>Continuity builds trust. Sarah feels known, not processed.</li>
+        <li>Behavioral patterns emerge over weeks, not single conversations.</li>
+        <li>The AI can intervene proactively based on memory trends.</li>
+      </ul>
+    </div>
+
+    <div class="use-case mag">
+      <div class="meta">
+        <span>Clinician Experience</span>
+        <span>Workflow Personalization</span>
+        <span>Efficiency</span>
+      </div>
+      <h4>Physician Workflow Personalization</h4>
+      <div class="role">Dr. Smith, Primary Care · 14-year veteran · 28 patients/day</div>
+      <p>
+        Dr. Smith uses the hospital's AI scribe and charting assistant. Over 8 months of use, the AI has learned:
+      </p>
+      <ul class="clean mag">
+        <li><strong>Documentation style:</strong> prefers a bulleted HPI and a narrative assessment, dislikes em-dashes</li>
+        <li><strong>Prescribing patterns:</strong> almost always chooses atorvastatin over rosuvastatin; prefers once-daily dosing</li>
+        <li><strong>Referral patterns:</strong> sends complex dermatology cases to Dr. Patel specifically, not the general queue</li>
+        <li><strong>Time patterns:</strong> charts fastest between 11:30am and 12:30pm; slower on Fridays</li>
+        <li><strong>Patient relationships:</strong> has long-standing relationships with ~200 patients and remembers their stories</li>
+      </ul>
+      <div class="dialog">
+        <div class="q">Draft the note for Mrs. Johnson, her 6-month diabetes follow-up.</div>
+        <div class="a"><strong>MAG in action:</strong> the AI retrieves Dr. Smith's style preferences and Mrs. Johnson's memory (last visit 6 months ago, started on semaglutide, lost 8 lbs, A1c down from 8.1 to 7.3, mentioned her grandson's wedding). It drafts a note in Dr. Smith's exact style: bulleted HPI, narrative assessment, no em-dashes. It includes the personal touch: "Patient reports improved energy and mentions her grandson's upcoming wedding, a positive social engagement noted."</div>
+      </div>
+    </div>
+
+    <div class="use-case mag">
+      <div class="meta">
+        <span>Mental Health</span>
+        <span>Therapy Companion</span>
+        <span>High Sensitivity</span>
+      </div>
+      <h4>Therapeutic Companion for CBT Between Sessions</h4>
+      <div class="role">James, 29, Generalized Anxiety Disorder · Between weekly therapy sessions</div>
+      <p>
+        James sees a therapist weekly. Between sessions he uses an AI companion trained in CBT techniques. The AI has built a sensitive, evolving memory:
+      </p>
+      <ul class="clean mag">
+        <li><strong>Triggers:</strong> public speaking, conflict with his manager, Sunday evenings (pre-work anxiety)</li>
+        <li><strong>Cognitive distortions:</strong> tends toward catastrophizing and mind-reading</li>
+        <li><strong>Coping tools that work:</strong> 4-7-8 breathing, thought records, progressive muscle relaxation</li>
+        <li><strong>History:</strong> had a panic attack 3 weeks ago during a team meeting; processed it in the last session</li>
+        <li><strong>What doesn't work:</strong> generic mindfulness advice; he finds it dismissive</li>
+      </ul>
+      <div class="dialog">
+        <div class="q">I have to present to the board on Thursday and I can't sleep.</div>
+        <div class="a"><strong>MAG in action:</strong> the AI retrieves James's memory: public speaking is a known trigger, he catastrophizes, and he responded well to thought records last time. It does NOT give generic "try meditation" advice. Response: "Hey James, I remember the team meeting presentation 3 weeks ago was really tough. Let's do what worked then: walk me through the worst-case scenario you're imagining, and we'll examine the evidence together. And if your body's revved up, the 4-7-8 breathing you practiced last week might help right now."</div>
+      </div>
+    </div>
+
+    <div class="use-case mag">
+      <div class="meta">
+        <span>Pediatrics</span>
+        <span>Parent Support</span>
+        <span>Developmental</span>
+      </div>
+      <h4>Pediatric Developmental Tracking for Parents</h4>
+      <div class="role">Maria, mother of 18-month-old Luca · Post-well-child-visit</div>
+      <p>
+        Maria uses the hospital's pediatric app. The AI has built a memory of Luca's development since birth:
+      </p>
+      <ul class="clean mag">
+        <li><strong>Milestones:</strong> walking at 13 months, 8 words at 15 months, now ~25 words at 18 months</li>
+        <li><strong>Concerns tracked:</strong> Maria worried about speech delay at 14 months; referred to SLP; now improving</li>
+        <li><strong>Family context:</strong> bilingual household (Spanish/English), older sibling with autism</li>
+        <li><strong>Preferences:</strong> Maria prefers short videos over long articles; likes milestone celebrations</li>
+      </ul>
+      <div class="dialog">
+        <div class="q">Is Luca's speech progress normal?</div>
+        <div class="a"><strong>MAG in action:</strong> the AI retrieves Luca's full milestone timeline. It remembers Maria's worry at 14 months, the SLP referral, and the bilingual context. Response: "Maria, Luca's gone from 8 words at 15 months to 25 at 18 months. That's a beautiful jump, and it's right in the expected range, especially for a bilingual kiddo (bilingual kids often have a total vocabulary across both languages that matches or exceeds monolingual peers). Remember how worried you were at 14 months? The SLP's strategies are clearly working. 🎉 At the 24-month visit we'll reassess, but you're both doing great."</div>
+      </div>
+    </div>
+
+    <h3>The Hard Problems of MAG</h3>
+    <p>Memory is powerful, but it introduces challenges that RAG and CAG do not face:</p>
+    <div class="grid-2">
+      <div class="card mag">
+        <h4>🧠 What to Remember?</h4>
+        <p>Not every utterance is worth persisting. The system has to decide: is "I like blue" a meaningful preference or noise? That takes sophisticated salience detection.</p>
+      </div>
+      <div class="card mag">
+        <h4>🗑️ What to Forget?</h4>
+        <p>Outdated memories become wrong. If Sarah's kidney function worsens, dietary advice based on the old eGFR becomes dangerous. Decay functions and explicit user control are essential.</p>
+      </div>
+      <div class="card mag">
+        <h4>⚖️ Conflict Resolution</h4>
+        <p>When a new memory contradicts an old one, which wins? "I hate running" (month 1) versus "I just finished my first 5K!" (month 6). The system must update, not hold both.</p>
+      </div>
+      <div class="card mag">
+        <h4>🔒 Privacy &amp; HIPAA</h4>
+        <p>Persistent memory of patient data is a regulatory minefield. Memories must be encrypted, access-controlled, auditable, and deletable on request (right to erasure).</p>
+      </div>
+    </div>
+
+    <h3>Tradeoffs &amp; Risks</h3>
+    <div class="tradeoffs">
+      <div class="col good">
+        <h5>✓ Strengths</h5>
+        <ul>
+          <li>True personalization at scale</li>
+          <li>Builds user trust and engagement</li>
+          <li>Enables proactive, not just reactive, AI</li>
+          <li>Longitudinal insights impossible in single sessions</li>
+          <li>Compounds in value over time</li>
+        </ul>
+      </div>
+      <div class="col bad">
+        <h5>✕ Risks</h5>
+        <ul>
+          <li>Privacy and regulatory complexity (HIPAA, GDPR)</li>
+          <li>Memory drift, so stale or wrong personalization</li>
+          <li>Hard to debug ("Why did it say that?")</li>
+          <li>Requires careful salience detection</li>
+          <li>Forgetting is as hard as remembering</li>
+        </ul>
+      </div>
+    </div>
+
+    <blockquote class="pull">
+      "MAG is the right answer when your users <strong>return repeatedly</strong>, when their context <strong>evolves over time</strong>, and when generic responses are no longer good enough."
+    </blockquote>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- ======================== COMPARISON ============================ -->
+<!-- ================================================================ -->
+<section id="compare">
+  <div class="container">
+    <span class="section-label hyb">Section 04 · Side-by-Side Comparison</span>
+    <h2>The Triad, Compared</h2>
+    <p class="subtitle">A single reference table for how RAG, CAG, and MAG differ across every dimension that matters in enterprise healthcare.</p>
+
+    <table class="compare">
+      <thead>
+        <tr>
+          <th style="width:22%">Dimension</th>
+          <th style="width:26%">RAG</th>
+          <th style="width:26%">CAG</th>
+          <th style="width:26%">MAG</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Core Problem</strong></td>
+          <td class="rag-col">Knowledge scale &amp; freshness</td>
+          <td class="cag-col">Latency &amp; determinism</td>
+          <td class="mag-col">Continuity &amp; personalization</td>
+        </tr>
+        <tr>
+          <td><strong>One-Line Mental Model</strong></td>
+          <td class="rag-col">Access knowledge</td>
+          <td class="cag-col">Cache knowledge</td>
+          <td class="mag-col">Remember knowledge</td>
+        </tr>
+        <tr>
+          <td><strong>When Knowledge Changes</strong></td>
+          <td class="rag-col">Daily / hourly</td>
+          <td class="cag-col">Yearly / rarely</td>
+          <td class="mag-col">Continuously (per user)</td>
+        </tr>
+        <tr>
+          <td><strong>Knowledge Size</strong></td>
+          <td class="rag-col">Unlimited (millions of docs)</td>
+          <td class="cag-col">Bounded (fits in context)</td>
+          <td class="mag-col">Per-user, evolving</td>
+        </tr>
+        <tr>
+          <td><strong>Latency</strong></td>
+          <td class="rag-col">Higher (retrieval adds 100–800ms)</td>
+          <td class="cag-col">Lowest (no retrieval)</td>
+          <td class="mag-col">Variable (memory retrieval)</td>
+        </tr>
+        <tr>
+          <td><strong>Per-User State</strong></td>
+          <td class="rag-col">None</td>
+          <td class="cag-col">None</td>
+          <td class="mag-col">Core feature</td>
+        </tr>
+        <tr>
+          <td><strong>Infrastructure</strong></td>
+          <td class="rag-col">Vector DB + embeddings + LLM</td>
+          <td class="cag-col">KV cache store + LLM</td>
+          <td class="mag-col">Memory store + LLM + update pipeline</td>
+        </tr>
+        <tr>
+          <td><strong>Failure Mode</strong></td>
+          <td class="rag-col">Wrong retrieval, wrong answer</td>
+          <td class="cag-col">Stale cache, outdated answer</td>
+          <td class="mag-col">Memory drift, wrong personalization</td>
+        </tr>
+        <tr>
+          <td><strong>Healthcare Example</strong></td>
+          <td class="rag-col">Oncology CDS, drug interactions</td>
+          <td class="cag-col">ER trauma protocols, nursing drug check</td>
+          <td class="mag-col">Diabetes coaching, physician scribe</td>
+        </tr>
+        <tr>
+          <td><strong>Regulatory Complexity</strong></td>
+          <td class="rag-col">Medium (audit trail needed)</td>
+          <td class="cag-col">Low (deterministic)</td>
+          <td class="mag-col">High (HIPAA, right to erasure)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- ========================= HYBRID =============================== -->
+<!-- ================================================================ -->
+<section id="hybrid">
+  <div class="container">
+    <span class="section-label hyb">Section 05 · The Hybrid Architecture</span>
+    <h2>The Highest-Performing Systems Combine All Three</h2>
+    <p class="subtitle">
+      The best enterprise hospital AI systems do not pick one architecture. They layer all three. Each handles what it does best, creating a unified "Chief of Staff" experience for clinicians and a deeply personalized experience for patients.
+    </p>
+
+    <!-- HYBRID DIAGRAM -->
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 900 420" width="100%" xmlns="http://www.w3.org/2000/svg" style="font-family: Inter, sans-serif;">
+        <!-- Title -->
+        <text x="450" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#1F2937">Hybrid Hospital AI Architecture</text>
+
+        <!-- User layer -->
+        <rect x="340" y="50" width="220" height="50" rx="10" fill="#F3F4F6" stroke="#1F2937" stroke-width="1.5"/>
+        <text x="450" y="72" text-anchor="middle" font-size="12" font-weight="600" fill="#1F2937">Clinician / Patient</text>
+        <text x="450" y="88" text-anchor="middle" font-size="10" fill="#4B5563">Query · Interaction</text>
+
+        <!-- Orchestration layer -->
+        <rect x="280" y="130" width="340" height="50" rx="10" fill="#FFFFFF" stroke="#B45309" stroke-width="2"/>
+        <text x="450" y="152" text-anchor="middle" font-size="12" font-weight="600" fill="#B45309">Orchestration Layer</text>
+        <text x="450" y="168" text-anchor="middle" font-size="10" fill="#4B5563">Routes query to the right architecture(s)</text>
+
+        <!-- Three architecture columns -->
+        <!-- RAG -->
+        <rect x="40" y="220" width="240" height="160" rx="12" fill="#EFF6FF" stroke="#1E40AF" stroke-width="2"/>
+        <text x="160" y="245" text-anchor="middle" font-size="13" font-weight="700" fill="#1E40AF">RAG Layer</text>
+        <text x="160" y="262" text-anchor="middle" font-size="10" fill="#1E40AF" font-style="italic">Dynamic Knowledge</text>
+        <text x="55" y="285" font-size="10" fill="#1F2937">• Latest journals</text>
+        <text x="55" y="302" font-size="10" fill="#1F2937">• Patient EHR data</text>
+        <text x="55" y="319" font-size="10" fill="#1F2937">• Drug interactions</text>
+        <text x="55" y="336" font-size="10" fill="#1F2937">• Clinical trials</text>
+        <text x="55" y="353" font-size="10" fill="#1F2937">• Hospital policies (current)</text>
+        <text x="55" y="370" font-size="10" fill="#4B5563" font-style="italic">Vector DB · Updated daily</text>
+
+        <!-- CAG -->
+        <rect x="330" y="220" width="240" height="160" rx="12" fill="#ECFDF5" stroke="#047857" stroke-width="2"/>
+        <text x="450" y="245" text-anchor="middle" font-size="13" font-weight="700" fill="#047857">CAG Layer</text>
+        <text x="450" y="262" text-anchor="middle" font-size="10" fill="#047857" font-style="italic">Core Stable Knowledge</text>
+        <text x="345" y="285" font-size="10" fill="#1F2937">• ATLS / ACLS protocols</text>
+        <text x="345" y="302" font-size="10" fill="#1F2937">• Hospital formulary</text>
+        <text x="345" y="319" font-size="10" fill="#1F2937">• Anatomy · Physiology</text>
+        <text x="345" y="336" font-size="10" fill="#1F2937">• ICD-10 / CPT codes</text>
+        <text x="345" y="353" font-size="10" fill="#1F2937">• Standard dosing rules</text>
+        <text x="345" y="370" font-size="10" fill="#4B5563" font-style="italic">KV Cache · Updated yearly</text>
+
+        <!-- MAG -->
+        <rect x="620" y="220" width="240" height="160" rx="12" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2"/>
+        <text x="740" y="245" text-anchor="middle" font-size="13" font-weight="700" fill="#7C3AED">MAG Layer</text>
+        <text x="740" y="262" text-anchor="middle" font-size="10" fill="#7C3AED" font-style="italic">User Memory</text>
+        <text x="635" y="285" font-size="10" fill="#1F2937">• Clinician preferences</text>
+        <text x="635" y="302" font-size="10" fill="#1F2937">• Patient history &amp; context</text>
+        <text x="635" y="319" font-size="10" fill="#1F2937">• Communication style</text>
+        <text x="635" y="336" font-size="10" fill="#1F2937">• Past interactions</text>
+        <text x="635" y="353" font-size="10" fill="#1F2937">• Behavioral patterns</text>
+        <text x="635" y="370" font-size="10" fill="#4B5563" font-style="italic">Memory Store · Per-user</text>
+
+        <!-- Arrows from orchestration -->
+        <path d="M 340 180 Q 220 200 160 220" stroke="#1E40AF" stroke-width="2" fill="none" marker-end="url(#arrH)"/>
+        <path d="M 450 180 L 450 220" stroke="#047857" stroke-width="2" fill="none" marker-end="url(#arrH)"/>
+        <path d="M 560 180 Q 680 200 740 220" stroke="#7C3AED" stroke-width="2" fill="none" marker-end="url(#arrH)"/>
+
+        <!-- Arrow from user to orchestration -->
+        <line x1="450" y1="100" x2="450" y2="130" stroke="#1F2937" stroke-width="2" marker-end="url(#arrH)"/>
+
+        <!-- LLM at bottom -->
+        <rect x="300" y="400" width="300" height="40" rx="8" fill="#1F2937"/>
+        <text x="450" y="425" text-anchor="middle" font-size="12" font-weight="600" fill="white">LLM · Final Synthesis &amp; Generation</text>
+
+        <!-- Arrows to LLM -->
+        <line x1="160" y1="380" x2="340" y2="405" stroke="#1E40AF" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrH)"/>
+        <line x1="450" y1="380" x2="450" y2="400" stroke="#047857" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrH)"/>
+        <line x1="740" y1="380" x2="560" y2="405" stroke="#7C3AED" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrH)"/>
+
+        <defs>
+          <marker id="arrH" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 10 3, 0 6" fill="#1F2937"/>
+          </marker>
+        </defs>
+      </svg>
+      <div class="caption">Figure 5.1 · Hybrid architecture: the orchestration layer routes each query to the right combination of RAG, CAG, and MAG, then synthesizes the final response.</div>
+    </div>
+
+    <h3>A Day in the Life: Hybrid in Action</h3>
+    <p>Let's follow <strong>Dr. Smith</strong> through a typical morning to see how all three architectures work together seamlessly.</p>
+
+    <div class="use-case" style="border-color: var(--hyb); background: linear-gradient(180deg, #FFFDF5 0%, #FFFFFF 100%);">
+      <div class="meta">
+        <span style="background: var(--hyb-soft); color: var(--hyb);">Hybrid Workflow</span>
+        <span style="background: var(--hyb-soft); color: var(--hyb);">7:45 AM · Before Clinic</span>
+      </div>
+      <h4>Dr. Smith's Morning Chart Review</h4>
+      <p>Dr. Smith opens the AI assistant to review the day's patients. One query triggers all three architectures at once:</p>
+      <div class="dialog">
+        <div class="q">Summarize Mrs. Johnson's status and prep me for her 6-month diabetes visit.</div>
+      </div>
+      <h4>① MAG activates first, personalization</h4>
+      <ul class="clean mag">
+        <li>Retrieves Dr. Smith's style: "bulleted HPI, narrative assessment, no em-dashes"</li>
+        <li>Retrieves Mrs. Johnson's memory: last visit 6 months ago, started semaglutide, A1c 8.1 to 7.3, lost 8 lbs, grandson's wedding coming up</li>
+        <li>Formats the output exactly how Dr. Smith likes it</li>
+      </ul>
+      <h4>② CAG handles core knowledge, instantly</h4>
+      <ul class="clean cag">
+        <li>Current semaglutide dosing rules (cached)</li>
+        <li>Standard diabetes monitoring intervals (cached)</li>
+        <li>ICD-10 codes for T2DM with obesity (cached)</li>
+      </ul>
+      <h4>③ RAG retrieves dynamic information</h4>
+      <ul class="clean rag">
+        <li>Mrs. Johnson's latest labs from yesterday (EHR)</li>
+        <li>Any new ADA guideline updates this month (journals)</li>
+        <li>Her recent pharmacy fill history (dynamic)</li>
+        <li>Any new clinical trials for semaglutide she might qualify for</li>
+      </ul>
+      <p style="margin-top:14px"><strong>Result:</strong> a perfectly personalized, instantly informed, fully up-to-date chart summary, generated in under 2 seconds, citing sources, formatted exactly how Dr. Smith prefers.</p>
+    </div>
+
+    <h3>When to Layer: The Decision Heuristic</h3>
+    <div class="grid-3">
+      <div class="card rag">
+        <div class="icon" style="background: var(--rag-soft); color: var(--rag);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        </div>
+        <h4>Add RAG when…</h4>
+        <p>Knowledge changes daily, is massive, or must be cited. Patient-specific data, the latest research, dynamic formularies.</p>
+      </div>
+      <div class="card cag">
+        <div class="icon" style="background: var(--cag-soft); color: var(--cag);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <h4>Add CAG when…</h4>
+        <p>Knowledge is stable, bounded, and latency-sensitive. Protocols, rules, and reference material that rarely changes.</p>
+      </div>
+      <div class="card mag">
+        <div class="icon" style="background: var(--mag-soft); color: var(--mag);">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <h4>Add MAG when…</h4>
+        <p>Users return repeatedly and personalization drives outcomes. Chronic care, workflow tools, therapeutic companions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================================================ -->
+<!-- ======================== DECISION ============================== -->
+<!-- ================================================================ -->
+<section id="decision">
+  <div class="container">
+    <span class="section-label hyb">Section 06 · Decision Framework</span>
+    <h2>How to Choose: The Right Question</h2>
+    <p class="subtitle">
+      The architecture decision is usually straightforward once you ask the right questions. Stop asking "which is best?" Start asking these three questions instead:
+    </p>
+
+    <div class="decision">
+      <div class="step rag">
+        <div class="q">Does the knowledge change daily?</div>
+        <div class="a">
+          <strong>Yes, use RAG.</strong><br/>
+          Examples: patient records, latest journals, drug formularies, clinical trials, regulatory updates. You need retrieval because caching would be constantly stale.
+        </div>
+      </div>
+      <div class="step cag">
+        <div class="q">Is the knowledge stable and bounded?</div>
+        <div class="a">
+          <strong>Yes, use CAG.</strong><br/>
+          Examples: ATLS protocols, formulary, ICD codes, hospital policies (updated yearly). You can cache it because it rarely changes, and latency matters.
+        </div>
+      </div>
+      <div class="step mag">
+        <div class="q">Do users come back repeatedly?</div>
+        <div class="a">
+          <strong>Yes, use MAG.</strong><br/>
+          Examples: chronic care patients, clinician workflow tools, therapy companions. You need memory because personalization drives outcomes over time.
+        </div>
+      </div>
+    </div>
+
+    <h3>The Final Insight</h3>
+    <blockquote class="pull">
+      Architecture is not about trends.<br/>
+      It's about matching the system design to the problem.<br/><br/>
+      The highest-performing hospital AI systems don't pick one.<br/>
+      They combine <span style="color:var(--rag); font-weight:600;">RAG</span> for dynamic information,<br/>
+      <span style="color:var(--cag); font-weight:600;">CAG</span> for core knowledge,<br/>
+      and <span style="color:var(--mag); font-weight:600;">MAG</span> for user memory.
+    </blockquote>
+
+    <div class="def-box" style="background: #FFFBEB; border-color: #FDE68A;">
+      <div class="tag" style="color: var(--hyb);">The Enterprise Playbook</div>
+      <h3 style="color: var(--hyb);">Build the triad. Layer by layer.</h3>
+      <p style="margin:0">
+        Start with <strong>CAG</strong> for your most latency-sensitive, stable knowledge (protocols, formularies).<br/>
+        Add <strong>RAG</strong> for everything dynamic (EHR, journals, real-time data).<br/>
+        Layer in <strong>MAG</strong> for your highest-value, recurring users (chronic patients, power-user clinicians).<br/>
+        The orchestration layer decides, per query, which combination to invoke.
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <p style="margin:0">
+      <strong>The AI Architecture Triad</strong> · RAG · CAG · MAG<br/>
+      A deep-dive reference for enterprise healthcare AI system design.
+    </p>
+    <p style="margin:14px 0 0">
+      <a href="https://drfarooqai.github.io/articles/">More Articles</a> ·
+      <a href="https://drfarooqai.github.io/dr-farooq-cv/">Portfolio</a> ·
+      <a href="https://www.linkedin.com/in/dr-muhammadfarooq/">LinkedIn</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
