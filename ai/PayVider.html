@@ -60,7 +60,7 @@ strong{font-weight:600;color:var(--ink)}
 .hamburger{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;width:42px;height:38px;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .hamburger svg{width:20px;height:20px}
 .scrim{display:none;position:fixed;inset:0;background:rgba(45,20,80,.4);backdrop-filter:blur(3px);z-index:99}
-.main{margin-left:var(--sidebar-w);max-width:calc(var(--maxw) + 120px);padding:0 60px 120px}
+.main{margin:0 auto;max-width:calc(var(--maxw) + 120px);padding:0 60px 120px}
 .wrap{max-width:var(--maxw);margin:0 auto}
 .hero{padding:64px 0 46px;border-bottom:1px solid var(--line)}
 .hero-eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--violet);margin-bottom:22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
@@ -249,44 +249,13 @@ table.cmp tbody tr:last-child th,table.cmp tbody tr:last-child td{border-bottom:
 .srcgroup .sg-h{font-weight:700;color:var(--violet);font-size:14px;margin-bottom:5px}
 .srcgroup .sg-b{font-size:13.5px;color:var(--muted);line-height:1.55}
 @media (max-width:1040px){:root{--sidebar-w:248px}.main{padding:0 40px 100px}}
-@media (max-width:860px){.hub-sidebar{transform:translateX(-100%);transition:transform .28s cubic-bezier(.3,.7,.3,1);box-shadow:0 0 60px rgba(80,30,140,.4)}body.nav-open .hub-sidebar{transform:none}body.nav-open .scrim{display:block}.topbar{display:flex}.main{margin-left:0;padding:58px 22px 90px;max-width:100%}.hero{padding:40px 0 36px}.tbl-scroll-note{display:flex;align-items:center;gap:6px}}
-@media (max-width:480px){body{font-size:16px}.main{padding:58px 16px 80px}.signature{padding:22px 18px}.synth{padding:26px 20px}}
+@media (max-width:860px){.hub-sidebar{transform:translateX(-100%);transition:transform .28s cubic-bezier(.3,.7,.3,1);box-shadow:0 0 60px rgba(80,30,140,.4)}body.nav-open .hub-sidebar{transform:none}body.nav-open .scrim{display:block}.topbar{display:flex}.main{margin:0 auto;padding:0 22px 90px;max-width:100%}.hero{padding:40px 0 36px}.tbl-scroll-note{display:flex;align-items:center;gap:6px}}
+@media (max-width:480px){body{font-size:16px}.main{padding:0 16px 80px}.signature{padding:22px 18px}.synth{padding:26px 20px}}
 
 </style>
 </head>
 <body>
 <div id="progress"></div>
-
-<!-- MOBILE TOP BAR -->
-<div class="topbar">
-  <span class="t-title">The Payvider Playbook</span>
-  <button class="hamburger" id="ham" aria-label="Open navigation">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-  </button>
-</div>
-<div class="scrim" id="scrim"></div>
-
-<!-- SIDEBAR -->
-<aside class="hub-sidebar" id="sidebar">
-  <div class="brand">
-    <div class="brand-kicker">Independent Analysis · 2022–2026</div>
-    <div class="brand-title">The Payvider<br>Playbook</div>
-    <div class="brand-sub">Who is taking over the front door of Saudi healthcare, and why hospital profits are on the line.</div>
-  </div>
-  <nav class="toc" id="toc">
-    <div class="toc-label">Contents</div>
-    <a href="#overview"><span class="n">00</span><span>Overview</span></a>
-    <a href="#reset"><span class="n">01</span><span>The Big Reset</span></a>
-    <a href="#challengers"><span class="n">02</span><span>The Three Challengers</span></a>
-    <a href="#marginstack"><span class="n">03</span><span>The Margin Stack Under Attack</span></a>
-    <a href="#parallels"><span class="n">04</span><span>The World Has Seen This</span></a>
-    <a href="#moves"><span class="n">05</span><span>Four Moves for Hospitals</span></a>
-    <a href="#counter"><span class="n">06</span><span>What Could Slow It</span></a>
-    <a href="#watch"><span class="n">07</span><span>Bottom Line &amp; What to Watch</span></a>
-    <a href="#sources"><span class="n">08</span><span>Verification &amp; Sources</span></a>
-  </nav>
-  <div class="side-foot">Fact-checked against public filings, regulator sources &amp; analyst research. Not investment advice.</div>
-</aside>
 
 <!-- MAIN -->
 <main class="main">
