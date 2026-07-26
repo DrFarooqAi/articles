@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>When the Insurance Company Becomes the Hospital: The Payvider Playbook</title>
+<meta name="description" content="When the insurance company becomes the hospital: how insurers and retail pharmacies are capturing the front door of Saudi healthcare, and what it means for hospital profitability. An independent market analysis, 2022–2026.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+@property --a{syntax:'<angle>';inherits:false;initial-value:0deg}
+:root{
+  --bg:#FAF9FF;--card:#FFFFFF;--surface-2:#F5F2FF;--ink:#1D1836;--ink-soft:#48416B;--muted:#847EA6;
+  --line:#EAE6F9;--line-strong:#D8D0F2;--violet:#7C3AED;--violet-2:#6D5EF6;--fuchsia:#EC4899;
+  --pink-soft:#FDE7F2;--cyan:#06B6D4;--amber:#F59E0B;--amber-soft:#FEF0D6;--indigo:#4F46E5;--tint:#F0ECFF;
+  --grad:linear-gradient(100deg,#6D5EF6,#B14EF0,#EC4899);
+  --grad-cool:linear-gradient(120deg,#4F46E5,#7C3AED,#06B6D4);
+  --grad-warm:linear-gradient(120deg,#B14EF0,#EC4899,#F59E0B);
+  --snake:conic-gradient(from var(--a),#6D5EF6,#B14EF0,#EC4899,#F59E42,#22D3EE,#6D5EF6);
+  --shadow:0 2px 8px rgba(109,94,246,.08),0 14px 32px -16px rgba(176,78,240,.24);
+  --shadow-lg:0 4px 16px rgba(124,58,237,.14),0 34px 64px -24px rgba(236,72,153,.32);
+  --radius:16px;--radius-sm:12px;--sidebar-w:288px;--maxw:820px;
+  --serif:'Instrument Serif',Georgia,serif;--sans:'DM Sans',system-ui,-apple-system,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;position:relative}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(46% 40% at 8% 4%,rgba(109,94,246,.09),transparent 60%),radial-gradient(42% 38% at 96% 18%,rgba(34,211,238,.06),transparent 60%),radial-gradient(48% 44% at 78% 92%,rgba(236,72,153,.08),transparent 60%),radial-gradient(40% 40% at 30% 70%,rgba(245,158,11,.05),transparent 60%)}
+a{color:var(--violet);text-decoration:none}
+h1,h2,h3,h4{margin:0;line-height:1.14;font-weight:600}
+p{margin:0 0 1.05em}
+strong{font-weight:600;color:var(--ink)}
+::selection{background:var(--fuchsia);color:#fff}
+.snake{position:relative;isolation:isolate}
+.snake::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.4px;background:linear-gradient(135deg,#6D5EF6,#B14EF0 55%,#EC4899);opacity:.5;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);mask-composite:exclude;pointer-events:none;z-index:2;transition:opacity .25s}
+.snake:hover::before{opacity:1}
+.snake:hover{box-shadow:var(--shadow-lg)}
+.clickable{cursor:pointer;transition:transform .2s,box-shadow .2s}
+.clickable:hover{transform:translateY(-3px)}
+#progress{position:fixed;top:0;left:0;height:3px;width:0;background:var(--grad);z-index:120;transition:width .1s linear;box-shadow:0 0 12px rgba(236,72,153,.5)}
+.hub-sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;z-index:100;background:linear-gradient(165deg,#5B4BE8 0%,#8B3EEA 46%,#D6379E 100%);color:#F3EEFF;display:flex;flex-direction:column;overflow:hidden}
+.brand{padding:26px 24px 20px;border-bottom:1px solid rgba(255,255,255,.16)}
+.brand-kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#FFE08A;margin-bottom:10px}
+.brand-title{font-family:var(--serif);font-size:28px;line-height:1.02;color:#fff;letter-spacing:.2px}
+.brand-sub{font-size:12.5px;color:#E6DBFF;margin-top:8px;line-height:1.45}
+.toc{flex:1;overflow-y:auto;padding:14px 12px 24px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.3) transparent}
+.toc::-webkit-scrollbar{width:6px}
+.toc::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:3px}
+.toc-label{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#E9C7FF;padding:8px 14px 6px}
+.toc a{display:flex;align-items:baseline;gap:11px;padding:9px 14px;border-radius:11px;color:#EADCFF;font-size:14.5px;font-weight:400;line-height:1.3;transition:background .18s,color .18s,transform .18s;position:relative}
+.toc a .n{font-family:var(--mono);font-size:11px;color:#C9A8FF;min-width:15px;transition:color .18s}
+.toc a:hover{background:rgba(255,255,255,.14);color:#fff;transform:translateX(2px)}
+.toc a.active{background:rgba(255,255,255,.92);color:#6B27C7;box-shadow:0 6px 18px -6px rgba(0,0,0,.3)}
+.toc a.active .n{color:#D6379E}
+.side-foot{padding:14px 22px;border-top:1px solid rgba(255,255,255,.16);font-size:11px;color:#E6DBFF;line-height:1.5}
+.topbar{display:none;position:fixed;top:0;left:0;right:0;height:58px;z-index:110;align-items:center;justify-content:space-between;padding:0 16px;background:linear-gradient(100deg,#5B4BE8,#D6379E);box-shadow:0 4px 18px rgba(124,58,237,.3)}
+.topbar .t-title{font-family:var(--serif);color:#fff;font-size:21px}
+.hamburger{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;width:42px;height:38px;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hamburger svg{width:20px;height:20px}
+.scrim{display:none;position:fixed;inset:0;background:rgba(45,20,80,.4);backdrop-filter:blur(3px);z-index:99}
+.main{margin-left:var(--sidebar-w);max-width:calc(var(--maxw) + 120px);padding:0 60px 120px}
+.wrap{max-width:var(--maxw);margin:0 auto}
+.hero{padding:64px 0 46px;border-bottom:1px solid var(--line)}
+.hero-eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--violet);margin-bottom:22px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hero-eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--grad-warm)}
+.hero h1{font-family:var(--serif);font-size:clamp(38px,5.4vw,64px);line-height:1.02;letter-spacing:-.5px;margin-bottom:22px;color:var(--ink)}
+.hero h1 em{font-style:italic;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.hero-deck{font-family:var(--serif);font-size:clamp(21px,2.6vw,27px);line-height:1.25;margin:-8px 0 22px;background:var(--grad-cool);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;max-width:620px}
+.hero-lede{font-size:20px;line-height:1.5;color:var(--ink-soft);max-width:660px;margin-bottom:34px}
+.hero-lede strong{background:var(--grad-cool);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;font-weight:700}
+.hero-meta{display:flex;gap:26px;flex-wrap:wrap;font-size:13px;color:var(--muted);font-family:var(--mono);letter-spacing:.02em}
+.hero-meta span{display:flex;align-items:center;gap:8px}
+.hero-meta .mk{color:var(--fuchsia)}
+.signature{margin:40px 0 4px;background:linear-gradient(145deg,#6D5EF6 0%,#A94BF0 50%,#EC4899 100%);border-radius:var(--radius);padding:30px 28px 26px;color:#fff;box-shadow:var(--shadow-lg);overflow:hidden}
+.signature h3{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#FFE08A;margin-bottom:18px;font-weight:500}
+.fd-svg{width:100%;height:auto;display:block}
+.fd-cap{margin-top:14px;font-size:13px;color:#F3E9FF;line-height:1.5}
+.fd-cap b{color:#fff;font-weight:600}
+.statstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:38px 0 8px}
+.stat{background:var(--card);padding:22px 18px;border-radius:var(--radius)}
+.stat .fig{font-family:var(--serif);font-size:36px;line-height:1;letter-spacing:-.5px;background:linear-gradient(120deg,#6D5EF6,#EC4899);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.stat .fig small{font-size:20px}
+.stat .lab{font-size:12.5px;color:var(--muted);margin-top:10px;line-height:1.4}
+@media (max-width:680px){.statstrip{grid-template-columns:repeat(2,1fr)}}
+.chapter{padding:58px 0 12px;scroll-margin-top:24px}
+.ch-head{margin-bottom:30px}
+.ch-num{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--fuchsia);margin-bottom:12px;display:flex;align-items:center;gap:10px;font-weight:600}
+.ch-num::before{content:"";width:30px;height:2px;border-radius:2px;background:var(--grad)}
+.ch-head h2{font-family:var(--serif);font-size:clamp(30px,4vw,46px);line-height:1.05;letter-spacing:-.3px}
+.ch-intro{font-size:18.5px;color:var(--ink-soft);margin-top:16px;max-width:680px}
+.chapter h3.sub{font-family:var(--serif);font-size:27px;margin:34px 0 14px;letter-spacing:-.2px;color:var(--ink);display:inline-block;position:relative;padding-bottom:6px}
+.chapter h3.sub::after{content:"";position:absolute;left:0;bottom:0;width:38px;height:3px;border-radius:2px;background:var(--grad)}
+.chapter h4.subm{font-size:16px;font-weight:700;margin:26px 0 10px;color:var(--ink);letter-spacing:.01em}
+.chapter ul{margin:0 0 1.1em;padding-left:0;list-style:none}
+.chapter ul li{position:relative;padding-left:24px;margin-bottom:.6em}
+.chapter ul li::before{content:"";position:absolute;left:6px;top:10px;width:7px;height:7px;border-radius:50%;background:var(--grad)}
+.figword{font-family:var(--mono);font-weight:600;font-size:.94em;padding:1px 7px;border-radius:6px;color:#fff;background:linear-gradient(100deg,#7C3AED,#EC4899);white-space:nowrap}
+.callout{background:var(--card);border-radius:var(--radius);padding:18px 22px 18px 24px;margin:24px 0;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.callout::after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--grad-warm)}
+.callout .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:8px;font-weight:600}
+.callout p{margin:0;font-size:16px;color:var(--ink-soft)}
+.callout.warn::after{background:linear-gradient(180deg,#EC4899,#F43F5E)}
+.callout.warn .k{color:var(--fuchsia)}
+.tabs{margin:26px 0 8px}
+.tab-hint{font-family:var(--mono);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;font-weight:600;color:var(--fuchsia);margin:0 0 11px;display:flex;align-items:center;gap:7px}
+.tab-hint svg{width:14px;height:14px;color:var(--fuchsia)}
+.tab-strip{display:inline-flex;gap:5px;padding:5px;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:15px;max-width:100%;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;box-shadow:inset 0 1px 3px rgba(29,24,54,.05)}
+.tab-strip::-webkit-scrollbar{display:none}
+.tab-strip.scroll{display:flex}
+.tab-btn{appearance:none;border:none;cursor:pointer;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink-soft);background:var(--card);padding:10px 17px;border-radius:11px;white-space:nowrap;transition:color .18s,background .18s,box-shadow .2s,transform .18s;display:flex;align-items:center;gap:8px;flex:0 0 auto;box-shadow:0 1px 2px rgba(29,24,54,.07)}
+.tab-btn .tn{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--muted);transition:color .18s}
+.tab-btn:hover{color:var(--violet);transform:translateY(-1px);box-shadow:0 5px 12px -5px rgba(124,58,237,.4)}
+.tab-btn.active{color:#fff;background:var(--grad);box-shadow:0 7px 18px -6px rgba(124,58,237,.55)}
+.tab-btn.active:hover{transform:none}
+.tab-btn.active .tn{color:rgba(255,255,255,.82)}
+.tab-panel{display:none;padding:24px 2px 4px;animation:fade .3s ease}
+.tab-panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ch-card-top{display:flex;align-items:flex-start;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.ch-badge{width:54px;height:54px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:27px;color:#fff;flex:0 0 auto;box-shadow:0 8px 20px -8px rgba(124,58,237,.5)}
+.ch-badge.a{background:linear-gradient(150deg,#6D5EF6,#4F46E5)}
+.ch-badge.b{background:linear-gradient(150deg,#06B6D4,#3B82F6)}
+.ch-badge.c{background:linear-gradient(150deg,#EC4899,#F59E0B)}
+.ch-card-top .who{flex:1;min-width:200px}
+.ch-card-top .who .nm{font-family:var(--serif);font-size:26px;color:var(--ink);line-height:1.05}
+.ch-card-top .who .role{font-size:13.5px;color:var(--muted);margin-top:4px;font-family:var(--mono);letter-spacing:.02em}
+.ch-tag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-top:7px;color:#fff}
+.ch-tag.a{background:linear-gradient(100deg,#6D5EF6,#4F46E5)}
+.ch-tag.b{background:linear-gradient(100deg,#06B6D4,#3B82F6)}
+.ch-tag.c{background:linear-gradient(100deg,#EC4899,#F59E0B)}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+.metrics .m{background:var(--card);padding:16px 15px;border-radius:var(--radius-sm)}
+.metrics .m .mf{font-family:var(--serif);font-size:25px;line-height:1;background:linear-gradient(120deg,#6D5EF6,#EC4899);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
+.metrics .m .ml{font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.35}
+@media (max-width:560px){.metrics{grid-template-columns:1fr 1fr}}
+.means{background:var(--card);border-radius:var(--radius-sm);padding:16px 18px;margin-top:8px}
+.means .mk{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--fuchsia);margin-bottom:7px;font-weight:600}
+.means p{margin:0;font-size:15.5px;color:var(--ink-soft)}
+.tbl-wrap{overflow-x:auto;margin:22px 0 6px;border-radius:var(--radius);box-shadow:var(--shadow);-webkit-overflow-scrolling:touch;background:var(--card)}
+table.cmp{width:100%;border-collapse:collapse;min-width:560px;font-size:14px}
+table.cmp th,table.cmp td{text-align:left;padding:13px 16px;vertical-align:top;border-bottom:1px solid var(--line)}
+table.cmp thead th{background:linear-gradient(100deg,#6D5EF6,#B14EF0);color:#fff;font-weight:600;font-size:13px;position:sticky;top:0}
+table.cmp tbody th{font-weight:700;color:var(--violet);background:var(--surface-2);width:150px;font-size:13px}
+table.cmp td{color:var(--ink-soft);background:var(--card)}
+table.cmp tbody tr:last-child th,table.cmp tbody tr:last-child td{border-bottom:none}
+.tbl-scroll-note{font-family:var(--mono);font-size:10.5px;color:var(--muted);margin:8px 2px 0;display:none}
+.stackviz{background:var(--card);border-radius:var(--radius);padding:26px 24px;margin:26px 0;box-shadow:var(--shadow)}
+.stackviz .sv-h{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--fuchsia);margin-bottom:6px;font-weight:600}
+.stackviz .sv-sub{font-size:14px;color:var(--muted);margin-bottom:20px}
+.slab{display:flex;align-items:center;gap:14px;margin-bottom:9px;padding:14px 18px;border-radius:var(--radius-sm);color:#fff;position:relative;overflow:hidden;transition:transform .5s cubic-bezier(.2,.7,.3,1),opacity .5s;box-shadow:0 6px 16px -8px rgba(124,58,237,.4)}
+.slab .sl-n{font-family:var(--mono);font-size:12px;opacity:.85;min-width:20px}
+.slab .sl-t{font-weight:700;font-size:15px;flex:1}
+.slab .sl-d{font-size:12.5px;opacity:.92;text-align:right;max-width:210px;line-height:1.3}
+.slab.l1{background:linear-gradient(100deg,#6D5EF6,#8B5CF6)}
+.slab.l2{background:linear-gradient(100deg,#8B5CF6,#A94BF0)}
+.slab.l3{background:linear-gradient(100deg,#B14EF0,#D648C9)}
+.slab.l4{background:linear-gradient(100deg,#EC4899,#F472B6)}
+.slab.l5{background:linear-gradient(100deg,#F59E42,#FBBF24)}
+.stackviz.sliced .slab{transform:translateX(66px);opacity:.26}
+.stackviz.sliced .slab::after{content:"◂ diverted";position:absolute;left:-74px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:10px;color:var(--fuchsia);font-weight:600}
+.chapter .stacklist{list-style:none;margin:0 0 6px;padding:0;counter-reset:sl}
+.chapter .stacklist li{position:relative;padding:10px 0 10px 34px;margin:0;border-bottom:1px solid var(--line);font-size:15.5px;color:var(--ink-soft);transition:transform .5s cubic-bezier(.2,.7,.3,1),opacity .5s}
+.chapter .stacklist li:last-child{border-bottom:none}
+.chapter .stacklist li::before{counter-increment:sl;content:counter(sl);position:absolute;left:0;top:11px;width:22px;height:22px;border-radius:6px;background:var(--grad);color:#fff;font-family:var(--mono);font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:600}
+.chapter .stacklist li b{color:var(--ink);font-weight:700}
+.chapter .stacklist li span{color:var(--muted)}
+.stackviz.sliced .stacklist li{transform:translateX(42px);opacity:.3}
+.stackviz.sliced .stacklist li::after{content:"\25C2 diverted";position:absolute;left:-96px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-size:10px;color:var(--fuchsia);font-weight:600}
+.slice-btn{margin-top:16px;appearance:none;border:none;color:#fff;font-family:var(--mono);font-size:12px;letter-spacing:.04em;padding:12px 20px;border-radius:24px;cursor:pointer;background:var(--grad);box-shadow:0 8px 20px -8px rgba(236,72,153,.5);transition:transform .2s,box-shadow .2s;display:inline-flex;align-items:center;gap:8px}
+.slice-btn:hover{transform:translateY(-2px);box-shadow:0 12px 26px -8px rgba(236,72,153,.6)}
+.slice-btn .ic{font-size:14px}
+.mech-grid{display:grid;gap:14px;margin:22px 0}
+.mech{background:var(--card);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow)}
+.mech .mm-k{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--fuchsia);margin-bottom:9px;display:flex;align-items:center;gap:10px;font-weight:600}
+.mech .mm-k b{background:var(--grad-warm);color:#fff;width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:15px}
+.mech h4{font-size:18px;margin-bottom:8px;color:var(--ink)}
+.mech p{margin:0;font-size:15px;color:var(--ink-soft)}
+.cardgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:22px 0 6px}
+@media (max-width:640px){.cardgrid{grid-template-columns:1fr}}
+.ccard{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.ccard summary{list-style:none;cursor:pointer;padding:18px 20px;display:flex;align-items:flex-start;gap:13px;position:relative}
+.ccard summary::-webkit-details-marker{display:none}
+.ccard .cc-ic{width:40px;height:40px;border-radius:11px;background:var(--grad-cool);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:20px;flex:0 0 auto}
+.ccard .cc-h{flex:1;min-width:0}
+.ccard .cc-t{font-weight:700;font-size:16px;color:var(--ink);line-height:1.2}
+.ccard .cc-s{font-size:12.5px;color:var(--muted);margin-top:4px;font-family:var(--mono);letter-spacing:.01em}
+.ccard .cc-chev{width:20px;height:20px;color:var(--fuchsia);transition:transform .25s;flex:0 0 auto;margin-top:8px}
+.ccard[open] .cc-chev{transform:rotate(180deg)}
+.ccard .cc-body{padding:0 20px 20px;border-top:1px solid var(--line);margin-top:2px}
+.ccard .cc-body .row{margin-top:14px}
+.ccard .cc-body .rl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--violet);margin-bottom:4px;font-weight:600}
+.ccard .cc-body .rv{font-size:14.5px;color:var(--ink-soft);line-height:1.5}
+.ccard.move .cc-ic{background:var(--grad-warm)}
+.acc{margin:22px 0 6px;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);background:var(--card)}
+.acc details{border-bottom:1px solid var(--line)}
+.acc details:last-child{border-bottom:none}
+.acc summary{list-style:none;cursor:pointer;padding:18px 22px;display:flex;align-items:center;gap:14px;transition:background .18s}
+.acc summary::-webkit-details-marker{display:none}
+.acc summary:hover{background:var(--surface-2)}
+.acc .ac-n{font-family:var(--mono);font-size:12px;color:#fff;min-width:30px;background:var(--grad);border-radius:7px;padding:3px 0;text-align:center;font-weight:600}
+.acc .ac-t{flex:1;font-weight:700;font-size:16.5px;color:var(--ink)}
+.acc .ac-badge{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:14px;background:var(--tint);color:var(--violet);font-weight:600}
+.acc .ac-chev{width:19px;height:19px;color:var(--fuchsia);transition:transform .25s;flex:0 0 auto}
+.acc details[open] .ac-chev{transform:rotate(180deg)}
+.acc details[open] summary{background:var(--surface-2)}
+.acc .ac-body{padding:2px 22px 22px 66px}
+.acc .ac-body p{font-size:15.5px;color:var(--ink-soft)}
+.acc .ac-body p:last-child{margin-bottom:0}
+@media (max-width:560px){.acc .ac-body{padding:2px 20px 20px}}
+.phase-mind{background:var(--pink-soft);border-radius:var(--radius-sm);padding:13px 17px;margin:0 0 12px;font-style:italic;color:#8A1A54;font-family:var(--sans);font-size:15.5px;font-weight:500;line-height:1.5}
+.phase-rows{display:grid;gap:10px}
+.phase-rows .pr{display:grid;grid-template-columns:130px 1fr;gap:10px;font-size:14.5px}
+.phase-rows .pr .pk{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);padding-top:2px;font-weight:600}
+.phase-rows .pr .pv{color:var(--ink-soft)}
+@media (max-width:560px){.phase-rows .pr{grid-template-columns:1fr}}
+.watch{display:grid;gap:12px;margin:22px 0 6px}
+.witem{background:var(--card);border-radius:var(--radius-sm);padding:15px 18px;display:flex;gap:14px;align-items:flex-start;box-shadow:var(--shadow)}
+.witem .wm{width:28px;height:28px;border-radius:8px;background:var(--grad-cool);color:#fff;display:flex;align-items:center;justify-content:center;flex:0 0 auto;margin-top:1px}
+.witem .wm svg{width:15px;height:15px}
+.witem .wt{font-size:15px;color:var(--ink-soft)}
+.witem .wt b{color:var(--violet)}
+.synth{background:linear-gradient(150deg,#4F46E5 0%,#7C3AED 44%,#EC4899 100%);color:#fff;border-radius:var(--radius);padding:34px 30px;margin:34px 0 8px;box-shadow:var(--shadow-lg)}
+.synth .sy-k{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#FFE08A;margin-bottom:14px;font-weight:600}
+.synth p{font-size:20px;line-height:1.5;color:#fff;margin-bottom:14px;font-family:var(--serif)}
+.synth p:last-child{margin-bottom:0}
+.synth b{color:#FFE08A}
+.synth .line3{display:grid;gap:12px;margin-top:20px}
+.synth .l3{display:flex;gap:13px;align-items:baseline;font-family:var(--sans);font-size:15px;font-style:normal;line-height:1.45;color:#F3E9FF}
+.synth .l3 .lb{font-family:var(--mono);font-size:11px;color:#FFE08A;min-width:64px;flex:0 0 auto;font-weight:600}
+.synth .l3 b{color:#fff}
+.byline{display:flex;align-items:center;gap:14px;margin:30px 0 0;padding:16px 18px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow)}
+.byline .av{width:46px;height:46px;border-radius:50%;background:var(--grad);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:19px;flex:0 0 auto;letter-spacing:.5px}
+.byline .bw{min-width:0}
+.byline .bn{font-weight:700;font-size:16px;color:var(--ink);line-height:1.2}
+.byline .bc{font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45;font-family:var(--mono);letter-spacing:.01em}
+.authorbox{margin:34px 0 0;padding:26px 26px;border-radius:var(--radius);background:linear-gradient(150deg,#4F46E5 0%,#7C3AED 46%,#EC4899 100%);color:#fff;box-shadow:var(--shadow-lg)}
+.authorbox .ak{font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:#FFE08A;margin-bottom:14px;font-weight:600}
+.authorbox .arow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.authorbox .aav{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.2);border:1.5px solid rgba(255,255,255,.45);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:24px;color:#fff;flex:0 0 auto}
+.authorbox .an{font-family:var(--serif);font-size:26px;line-height:1.1;color:#fff}
+.authorbox .acreds{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+.authorbox .cred{font-family:var(--mono);font-size:11px;letter-spacing:.03em;padding:6px 12px;border-radius:20px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);color:#fff}
+@media (max-width:480px){.authorbox{padding:22px 18px}.authorbox .an{font-size:22px}}
+.foot{margin-top:60px;padding-top:26px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);line-height:1.6}
+.foot .disc{font-style:italic;margin-top:12px}
+.srcgroup{margin-bottom:16px}
+.srcgroup .sg-h{font-weight:700;color:var(--violet);font-size:14px;margin-bottom:5px}
+.srcgroup .sg-b{font-size:13.5px;color:var(--muted);line-height:1.55}
+@media (max-width:1040px){:root{--sidebar-w:248px}.main{padding:0 40px 100px}}
+@media (max-width:860px){.hub-sidebar{transform:translateX(-100%);transition:transform .28s cubic-bezier(.3,.7,.3,1);box-shadow:0 0 60px rgba(80,30,140,.4)}body.nav-open .hub-sidebar{transform:none}body.nav-open .scrim{display:block}.topbar{display:flex}.main{margin-left:0;padding:58px 22px 90px;max-width:100%}.hero{padding:40px 0 36px}.tbl-scroll-note{display:flex;align-items:center;gap:6px}}
+@media (max-width:480px){body{font-size:16px}.main{padding:58px 16px 80px}.signature{padding:22px 18px}.synth{padding:26px 20px}}
+
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<!-- MOBILE TOP BAR -->
+<div class="topbar">
+  <span class="t-title">The Payvider Playbook</span>
+  <button class="hamburger" id="ham" aria-label="Open navigation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</div>
+<div class="scrim" id="scrim"></div>
+
+<!-- SIDEBAR -->
+<aside class="hub-sidebar" id="sidebar">
+  <div class="brand">
+    <div class="brand-kicker">Independent Analysis · 2022–2026</div>
+    <div class="brand-title">The Payvider<br>Playbook</div>
+    <div class="brand-sub">Who is taking over the front door of Saudi healthcare, and why hospital profits are on the line.</div>
+  </div>
+  <nav class="toc" id="toc">
+    <div class="toc-label">Contents</div>
+    <a href="#overview"><span class="n">00</span><span>Overview</span></a>
+    <a href="#reset"><span class="n">01</span><span>The Big Reset</span></a>
+    <a href="#challengers"><span class="n">02</span><span>The Three Challengers</span></a>
+    <a href="#marginstack"><span class="n">03</span><span>The Margin Stack Under Attack</span></a>
+    <a href="#parallels"><span class="n">04</span><span>The World Has Seen This</span></a>
+    <a href="#moves"><span class="n">05</span><span>Four Moves for Hospitals</span></a>
+    <a href="#counter"><span class="n">06</span><span>What Could Slow It</span></a>
+    <a href="#watch"><span class="n">07</span><span>Bottom Line &amp; What to Watch</span></a>
+    <a href="#sources"><span class="n">08</span><span>Verification &amp; Sources</span></a>
+  </nav>
+  <div class="side-foot">Fact-checked against public filings, regulator sources &amp; analyst research. Not investment advice.</div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+<div class="wrap">
+
+<!-- ===== OVERVIEW / HERO ===== -->
+<section id="overview" class="hero">
+  <div class="hero-eyebrow"><span class="dot"></span> Saudi Healthcare Market Intelligence</div>
+  <h1>When the insurance company<br>becomes <em>the hospital</em>.</h1>
+  <p class="hero-deck">The people who pay for care are now delivering it.</p>
+  <p class="hero-lede">Between 2022 and 2026, three forces converged on the single most profitable product in the hospital business: the quick, low-complexity outpatient visit. The government rebuilt the public system around primary care. The two dominant insurers became providers. And the Kingdom's largest pharmacy chain started opening clinics next to its own drugstores. For tertiary hospitals, it is one story told three ways: <strong>the front door is being captured by someone else.</strong></p>
+  <div class="hero-meta">
+    <span><span class="mk">▪</span> 9 chapters</span>
+    <span><span class="mk">▪</span> ~18 min read</span>
+    <span><span class="mk">▪</span> Verified Jul 2026</span>
+    <span><span class="mk">▪</span> Executive briefing</span>
+  </div>
+
+  <div class="byline">
+    <div class="av">MF</div>
+    <div class="bw">
+      <div class="bn">Dr. Muhammad Farooq</div>
+      <div class="bc">MBBS · MSc in AI (Germany) · American Board of Medicine in AI certified · CPHQ</div>
+    </div>
+  </div>
+
+  <!-- SIGNATURE: THE FRONT DOOR -->
+  <div class="signature snake">
+    <h3>The Signature Dynamic: Three Channels, One Front Door</h3>
+    <svg class="fd-svg" viewBox="0 0 760 260" role="img" aria-label="Three channels, insurer-built, insurer-integrated and retail-led, diverting low-acuity patients away from the hospital front door.">
+      <defs>
+        <marker id="ar" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#FFE08A"/></marker>
+        <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".18"/><stop offset="1" stop-color="#ffffff" stop-opacity=".08"/></linearGradient>
+      </defs>
+      <!-- channels -->
+      <g font-family="'JetBrains Mono',monospace" font-size="11" fill="#F0E4FF">
+        <rect x="14" y="26" width="176" height="52" rx="9" fill="rgba(255,255,255,.14)" stroke="rgba(255,255,255,.3)"/>
+        <text x="30" y="48" fill="#fff" font-size="12.5" font-weight="600">Meena Health</text>
+        <text x="30" y="66">Insurer-built (Tawuniya)</text>
+        <rect x="14" y="104" width="176" height="52" rx="9" fill="rgba(255,255,255,.14)" stroke="rgba(255,255,255,.3)"/>
+        <text x="30" y="126" fill="#fff" font-size="12.5" font-weight="600">Bupa CareConnect</text>
+        <text x="30" y="144">Insurer-integrated</text>
+        <rect x="14" y="182" width="176" height="52" rx="9" fill="rgba(255,255,255,.14)" stroke="rgba(255,255,255,.3)"/>
+        <text x="30" y="204" fill="#fff" font-size="12.5" font-weight="600">NahdiCare</text>
+        <text x="30" y="222">Retail pharmacy-led</text>
+      </g>
+      <!-- diverting arrows curving to the patient node -->
+      <g fill="none" stroke="#FFE08A" stroke-width="1.6" opacity=".9" marker-end="url(#ar)">
+        <path d="M194,52 C280,52 300,120 372,124"/>
+        <path d="M194,130 C280,130 300,130 372,130"/>
+        <path d="M194,208 C280,208 300,140 372,136"/>
+      </g>
+      <!-- diverted patient pool -->
+      <circle cx="392" cy="130" r="17" fill="#FFE08A"/>
+      <text x="392" y="134" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="10.5" fill="#7C2D8A" font-weight="700">flow</text>
+      <text x="392" y="168" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#F0E4FF">low-acuity visits</text>
+      <!-- blocked path to hospital -->
+      <path d="M414,130 L560,130" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-dasharray="5 5" opacity=".5"/>
+      <line x1="482" y1="116" x2="496" y2="144" stroke="#fff" stroke-width="2.6"/>
+      <line x1="496" y1="116" x2="482" y2="144" stroke="#fff" stroke-width="2.6"/>
+      <!-- hospital -->
+      <g>
+        <rect x="566" y="88" width="180" height="92" rx="10" fill="url(#hg)" stroke="rgba(255,255,255,.34)"/>
+        <rect x="640" y="66" width="32" height="30" rx="4" fill="rgba(255,255,255,.16)" stroke="rgba(255,255,255,.34)"/>
+        <line x1="656" y1="70" x2="656" y2="92" stroke="#FFE08A" stroke-width="2.2"/><line x1="646" y1="81" x2="666" y2="81" stroke="#FFE08A" stroke-width="2.2"/>
+        <text x="656" y="130" text-anchor="middle" font-family="'Instrument Serif',serif" font-size="20" fill="#fff">Hospital OPD</text>
+        <text x="656" y="152" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9.5" fill="#F0E4FF">left with complex cases</text>
+      </g>
+    </svg>
+    <div class="fd-cap"><b>Read it left to right.</b> Three differently-owned networks intercept the routine visit before it reaches the hospital. The hospital keeps the dashed path, the complex and costly cases, and loses the profitable, easy ones. That single reroute is the whole thesis.</div>
+  </div>
+
+  <!-- STAT STRIP -->
+  <div class="statstrip">
+    <div class="stat snake clickable"><div class="fig">84–92<small>%</small></div><div class="lab">Insurer health loss ratios in 2022, the pressure that started it all</div></div>
+    <div class="stat snake clickable"><div class="fig">~80<small>%</small></div><div class="lab">Of health premiums controlled by just Bupa Arabia &amp; Tawuniya</div></div>
+    <div class="stat snake clickable"><div class="fig">SAR 14<small>B</small></div><div class="lab">Primary-care market the challengers are targeting</div></div>
+    <div class="stat snake clickable"><div class="fig">47.6<small>%</small></div><div class="lab">Share of listed-sector profit earned by one hospital group in 2024</div></div>
+  </div>
+</section>
+
+<!-- ===== 01 THE BIG RESET ===== -->
+<section id="reset" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">Chapter 01</div>
+    <h2>The Big Reset: Two Forces Hitting at Once</h2>
+    <p class="ch-intro">Saudi healthcare is being re-engineered from the top down and disrupted from the bottom up, at the same time. The two pillars start from different places but point in exactly the same direction.</p>
+  </div>
+
+  <div class="tabs" data-tabs>
+    <div class="tab-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Tap to switch view</div>
+    <div class="tab-strip">
+      <button class="tab-btn active" data-tab="gov"><span class="tn">A</span> Government Pillar</button>
+      <button class="tab-btn" data-tab="ins"><span class="tn">B</span> Insurer Pillar</button>
+      <button class="tab-btn" data-tab="cmp"><span class="tn">↔</span> Side by Side</button>
+    </div>
+
+    <div class="tab-panel active" data-panel="gov">
+      <h4 class="subm">The state stopped paying for volume in hospitals</h4>
+      <p>In June 2022, <strong>Cabinet Decision No. 469</strong> rewired how the public system is run and financed. The <strong>Health Holding Company (HHC)</strong>, created by royal decree that year, took over day-to-day operation of the Ministry of Health's network: more than <span class="figword">2,300</span> primary-care centers and roughly <span class="figword">500</span> hospitals, leaving the Ministry as a pure regulator.</p>
+      <p>Those assets were corporatized into <strong>20 regional health clusters</strong>, each serving about a million people. The first phase finished at the end of 2023, with all 20 clusters live and more than <span class="figword">20M</span> beneficiaries registered in primary care.</p>
+      <div class="callout snake clickable"><div class="k">The key word is "accountable"</div><p>Each cluster runs as an Accountable Care Organization, one entity responsible for a whole population's health, paid a fixed, risk-adjusted budget. Its overriding incentive becomes keeping people healthy and out of expensive beds. Care is deliberately pushed <em>down</em> the acuity pyramid.</p></div>
+      <p>The financing engine is the <strong>Center for National Health Insurance (CNHI)</strong>, funded by the Ministry of Finance, acting as the strategic (ultimately sole) purchaser of public care. By <strong>2027</strong> it is expected to become the main budget holder, paying through risk-adjusted capitation and bundled payments, with an explicit mandate to control cost and drive value-based payment. Behind it sits Vision 2030: tens of billions in planned investment and a target of ~65% private-sector participation by 2030.</p>
+    </div>
+
+    <div class="tab-panel" data-panel="ins">
+      <h4 class="subm">The insurers had a margin problem, and a radical answer</h4>
+      <p>The private pillar starts with pain. In 2022 the overall health claims ratio hit <span class="figword">84.4%</span>: insurers paid out 84.4 halalas of every premium riyal in claims before a single riyal of cost. Company figures: Tawuniya <span class="figword">85.6%</span>, Bupa Arabia <span class="figword">85.1%</span>, Medgulf <span class="figword">92.3%</span>. Regional medical inflation ran at <span class="figword">10–12%</span> a year.</p>
+      <p>Now add structure. Bupa Arabia and Tawuniya together control close to <strong>80% of health premiums</strong> (Bupa ~44% in 2022, rising to ~46% by H1 2025; Tawuniya ~33%). When a duopoly watches loss ratios climb toward the ceiling, the logical move is to stop renting care from hospitals and start <em>owning</em> the cheap, high-frequency end of it.</p>
+      <div class="callout warn snake clickable"><div class="k">This is the "payvider" move</div><p>The payer becomes the provider. Regulatory changes let Saudi insurers enter delivery, and both giants moved fast: Tawuniya building a clinic company from scratch, Bupa importing a model it already runs profitably in Chile, Spain and Turkey.</p></div>
+    </div>
+
+    <div class="tab-panel" data-panel="cmp">
+      <p style="margin-bottom:18px;color:var(--muted);font-size:15px">Different origins, identical destination, a pincer on the hospital outpatient department.</p>
+      <div class="tbl-wrap snake">
+        <table class="cmp">
+          <thead><tr><th>Dimension</th><th>Government (HHC / CNHI)</th><th>Insurer (Tawuniya / Bupa)</th></tr></thead>
+          <tbody>
+            <tr><th>Primary driver</th><td>Vision 2030 systemic reform</td><td>84–92% loss ratios; 10–12% medical inflation</td></tr>
+            <tr><th>Lead entities</th><td>Health Holding Company; CNHI</td><td>Meena Health; Bupa CareConnect</td></tr>
+            <tr><th>Core strategy</th><td>Reorganize public care into 20 ACO clusters; shift to primary level</td><td>Vertically integrate into delivery; capture low-acuity margin</td></tr>
+            <tr><th>Payment mechanics</th><td>CNHI as sole purchaser; risk-adjusted capitation by 2027</td><td>Premium capital funds owned clinics; benefit design steers flow</td></tr>
+            <tr><th>Explicit goal</th><td>Double primary-care visits per capita; improve outcomes</td><td>Control claim cost, repair margins, steer member journeys</td></tr>
+            <tr><th>Effect on hospitals</th><td>Public volume pulled down the acuity pyramid</td><td>Insured volume pulled out of private OPDs</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tbl-scroll-note">↔ swipe to see full table</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 02 THE THREE CHALLENGERS ===== -->
+<section id="challengers" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">Chapter 02</div>
+    <h2>The Three Challengers Taking the Front Door</h2>
+    <p class="ch-intro">One insurer-built, one insurer-integrated, one retail-led. Three different engines, one identical output: low-acuity patients who no longer walk through a hospital's front door.</p>
+  </div>
+
+  <div class="tabs" data-tabs>
+    <div class="tab-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg> Swipe or tap between the three networks</div>
+    <div class="tab-strip scroll">
+      <button class="tab-btn active" data-tab="meena"><span class="tn">01</span> Meena Health</button>
+      <button class="tab-btn" data-tab="bupa"><span class="tn">02</span> Bupa CareConnect</button>
+      <button class="tab-btn" data-tab="nahdi"><span class="tn">03</span> NahdiCare</button>
+      <button class="tab-btn" data-tab="cmp3"><span class="tn">↔</span> Compare all three</button>
+    </div>
+
+    <!-- MEENA -->
+    <div class="tab-panel active" data-panel="meena">
+      <div class="ch-card-top">
+        <div class="ch-badge a">M</div>
+        <div class="who">
+          <div class="nm">Meena Health</div>
+          <div class="role">Tawuniya · insurer-built · est. Jan 2023</div>
+          <span class="ch-tag a">The Optum Playbook</span>
+        </div>
+      </div>
+      <p>The most direct declaration of intent in the market. A wholly-owned Tawuniya subsidiary, capitalized at <span class="figword">SAR 500M</span>, a purpose-built clinic company, not a pilot.</p>
+      <div class="metrics">
+        <div class="m snake clickable"><div class="mf">5 → 46–52</div><div class="ml">Clinics today → target by 2027 (CEO to Argaam)</div></div>
+        <div class="m snake clickable"><div class="mf">20–30%</div><div class="ml">Target share of the SAR 14B primary-care market, within a decade</div></div>
+        <div class="m snake clickable"><div class="mf">~85%</div><div class="ml">Of population needs the model aims to resolve in-network first</div></div>
+      </div>
+      <p>Beyond bricks: 27 strategic partnerships, a health academy to train primary-care staff, and home-health and digital ambitions. In late 2025 Tawuniya and Meena deployed The Clinician's platform to embed ICHOM outcome standards, the first payer-led implementation of its kind, positioning Meena as the reference model for value-based primary care in the Kingdom.</p>
+      <div class="means snake clickable"><div class="mk">What it means</div><p>The country's second-largest insurer has built a gatekeeping machine. If it works, a Tawuniya member's journey starts, and usually ends, inside Tawuniya-owned care.</p></div>
+    </div>
+
+    <!-- BUPA -->
+    <div class="tab-panel" data-panel="bupa">
+      <div class="ch-card-top">
+        <div class="ch-badge b">B</div>
+        <div class="who">
+          <div class="nm">Bupa CareConnect</div>
+          <div class="role">Bupa Arabia · insurer-integrated · licensed 2024</div>
+          <span class="ch-tag b">The Bupa / Kaiser Playbook</span>
+        </div>
+      </div>
+      <p>Quieter than Meena on the surface, but its installed base is arguably larger, because it started digital. Full telemedicine and home-care licenses in 2024 completed vertical integration from insurance to treatment.</p>
+      <div class="metrics">
+        <div class="m snake clickable"><div class="mf">400K+</div><div class="ml">Digital consultations a year, ~1,500 a day, no pre-approvals</div></div>
+        <div class="m snake clickable"><div class="mf">15</div><div class="ml">Workplace clinics inside PIF, KAFD, Savola, Alinma &amp; others</div></div>
+        <div class="m snake clickable"><div class="mf">10 cities</div><div class="ml">Bupa @Home reach, reportedly double its nearest rival</div></div>
+      </div>
+      <p>Next phase: flagship physical clinics in Riyadh and Jeddah (MRI, lab, pharmacy, physiotherapy), plans to <strong>double the clinic network by 2026</strong>, and AI tools for diagnostics and chronic care. In 2024 alone, more than <span class="figword">1.2M</span> members used CareConnect services.</p>
+      <div class="callout snake clickable"><div class="k">The steering weapon</div><p>In March 2025 Bupa launched Saudi Arabia's first <strong>"No Pre-Approvals"</strong> program: outpatient treatment at network settings with no wait for authorization. Removing friction isn't a courtesy; it's a routing mechanism. Care flows where approval is instant.</p></div>
+      <div class="means snake clickable"><div class="mk">What it means</div><p>Bupa controls the largest insured population <em>and</em> the most-used digital front door. Every consult it absorbs digitally, at work, or at home is a visit a hospital never sees.</p></div>
+    </div>
+
+    <!-- NAHDI -->
+    <div class="tab-panel" data-panel="nahdi">
+      <div class="ch-card-top">
+        <div class="ch-badge c">N</div>
+        <div class="who">
+          <div class="nm">NahdiCare</div>
+          <div class="role">Nahdi Medical Co. · retail pharmacy-led</div>
+          <span class="ch-tag c">The CVS / Aetna Playbook</span>
+        </div>
+      </div>
+      <p>The third disruptor didn't come from insurance at all. It came from the pharmacy counter: Saudi Arabia's largest chain, <span class="figword">1,156</span> pharmacies, SAR 9.45B group revenue (FY2024), one of the country's strongest consumer-health brands.</p>
+      <div class="metrics">
+        <div class="m snake clickable"><div class="mf">3 → 12</div><div class="ml">Polyclinics 2022 → mid-2025; 15–20 planned near term</div></div>
+        <div class="m snake clickable"><div class="mf">~2×/yr</div><div class="ml">Healthcare-segment revenue growth, three years running</div></div>
+        <div class="m snake clickable"><div class="mf">SAR 1.3</div><div class="ml">Pharmacy pull-through for every SAR 1.0 of clinic revenue</div></div>
+      </div>
+      <p>The 2025 wave targets Jazan, Abha and, critically, <strong>Riyadh</strong>, the Kingdom's largest hospital market. Polyclinic visits jumped from 0.9M (2023) to <span class="figword">1.4M</span> guests (2024); four mature clinics already deliver <span class="figword">15%+</span> net margins. Management targets SAR 1.0B healthcare revenue within five years, from ~SAR 200M in 2024.</p>
+      <div class="callout snake clickable"><div class="k">The Bupa–Nahdi loop</div><p>NahdiCare is independent, but woven into the insurers' ecosystems: its clinics sit in Bupa's approved network, and its pharmacies are a primary dispensing partner. A digital consult ends in a prescription fulfilled and home-delivered through Al Nahdi (with Al Borg for labs), publicized as the "EZ-Pill" loop. Consult, medication and data never touch a hospital.</p></div>
+      <div class="means snake clickable"><div class="mk">What it means</div><p>Even where insurers don't own the asset, the ecosystem now exists to route the whole low-acuity journey (consult, prescribe, dispense, deliver) around the hospital campus.</p></div>
+    </div>
+
+    <!-- COMPARE 3 -->
+    <div class="tab-panel" data-panel="cmp3">
+      <div class="tbl-wrap snake">
+        <table class="cmp">
+          <thead><tr><th>Dimension</th><th>Meena Health</th><th>Bupa CareConnect</th><th>NahdiCare</th></tr></thead>
+          <tbody>
+            <tr><th>Origin</th><td>Tawuniya · insurer-built (2023)</td><td>Bupa Arabia · integrated (2024)</td><td>Nahdi · retail pharmacy-led</td></tr>
+            <tr><th>Scale anchor</th><td>SAR 500M capital</td><td>45%+ insurance share funding the build</td><td>SAR 9.45B group; 1,150+ pharmacies</td></tr>
+            <tr><th>Footprint trajectory</th><td>5 → 46–52 by 2027</td><td>15 workplace + flagships; doubling by 2026</td><td>12+ → 15–20; entering Riyadh</td></tr>
+            <tr><th>Digital / home</th><td>App + ICHOM outcomes; home ambitions</td><td>400K+ consults/yr; home care 10 cities</td><td>~800K virtual consults; app-linked pharmacy</td></tr>
+            <tr><th>Steering mechanism</th><td>Insurer gatekeeping (~85% in-network)</td><td>"No Pre-Approvals" frictionless routing</td><td>Brand trust + pharmacy foot-traffic</td></tr>
+            <tr><th>Economic engine</th><td>Claims-cost avoidance for Tawuniya</td><td>Claims avoidance + member retention</td><td>SAR 1.3 pharmacy pull-through per SAR 1.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tbl-scroll-note">↔ swipe to see full table</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 03 MARGIN STACK ===== -->
+<section id="marginstack" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">Chapter 03</div>
+    <h2>The Margin Stack Under Attack</h2>
+    <p class="ch-intro">A simple outpatient visit is worth far more to a hospital than the consultation fee. To see why the disruption hurts, you have to see the whole stack it triggers.</p>
+  </div>
+
+  <h3 class="sub">The "icing on the cake" economics</h3>
+  <p>A flu visit, a follow-up, a prescription renewal, these cost a hospital almost nothing at the margin. The doctor is rostered, the building lit, the systems running. Yet they bill at premium institutional rates. High volume × near-zero marginal cost × premium price = the most profitable minutes in the building. And the visit is only the trigger for everything stacked on top of it.</p>
+
+  <!-- SIGNATURE 2: MARGIN STACK -->
+  <div class="stackviz snake" id="stackviz">
+    <div class="sv-h">The Margin Stack: one visit, five revenue layers</div>
+    <div class="sv-sub">Foot traffic feeds every layer. Divert the first consult and the layers above it go too.</div>
+    <ul class="stacklist">
+      <li><b>Consultation:</b> <span>the visit fee itself</span></li>
+      <li><b>Pharmacy:</b> <span>the prescription filled on campus</span></li>
+      <li><b>Laboratory:</b> <span>tests ordered "while you're here"</span></li>
+      <li><b>Imaging:</b> <span>the scan added for reassurance</span></li>
+      <li><b>Referral:</b> <span>the specialist follow-up booked internally</span></li>
+    </ul>
+    <button class="slice-btn" id="sliceBtn"><span class="ic">✂</span> <span id="sliceLabel">Divert the front door</span></button>
+  </div>
+  <p>These profits cross-subsidize the genuinely expensive parts of hospital medicine (ICUs, complex surgery, transplant programs) where reimbursement often barely covers cost. Remove the stack, and the economics of the whole institution shift. The stakes are concrete: <strong>one of the largest listed hospital groups earned SAR 2.31B net profit on SAR 11.2B revenue in 2024, roughly 47.6% of the entire listed sector's earnings</strong>, with rising outpatient volume repeatedly cited as a profit driver. That is exactly the architecture the new entrants are built to intercept.</p>
+
+  <h3 class="sub">Three mechanisms of erosion</h3>
+  <div class="mech-grid">
+    <div class="mech snake clickable"><div class="mm-k"><b>1</b> Channel diversion</div><h4>Steering the patient river</h4><p>Insurers see every claim: they know exactly which low-acuity services are billed at hospital premiums. They build a cheaper setting for precisely those, then steer: benefit design ("No Pre-Approvals"), digital defaults, workplace clinics, insurer gatekeeping. Each looks like convenience. Together they reroute the river.</p></div>
+    <div class="mech snake clickable"><div class="mm-k"><b>2</b> Case-mix deterioration</div><h4>The cruel arithmetic</h4><p>Keep the visit count but lose the <em>simple</em> cases to clinics while retaining the <em>complex</em> ones, and blended margins collapse: the cheap-to-serve visits that subsidized everything are gone, the expensive ones remain. Losing the flu visit while keeping the ICU admission is not a neutral trade.</p></div>
+    <div class="mech snake clickable"><div class="mm-k"><b>3</b> Pricing power flips</div><h4>Negotiating from weakness</h4><p>A payer that can say "our members' simple care goes to our own clinics anyway" can credibly narrow networks or compress outpatient tariffs at renewal. Hospitals end up defending prices for the very services the payer no longer needs them for.</p></div>
+  </div>
+
+  <div class="callout warn snake clickable"><div class="k">Early signal</div><p>In FY2025 that same group grew revenue <strong>+22.4% to SAR 13.7B</strong>, yet net profit rose only <strong>+3.7% to SAR 2.40B</strong>, officially attributed to ramp-up costs of six new hospitals. Ramp-up is real and temporary. But it shows how sensitive the model is: heavy fixed-cost capacity is being added at exactly the moment three funded networks compete for the light, profitable volume that pays for it.</p></div>
+</section>
+
+<!-- ===== 04 GLOBAL PARALLELS ===== -->
+<section id="parallels" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">Chapter 04</div>
+    <h2>The World Has Seen This Movie</h2>
+    <p class="ch-intro">None of this is speculative. Saudi Arabia is compressing roughly two decades of global healthcare evolution, chiefly American, into about five years. The precedents are unusually consistent.</p>
+  </div>
+
+  <h3 class="sub">Six precedents: tap any card to expand</h3>
+  <div class="cardgrid">
+    <details class="ccard snake"><summary><div class="cc-ic">O</div><div class="cc-h"><div class="cc-t">UnitedHealth · Optum</div><div class="cc-s">USA · the definitive case</div></div><svg class="cc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="cc-body"><div class="row"><div class="rl">Strategy</div><div class="rv">Acquired physician groups, urgent care and surgery centers to build a lower-cost alternative to hospitals.</div></div><div class="row"><div class="rl">Scale</div><div class="rv">~90,000 affiliated physicians, the largest employer of doctors in the US. Optum now generates more profit than the insurance segment.</div></div><div class="row"><div class="rl">Lesson for KSA</div><div class="rv">The blueprint: use perfect claims data to spot overcharged services, build cheaper settings, and steer members away from hospital OPDs. This is the end-state Bupa &amp; Tawuniya point toward.</div></div></div>
+    </details>
+    <details class="ccard snake"><summary><div class="cc-ic">H</div><div class="cc-h"><div class="cc-t">Humana · CenterWell</div><div class="cc-s">USA · targeted interception</div></div><svg class="cc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="cc-body"><div class="row"><div class="rl">Strategy</div><div class="rv">Built/acquired hundreds of senior-focused primary-care clinics to manage Medicare Advantage populations.</div></div><div class="row"><div class="rl">Lesson</div><div class="rv">Keeping a high-risk demographic out of ERs and OPDs through proactive, localized primary care: payer-owned primary care as a claims-control device.</div></div></div>
+    </details>
+    <details class="ccard snake"><summary><div class="cc-ic">C</div><div class="cc-h"><div class="cc-t">CVS + Aetna + Oak Street</div><div class="cc-s">USA · the Nahdi parallel</div></div><svg class="cc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="cc-body"><div class="row"><div class="rl">Strategy</div><div class="rv">Merged retail pharmacy, insurance and a clinic network into one entity: 9,000+ retail locations plus clinics plus a full insurance book.</div></div><div class="row"><div class="rl">Lesson</div><div class="rv">The closest structural analogue to NahdiCare: leverage weekly retail footfall and data to manage care, bypassing hospitals. MinuteClinics had already shown the skim of flu/sore-throat visits.</div></div></div>
+    </details>
+    <details class="ccard snake"><summary><div class="cc-ic">D</div><div class="cc-h"><div class="cc-t">Discovery Health</div><div class="cc-s">South Africa · emerging-market proof</div></div><svg class="cc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="cc-body"><div class="row"><div class="rl">Strategy</div><div class="rv">A dominant insurer built virtual care and clinic capability, using benefit design to steer members.</div></div><div class="row"><div class="rl">Lesson</div><div class="rv">Zero co-pay for network clinics vs high co-pay for non-network hospitals successfully diverts flow, evidence the playbook is not uniquely American.</div></div></div>
+    </details>
+    <details class="ccard snake"><summary><div class="cc-ic">B</div><div class="cc-h"><div class="cc-t">Bupa Global</div><div class="cc-s">Chile · Spain · Turkey</div></div><svg class="cc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="cc-body"><div class="row"><div class="rl">Strategy</div><div class="rv">Vertical integration of insurance and direct care across multiple countries: Sanitas (Spain), IntegraMédica (Chile), Bupa Acıbadem (Turkey).</div></div><div class="row"><div class="rl">Lesson</div><div class="rv">CareConnect is not an experiment; it is a direct replication of a mature, profitable international playbook.</div></div></div>
+    </details>
+    <details class="ccard snake"><summary><div class="cc-ic">K</div><div class="cc-h"><div class="cc-t">Kaiser Permanente</div><div class="cc-s">USA · the ultimate end-state</div></div><svg class="cc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="cc-body"><div class="row"><div class="rl">Strategy</div><div class="rv">Insurer, clinics and hospitals under one roof, with primary care as the strict control tower for referrals.</div></div><div class="row"><div class="rl">Lesson</div><div class="rv">Per-capita hospitalization runs dramatically below the US average, precisely what the HHC/CNHI cluster model aims to replicate on the public side.</div></div></div>
+    </details>
+  </div>
+
+  <h3 class="sub">The predictable three-phase trap</h3>
+  <p>Across every market, incumbent hospitals followed the same fatalistic sequence. Expand each phase to see the mindset, the reality, and the financial impact.</p>
+  <div class="acc snake">
+    <details open><summary><span class="ac-n">P1</span><span class="ac-t">Denial</span><span class="ac-badge">minimal impact, for now</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body"><div class="phase-mind">"Patients will always prefer our brand, prestige and complex services. These clinics are just for minor issues."</div><div class="phase-rows"><div class="pr"><div class="pk">Reality</div><div class="pv">Payviders quietly capture the front door for millions of patients. The referral pipeline begins to dry up.</div></div><div class="pr"><div class="pk">Financial impact</div><div class="pv">Little immediate pain, but future growth is silently capped.</div></div></div></div>
+    </details>
+    <details><summary><span class="ac-n">P2</span><span class="ac-t">Case-mix deterioration</span><span class="ac-badge">margins fall sharply</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body"><div class="phase-mind">"We still have the complex, high-acuity cases. We are fine."</div><div class="phase-rows"><div class="pr"><div class="pk">Reality</div><div class="pv">Hospitals lose the profitable simple cases (routine ortho, cataracts, primary care) and are left with complex, high-cost, low-margin work.</div></div><div class="pr"><div class="pk">Financial impact</div><div class="pv">Blended margins fall sharply. Fixed overhead is spread over fewer, less profitable patients.</div></div></div></div>
+    </details>
+    <details><summary><span class="ac-n">P3</span><span class="ac-t">Negotiation from weakness</span><span class="ac-badge">commoditized</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body"><div class="phase-mind">"We need to be in their network to survive."</div><div class="phase-rows"><div class="pr"><div class="pk">Reality</div><div class="pv">The payvider now controls the referral flow. Hospitals have no leverage.</div></div><div class="pr"><div class="pk">Financial impact</div><div class="pv">Hospitals are relegated to subcontractors, forced to accept aggressive, risk-sharing or capitated contracts dictated by the payer.</div></div></div></div>
+    </details>
+  </div>
+
+  <h3 class="sub">Three patterns of margin erosion</h3>
+  <p>Payviders don't attack all at once: they skim the most profitable layers first, leaving the hospital with the heaviest burdens.</p>
+  <div class="tbl-wrap snake">
+    <table class="cmp">
+      <thead><tr><th>Pattern</th><th>Mechanism</th><th>Examples</th><th>Impact on hospitals</th></tr></thead>
+      <tbody>
+        <tr><th>Retail / urgent-care skim</th><td>Pulls high-volume, low-complexity visits (flu, sore throat, minor injury) out of OPDs and ERs</td><td>CVS MinuteClinic (US); NahdiCare (KSA)</td><td>Loss of the most profitable "per-minute" outpatient revenue that subsidized overhead</td></tr>
+        <tr><th>Ambulatory surgery centers</th><td>Draws routine, predictable procedures into cheaper specialized facilities</td><td>US ASCs; outpatient surgical hubs</td><td>Severe erosion of surgical margins (cataracts, endoscopy, minor ortho)</td></tr>
+        <tr><th>Integrated control towers</th><td>Insurer + clinics + hospitals unified; primary care gates all referrals by value</td><td>Kaiser (US); HHC/CNHI clusters (KSA public)</td><td>Dramatic drop in per-capita hospitalization; hospitals get only what the system allows</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="tbl-scroll-note">↔ swipe to see full table</div>
+</section>
+
+<!-- ===== 05 FOUR MOVES ===== -->
+<section id="moves" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">Chapter 05</div>
+    <h2>Four Moves for Hospital Groups</h2>
+    <p class="ch-intro">The question is no longer whether the front door is contested, but what to do about it. Four moves, not mutually exclusive; the strongest strategies combine all four.</p>
+  </div>
+  <div class="cardgrid">
+    <details class="ccard move snake" open><summary><div class="cc-ic">1</div><div class="cc-h"><div class="cc-t">Defend the front door</div><div class="cc-s">build / acquire primary &amp; urgent care</div></div><svg class="cc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="cc-body"><div class="row"><div class="rv">Extend a trusted hospital brand into neighborhood clinics to compete for the low-acuity flow, and keep the attached pharmacy, lab and imaging layers in-house. Capital-hungry and operationally different from running hospitals, but the only move that contests the same ground. The window matters: Meena targets ~50 sites by 2027 and NahdiCare is entering Riyadh now.</div></div></div>
+    </details>
+    <details class="ccard move snake"><summary><div class="cc-ic">2</div><div class="cc-h"><div class="cc-t">Go asset-light on ambulatory</div><div class="cc-s">lead the migration, don't fight it</div></div><svg class="cc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="cc-body"><div class="row"><div class="rv">Day surgery, endoscopy, routine diagnostics and infusion don't need a tertiary tower. Purpose-built ASCs and satellites cut overhead, improve experience and free flagships for what only they can do. The group that cannibalizes its own OPD on its own terms keeps the revenue; the one that waits donates it.</div></div></div>
+    </details>
+    <details class="ccard move snake"><summary><div class="cc-ic">3</div><div class="cc-h"><div class="cc-t">Double down on complexity</div><div class="cc-s">make the flagship indispensable</div></div><svg class="cc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="cc-body"><div class="row"><div class="rv">Advanced oncology, transplant, neurosurgery, complex cardiac, rare disease: genuine centers of excellence, priced on value, where no clinic can follow. In every global precedent, quaternary specialization was the most defensible moat, and it repositions the hospital from a cost to be avoided into a partner that must be secured.</div></div></div>
+    </details>
+    <details class="ccard move snake"><summary><div class="cc-ic">4</div><div class="cc-h"><div class="cc-t">Partner from the strong side</div><div class="cc-s">before the leverage flips</div></div><svg class="cc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="cc-body"><div class="row"><div class="rv">A network resolving 85% of needs still generates the other 15%, and those complex referrals must go somewhere trusted. Negotiate preferred-referral partnerships now, and sell picks and shovels: RCM, cloud/health-IT, labs and imaging packaged as back-end infrastructure for the very clinic networks driving the disruption. Becoming indispensable to the new system is a strategy, not a surrender.</div></div></div>
+    </details>
+  </div>
+</section>
+
+<!-- ===== 06 COUNTERARGUMENTS ===== -->
+<section id="counter" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">Chapter 06</div>
+    <h2>What Could Slow the Disruption</h2>
+    <p class="ch-intro">A rigorous analysis must argue against itself. Four factors could soften or delay the scenario above.</p>
+  </div>
+  <div class="acc snake">
+    <details><summary><span class="ac-n">01</span><span class="ac-t">The pie may grow faster than the slices move</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body"><p>Demand is expanding powerfully: population growth, chronic disease, huge Vision 2030 investment; one widely cited forecast sees the market roughly doubling (from ~USD 139B in 2025 toward ~USD 259B by 2032). In a market growing this fast, new clinics may largely absorb <em>new</em> demand rather than cannibalize existing hospital volume, especially before saturation. The 22% revenue growth posted by a leading listed group in 2025 shows incumbent demand is, for now, anything but shrinking.</p></div>
+    </details>
+    <details><summary><span class="ac-n">02</span><span class="ac-t">Execution and staffing risk is real</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body"><p>Announcing 50 clinics is easy; staffing them is not. Primary-care physicians are a known bottleneck, and scaling consistent multi-site quality is operationally brutal. Meena's leap from 5 to ~50 sites, Bupa's network doubling, and NahdiCare's simultaneous three-city entry all carry slippage risk. Every quarter of delay is adaptation time for incumbents.</p></div>
+    </details>
+    <details><summary><span class="ac-n">03</span><span class="ac-t">The regulatory rules are still being written</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body"><p>An insurer that owns clinics <em>and</em> decides where members may go without pre-approval has an obvious conflict of interest. How the Council of Health Insurance and the Insurance Authority police self-steering, pricing transparency and fair network access will shape how aggressive the strategy can be. Future rulings could blunt the steering tools.</p></div>
+    </details>
+    <details><summary><span class="ac-n">04</span><span class="ac-t">Incumbents hold real counterweights</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body"><p>Brand trust for anything serious, one-stop convenience for complicated patients, advanced diagnostics and specialist depth, and existing asset-light ventures (RCM, health-IT, ASCs) all remain genuine differentiators. For an undiagnosed lump, a chest pain, a sick child at 2am, the default instinct is still the hospital. That instinct is an asset, though a depreciating one if the routine relationship migrates elsewhere.</p></div>
+    </details>
+  </div>
+  <div class="callout snake clickable"><div class="k">The balanced read</div><p>The <em>direction</em> of change is unambiguous; the <em>speed</em> is not. Executives should plan for the harsh scenario while exploiting every year the counterforces buy them.</p></div>
+</section>
+
+<!-- ===== 07 BOTTOM LINE / WATCH ===== -->
+<section id="watch" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">Chapter 07</div>
+    <h2>The Bottom Line &amp; What to Watch</h2>
+    <p class="ch-intro">This is not a story about clinics. It is a story about control of the patient journey, and three engines pointed the same way, away from the hospital front door.</p>
+  </div>
+
+  <div class="synth snake">
+    <div class="sy-k">Synthesis: the Saudi reality check</div>
+    <p>Incumbent hospitals cannot out-brand or out-complexity a payvider that controls the front door, the data, and the wallet.</p>
+    <div class="line3">
+      <div class="l3"><span class="lb">Tawuniya</span><span><b>Meena Health</b> runs the Optum playbook: claims data building a lower-cost, outcomes-measured alternative to hospital OPDs.</span></div>
+      <div class="l3"><span class="lb">Bupa</span><span><b>CareConnect</b> runs the Bupa/Kaiser playbook: a digital and workplace control tower intercepting care before it reaches a hospital, with "No Pre-Approvals" commoditizing external hospitals.</span></div>
+      <div class="l3"><span class="lb">Nahdi</span><span><b>NahdiCare</b> runs the CVS/Aetna playbook: converting weekly pharmacy footfall into low-acuity clinical visits that bypass the OPD entirely.</span></div>
+    </div>
+  </div>
+
+  <h3 class="sub">Signposts to track through 2026–2027</h3>
+  <div class="watch">
+    <div class="witem snake clickable"><div class="wm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="wt"><b>Meena's clinic count</b> vs the 46–52-by-2027 target, and its pace into Jeddah and the Eastern Province.</div></div>
+    <div class="witem snake clickable"><div class="wm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="wt"><b>Bupa's flagship clinics</b> in Riyadh and Jeddah, whether the network truly doubles by end-2026, and "No Pre-Approvals" enrollment.</div></div>
+    <div class="witem snake clickable"><div class="wm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="wt"><b>NahdiCare's Riyadh opening</b> and progress toward 15–20 clinics and the SAR 1B healthcare-revenue target.</div></div>
+    <div class="witem snake clickable"><div class="wm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="wt"><b>CNHI's 2027 transition</b> to main budget holder and the rollout of risk-adjusted capitation across clusters.</div></div>
+    <div class="witem snake clickable"><div class="wm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="wt"><b>Hospital OPD KPIs</b> such as visit growth, pharmacy revenue per visit and blended margins: the earliest place diversion shows up in numbers.</div></div>
+    <div class="witem snake clickable"><div class="wm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="wt"><b>Regulatory rulings</b> on insurer self-steering and network fairness.</div></div>
+  </div>
+
+  <div class="callout snake clickable"><div class="k">The one-sentence lesson</div><p>Hospitals that waited to see whether the payviders were serious ended up working for them. The Saudi groups that act in 2026 still have every chance to shape the new system rather than be reshaped by it.</p></div>
+</section>
+
+<!-- ===== 08 VERIFICATION / SOURCES ===== -->
+<section id="sources" class="chapter">
+  <div class="ch-head">
+    <div class="ch-num">Chapter 08</div>
+    <h2>Verification &amp; Sources</h2>
+    <p class="ch-intro">Every load-bearing figure was re-checked in July 2026 against primary and reputable secondary sources.</p>
+  </div>
+  <div class="acc snake">
+    <details><summary><span class="ac-n">✓</span><span class="ac-t">Confirmed as originally stated</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body"><p>Cabinet Decision 469 (2022); HHC and 20 clusters (phase one complete end-2023; 20M+ registered); CNHI as strategic purchaser moving to main budget holder by 2027 with risk-adjusted capitation; 2022 loss ratios (overall 84.4%, Tawuniya 85.6%, Medgulf 92.3%); Bupa+Tawuniya ≈80% premium share; Meena SAR 500M capital, 5 clinics, SAR 14B market, 20–30% target, 27 partnerships, health academy; Bupa CareConnect 15 workplace clinics, 400K+ digital consults, 1.2M members (2024), 2024 telemedicine/home-care licenses; NahdiCare 10 clinics/7 cities by end-2024 (two years early), ~1.4M guests, 250+ specialty clinics, ~100 ER beds, NPS 81, CBAHI, four mature clinics at 15%+ margin; Nahdi group revenue SAR 9.45B; Leading listed hospital group FY2024: SAR 11.2B revenue / SAR 2.31B profit / 47.6% of listed-sector earnings; insurance market USD 7.8B (2024) → ~12.5B (2033); global precedents.</p></div>
+    </details>
+    <details><summary><span class="ac-n">↑</span><span class="ac-t">Updated with newer 2025–2026 data</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body"><p>Meena target refined to 46–52 centers by 2027 (CEO to Argaam); Bupa share ~45.7% by H1 2025; "No Pre-Approvals" dated March 2025 (first in KSA); Bupa flagship clinics confirmed for Riyadh and Jeddah with network doubling by 2026, ~1,500 consults/day, Bupa @Home in 10 cities; Bupa Arabia corporate demerger approved for early-2026 closing; NahdiCare at 12 polyclinics by mid-2025 targeting 15–20, healthcare revenue ~SAR 200M (2024) with SAR 1B five-year target and ~SAR 1.3 pharmacy pull-through per SAR 1.0; polyclinic visits 0.9M (2023) → 1.4M (2024), ~797K virtual consults; Nahdi healthcare segment +98.3% in FY2024; Leading listed hospital group FY2025 added (revenue SAR 13.71B +22.4%; net profit SAR 2.40B +3.7%).</p></div>
+    </details>
+    <details><summary><span class="ac-n">±</span><span class="ac-t">Adjusted for accuracy</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body"><p>Insurer scale is expressed via verified market shares (~44–46% Bupa, ~33% Tawuniya) rather than the 3.7M/3.6M member counts, which could not be independently confirmed at those exact values; the earlier "grow to six locations by 2026" claim for Bupa Clinics was replaced by the verified "double the clinic network by 2026" guidance; the Bupa–Nahdi fulfillment partnership is confirmed via a Bupa Arabia executive interview (with Al Borg labs alongside), while "EZ-Pill" is drawn from company/partner communications; the USD 139B→259B projection is retained but flagged as one research house's forecast.</p></div>
+    </details>
+    <details><summary><span class="ac-n">§</span><span class="ac-t">Source list</span><svg class="ac-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="ac-body">
+        <div class="srcgroup"><div class="sg-h">Government restructuring</div><div class="sg-b">Saudi Cabinet Decision 469/1443 (Lexis Middle East) · Health Holding Company (health.sa) · OHE Saudi HTA landscape (2026) · P4H Network · US ITA Country Commercial Guide · CNHI · Vision 2030 HSTP.</div></div>
+        <div class="srcgroup"><div class="sg-h">Insurance economics</div><div class="sg-b">U Capital / Argaam Saudi Insurance Sector report · Al Rajhi Capital coverage · ResearchAndMarkets &amp; IMARC market reports · Mordor Intelligence (No Pre-Approvals, Bupa demerger).</div></div>
+        <div class="srcgroup"><div class="sg-h">Meena Health</div><div class="sg-b">Argaam CEO interview · ICHOM (The Clinician deployment; Tawuniya integrated care) · Arab News corporate news.</div></div>
+        <div class="srcgroup"><div class="sg-h">Bupa CareConnect</div><div class="sg-b">Zawya / Gulf Business / HealthTechAsia, Global Health Exhibition 2025 · InterSystems partnership release · Medgate Today interview (Bupa Arabia CBDO) · bupa.com.sa.</div></div>
+        <div class="srcgroup"><div class="sg-h">NahdiCare</div><div class="sg-b">Nahdi FY2024 release (investors.nahdi.sa / Zawya / Maaal) · Argaam CEO interview · anb capital Initiation of Coverage.</div></div>
+        <div class="srcgroup"><div class="sg-h">Hospital incumbents &amp; global parallels</div><div class="sg-b">Listed hospital group FY2024 &amp; FY2025 results (Tadawul / Sahm Capital) · Riyad Capital notes · Forbes Middle East · Argaam sector coverage · public reporting on Optum, CenterWell, CVS–Aetna–Oak Street, US retail clinics &amp; ASCs, Discovery Health, Kaiser, and Bupa's Chile/Spain/Turkey operations.</div></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="authorbox">
+    <div class="ak">About the author</div>
+    <div class="arow">
+      <div class="aav">MF</div>
+      <div>
+        <div class="an">Dr. Muhammad Farooq</div>
+        <div class="acreds">
+          <span class="cred">MBBS</span>
+          <span class="cred">MSc Artificial Intelligence (Germany)</span>
+          <span class="cred">CPHQ, Certified Professional in Healthcare Quality</span>
+          <span class="cred">ABAIM, American Board of Artificial Intelligence in Medicine, Certified</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div>The Payvider Playbook: an independent industry analysis of Saudi healthcare, 2022–2026. Compiled from public filings, regulator publications, analyst research and company disclosures.</div>
+    <div class="disc">Prepared as independent market analysis. Not investment advice, and not affiliated with or positioned on behalf of any provider or insurer named above.</div>
+  </div>
+</section>
+
+</div>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- reading progress ---- */
+  var bar = document.getElementById('progress');
+  function onScroll(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? (h.scrollTop || document.body.scrollTop) / max : 0;
+    bar.style.width = (p*100).toFixed(2)+'%';
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* ---- mobile nav ---- */
+  var ham = document.getElementById('ham'), scrim = document.getElementById('scrim');
+  function closeNav(){ document.body.classList.remove('nav-open'); }
+  if(ham) ham.addEventListener('click', function(){ document.body.classList.toggle('nav-open'); });
+  if(scrim) scrim.addEventListener('click', closeNav);
+  document.querySelectorAll('.toc a').forEach(function(a){ a.addEventListener('click', closeNav); });
+
+  /* ---- scroll spy ---- */
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var map = {};
+  links.forEach(function(a){ var id=a.getAttribute('href').slice(1); var s=document.getElementById(id); if(s) map[id]=a; });
+  var sections = Object.keys(map).map(function(id){ return document.getElementById(id); });
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          links.forEach(function(l){ l.classList.remove('active'); });
+          var a = map[e.target.id]; if(a) a.classList.add('active');
+        }
+      });
+    }, {rootMargin:'-20% 0px -70% 0px', threshold:0});
+    sections.forEach(function(s){ io.observe(s); });
+  }
+
+  /* ---- tabs (delegated per group) ---- */
+  document.querySelectorAll('[data-tabs]').forEach(function(group){
+    var btns = group.querySelectorAll('.tab-btn');
+    var panels = group.querySelectorAll('.tab-panel');
+    btns.forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var key = btn.getAttribute('data-tab');
+        btns.forEach(function(b){ b.classList.toggle('active', b===btn); });
+        panels.forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-panel')===key); });
+        // keep active tab in view on the scroll strip
+        if(btn.scrollIntoView){ btn.scrollIntoView({block:'nearest', inline:'center', behavior: reduce?'auto':'smooth'}); }
+      });
+    });
+  });
+
+  /* ---- margin stack slice toggle ---- */
+  var sv = document.getElementById('stackviz'), sb = document.getElementById('sliceBtn'), sl = document.getElementById('sliceLabel');
+  if(sb){
+    sb.addEventListener('click', function(){
+      var on = sv.classList.toggle('sliced');
+      sl.textContent = on ? 'Restore the visit' : 'Divert the front door';
+    });
+  }
+
+  /* ---- scroll reveal ---- */
+  if(!reduce && 'IntersectionObserver' in window){
+    var revealEls = document.querySelectorAll('.chapter .callout, .mech, .ccard, .witem, .statstrip, .signature, .stackviz, .synth, .tbl-wrap, .metrics');
+    revealEls.forEach(function(el){ el.style.opacity='0'; el.style.transition='opacity .5s ease'; });
+    var ro = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.style.opacity='1'; ro.unobserve(e.target); }
+      });
+    }, {rootMargin:'0px 0px -8% 0px', threshold:.08});
+    revealEls.forEach(function(el){ ro.observe(el); });
+  }
+})();
+</script>
+</body>
+</html>
