@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Find my doctor (demo)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light dark;
+  --teal:#0e6b6b; --teal-deep:#0a4d4d; --brand:#0e6b6b;
+  --gold:#c9a227; --gold-soft:#f3e7bf; --gold-on-teal:#ffe08a;
+  --bg:#f2f6f5; --surface:#ffffff; --ink:#153231; --muted:#566b69; --line:#d5e0de;
+  --on-teal:#f2f8f7; --on-teal-muted:#c3dedb;
+  --danger:#a8261b; --danger-bg:#fcebe8; --on-danger:#ffffff;
+  --serif:'Instrument Serif', Georgia, 'Times New Roman', serif;
+  --sans:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --teal:#0f5f5f; --teal-deep:#0b3f3f; --brand:#6cc9c1;
+    --gold:#ddb847; --gold-soft:#3a3218; --gold-on-teal:#ffe08a;
+    --bg:#0b1514; --surface:#12201f; --ink:#e2eeec; --muted:#9bb1ae; --line:#24403d;
+    --on-teal:#eef7f6; --on-teal-muted:#b2d2ce;
+    --danger:#ff9b8f; --danger-bg:#3b1714; --on-danger:#2a0d0a;
+  }
+}
+:root[data-theme="dark"]{
+  --teal:#0f5f5f; --teal-deep:#0b3f3f; --brand:#6cc9c1;
+  --gold:#ddb847; --gold-soft:#3a3218; --gold-on-teal:#ffe08a;
+  --bg:#0b1514; --surface:#12201f; --ink:#e2eeec; --muted:#9bb1ae; --line:#24403d;
+  --on-teal:#eef7f6; --on-teal-muted:#b2d2ce;
+  --danger:#ff9b8f; --danger-bg:#3b1714; --on-danger:#2a0d0a;
+}
+html[lang="ar"]{ --sans:'IBM Plex Sans Arabic', 'DM Sans', system-ui, sans-serif; --serif:'IBM Plex Sans Arabic', Georgia, serif; }
+*{ box-sizing:border-box; }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:var(--sans); font-size:17px; line-height:1.5;
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.wrap{ max-width:560px; margin:0 auto; padding:0 18px; }
+header.top{
+  padding-top:calc(env(safe-area-inset-top,0px) + 14px); padding-bottom:12px;
+  display:flex; justify-content:space-between; align-items:center; gap:12px;
+}
+.brand{ font-family:var(--serif); font-size:1.55rem; color:var(--brand); line-height:1; }
+html[lang="ar"] .brand{ font-weight:700; font-size:1.3rem; }
+.lang{
+  border:1px solid var(--line); background:var(--surface); color:var(--ink);
+  border-radius:999px; padding:7px 15px; font:inherit; font-size:.95rem; cursor:pointer;
+}
+.demo{ background:var(--gold-soft); color:var(--ink); border-radius:12px; padding:10px 14px; font-size:.9rem; margin:0 0 14px; }
+
+.hero{ background:var(--teal); color:var(--on-teal); border-radius:26px; padding:30px 22px 24px; text-align:center; }
+h1{ font-family:var(--serif); font-weight:400; font-size:clamp(2rem,8.5vw,2.7rem); line-height:1.08; margin:0 0 12px; }
+html[lang="ar"] h1{ font-weight:700; font-size:clamp(1.55rem,6.5vw,2.05rem); line-height:1.45; }
+.sub{ color:var(--on-teal-muted); margin:0 auto 24px; max-width:34ch; }
+.mic{
+  width:116px; height:116px; border-radius:50%; border:none; cursor:pointer;
+  background:var(--gold); color:#1c1606; display:grid; place-items:center;
+  margin:0 auto; position:relative; box-shadow:0 0 0 9px rgba(221,184,71,.2);
+}
+.mic svg{ width:46px; height:46px; }
+.mic:disabled{ opacity:.45; cursor:not-allowed; }
+.mic.listening::before{
+  content:""; position:absolute; inset:-9px; border-radius:50%;
+  border:3px solid var(--gold); animation:pulse 1.4s ease-out infinite;
+}
+@keyframes pulse{ from{ transform:scale(1); opacity:.9; } to{ transform:scale(1.4); opacity:0; } }
+@media (prefers-reduced-motion: reduce){ .mic.listening::before{ animation:none; opacity:1; } }
+.mic-status{ margin:16px 0 20px; font-weight:500; min-height:1.5em; }
+.typebox{ text-align:start; }
+.typebox label{ display:block; font-size:.9rem; color:var(--on-teal-muted); margin-bottom:6px; }
+textarea{
+  width:100%; min-height:88px; border-radius:14px; border:1px solid transparent;
+  padding:12px 14px; font:inherit; background:var(--surface); color:var(--ink); resize:vertical;
+}
+.find{
+  margin-top:10px; width:100%; padding:14px; border-radius:14px; cursor:pointer;
+  background:var(--teal-deep); color:var(--on-teal); border:1px solid rgba(255,255,255,.22);
+  font:inherit; font-weight:700;
+}
+.msg{ margin:10px 0 0; font-size:.92rem; color:var(--gold-on-teal); min-height:1.2em; text-align:start; }
+.examples{ margin-top:18px; text-align:start; }
+.examples p{ margin:0 0 8px; font-size:.9rem; color:var(--on-teal-muted); }
+.ex{ display:flex; flex-wrap:wrap; gap:8px; }
+.ex button{
+  background:rgba(255,255,255,.12); color:var(--on-teal); border:1px solid rgba(255,255,255,.24);
+  border-radius:999px; padding:7px 13px; font:inherit; font-size:.88rem; cursor:pointer; text-align:start;
+}
+:focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+
+#results{ margin:24px 0 48px; }
+.said{ border-inline-start:3px solid var(--gold); padding:2px 14px; margin-bottom:20px; }
+.said span{ display:block; font-size:.85rem; color:var(--muted); }
+.said p{ margin:2px 0 0; font-size:1.05rem; }
+.emergency{ background:var(--danger-bg); border:1.5px solid var(--danger); border-radius:18px; padding:18px; margin-bottom:20px; }
+.emergency h2{ color:var(--danger); margin:0 0 6px; font-size:1.2rem; }
+.emergency p{ margin:0 0 12px; }
+.callbtn{
+  display:inline-block; background:var(--danger); color:var(--on-danger); text-decoration:none;
+  font-weight:700; border-radius:12px; padding:11px 18px; margin-inline-end:8px; margin-bottom:8px;
+}
+.ghost{
+  background:transparent; border:1px solid var(--line); color:var(--ink);
+  border-radius:12px; padding:10px 14px; font:inherit; cursor:pointer;
+}
+h2.section{ font-family:var(--serif); font-weight:400; font-size:1.7rem; line-height:1.15; margin:26px 0 10px; }
+html[lang="ar"] h2.section{ font-weight:700; font-size:1.3rem; }
+.note{ color:var(--muted); margin:0 0 10px; font-size:.95rem; }
+.list{ border:1px solid var(--line); border-radius:16px; background:var(--surface); overflow:hidden; }
+.row{ padding:14px 16px; border-top:1px solid var(--line); display:flex; justify-content:space-between; gap:12px; align-items:baseline; }
+.row:first-child{ border-top:none; }
+.row strong{ display:block; }
+.row small{ color:var(--muted); font-size:.9rem; }
+.row .where{ font-size:.85rem; color:var(--muted); white-space:nowrap; }
+.q{ margin:16px 0; }
+.q p{ margin:0 0 8px; font-weight:500; }
+.chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.chips button{
+  border:1px solid var(--line); background:var(--surface); color:var(--ink);
+  border-radius:999px; padding:8px 15px; font:inherit; font-size:.95rem; cursor:pointer;
+}
+.chips button[aria-pressed="true"]{ background:var(--teal); color:var(--on-teal); border-color:var(--teal); }
+.primary{
+  width:100%; padding:15px; border-radius:14px; border:none; cursor:pointer; margin-top:8px;
+  background:var(--teal); color:var(--on-teal); font:inherit; font-weight:700; font-size:1.05rem;
+}
+.card{ background:var(--surface); border:1px solid var(--line); border-radius:24px; overflow:hidden; margin-top:12px; }
+.card-head{ background:var(--teal); color:var(--on-teal); padding:22px 20px 18px; }
+.card-head .name{ font-family:var(--serif); font-size:2rem; line-height:1.1; }
+html[lang="ar"] .card-head .name{ font-weight:700; font-size:1.5rem; line-height:1.4; }
+.card-head .spec{ color:var(--on-teal-muted); margin-top:4px; }
+.badge{ display:inline-block; background:var(--gold); color:#1c1606; border-radius:999px; padding:3px 11px; font-size:.8rem; font-weight:700; margin-top:12px; }
+.facts{ margin:0; padding:4px 20px; }
+.fact{ display:grid; grid-template-columns:7.2em 1fr; gap:10px; padding:12px 0; border-top:1px solid var(--line); }
+.fact:first-child{ border-top:none; }
+.fact dt{ color:var(--muted); font-size:.92rem; }
+.fact dd{ margin:0; font-weight:500; }
+.phone{ font-size:1.3rem; direction:ltr; unicode-bidi:isolate; }
+.matched{ color:var(--muted); font-size:.9rem; padding:0 20px 4px; margin:0; }
+.card-actions{ padding:14px 20px 20px; display:flex; gap:10px; flex-wrap:wrap; }
+.card-actions .primary{ width:auto; flex:1 1 160px; margin:0; }
+.card-actions .ghost{ flex:1 1 140px; }
+.sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand" data-i18n="brand">Find my doctor</div>
+    <button class="lang" id="langBtn" type="button">عربي</button>
+  </header>
+
+  <p class="demo" data-i18n="banner">Demo with fictional doctors. Not medical advice. Phone numbers are not real.</p>
+
+  <section class="hero">
+    <h1 data-i18n="title">Tell us what’s wrong. We’ll find your doctor.</h1>
+    <p class="sub" data-i18n="sub">Speak in English or Arabic. Mention your symptoms, any past history and your area of Riyadh.</p>
+
+    <button class="mic" id="mic" type="button" aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="9" y="2" width="6" height="12" rx="3"></rect>
+        <path d="M5 11a7 7 0 0 0 14 0"></path>
+        <line x1="12" y1="18" x2="12" y2="22"></line>
+      </svg>
+      <span class="sr" id="micLabel">Tap to speak</span>
+    </button>
+    <p class="mic-status" id="micStatus" aria-live="polite">Tap to speak</p>
+
+    <div class="typebox">
+      <label for="q" data-i18n="orType">Or type it</label>
+      <textarea id="q" data-i18n-ph="placeholder" placeholder="e.g. Pain in my right kidney, I had kidney stones before, I live in north Riyadh"></textarea>
+      <button class="find" id="findBtn" type="button" data-i18n="find">Find doctors</button>
+      <p class="msg" id="msg" aria-live="polite"></p>
+    </div>
+
+    <div class="examples">
+      <p data-i18n="tryOne">Try one:</p>
+      <div class="ex" id="examples"></div>
+    </div>
+  </section>
+
+  <section id="results" aria-live="polite"></section>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- Text in both languages ---------- */
+var T = {
+  en:{
+    brand:"Find my doctor", langBtn:"عربي",
+    banner:"Demo with fictional doctors. Not medical advice. Phone numbers are not real.",
+    title:"Tell us what’s wrong. We’ll find your doctor.",
+    sub:"Speak in English or Arabic. Mention your symptoms, any past history and your area of Riyadh.",
+    micIdle:"Tap to speak", micListening:"Listening… tap to stop",
+    noVoice:"Voice isn’t available in this browser. Type instead.",
+    micDenied:"Microphone access is blocked. Allow it in your browser settings, or type instead.",
+    noSpeech:"Didn’t catch that. Tap the mic and try again.",
+    orType:"Or type it",
+    placeholder:"e.g. Pain in my right kidney, I had kidney stones before, I live in north Riyadh",
+    find:"Find doctors", tryOne:"Try one:", emptyInput:"Say or type your symptoms first.",
+    examples:["Kidney pain, I had stones before","Burning in my stomach after meals","Lower back pain going down my leg","My child has a fever and cough"],
+    youSaid:"You said",
+    emTitle:"This may be an emergency",
+    emText:"Call 997 or go to the nearest emergency room now. Don’t wait for an appointment.",
+    emCall:"Call 997", emLine:"For health advice, the Ministry of Health line is 937.",
+    emContinue:"I’m not in an emergency, show doctors",
+    match1:"1 doctor matches", matchN:"{n} doctors match",
+    noMatch:"We couldn’t pick a specialty from that, so here’s a family doctor who can guide you.",
+    questions:"Three quick questions",
+    qArea:"Which part of Riyadh?", qGender:"Doctor preference?", qTime:"When suits you?",
+    any:"Any", noPref:"No preference", male:"Male", female:"Female",
+    morning:"Morning", evening:"Evening", anyTime:"Any time",
+    north:"North", east:"East", west:"West", south:"South", central:"Central",
+    northF:"North Riyadh", eastF:"East Riyadh", westF:"West Riyadh", southF:"South Riyadh", centralF:"Central Riyadh",
+    showDoctor:"Show my doctor", best:"Your best match",
+    fictional:"Fictional doctor for demo",
+    fSpec:"Specialty", fExp:"Expert in", fQual:"Qualified in", fClinic:"Clinic", fArea:"Area", fDays:"Days", fHours:"Hours", fPhone:"Mobile",
+    matchedOn:"Matched on: {w}",
+    prefNote:"No doctor fits every preference, so this is the closest match for your problem.",
+    copy:"Copy number", copied:"Copied", again:"Start again",
+    satthu:"Saturday to Thursday", suthu:"Sunday to Thursday",
+    hMorning:"8 am to 1 pm", hEvening:"5 pm to 9 pm", sep:", "
+  },
+  ar:{
+    brand:"اعثر على طبيبي", langBtn:"English",
+    banner:"نسخة تجريبية بأطباء افتراضيين. ليست استشارة طبية. أرقام الجوال غير حقيقية.",
+    title:"أخبرنا بما تشعر به، ونجد لك طبيبك.",
+    sub:"تحدّث بالعربية أو الإنجليزية. اذكر الأعراض والتاريخ المرضي والحي الذي تسكنه في الرياض.",
+    micIdle:"اضغط للتحدث", micListening:"أستمع… اضغط للإيقاف",
+    noVoice:"التحدث غير متاح في هذا المتصفح. اكتب بدلًا من ذلك.",
+    micDenied:"الميكروفون محظور. اسمح به من إعدادات المتصفح، أو اكتب بدلًا من ذلك.",
+    noSpeech:"لم أسمع شيئًا. اضغط على الميكروفون وحاول مجددًا.",
+    orType:"أو اكتب",
+    placeholder:"مثال: ألم في الكلية اليمنى، عندي حصوات سابقة، أسكن شمال الرياض",
+    find:"ابحث عن طبيب", tryOne:"جرّب:", emptyInput:"تحدّث أو اكتب الأعراض أولًا.",
+    examples:["ألم في الكلى وعندي حصوات سابقة","حرقة في المعدة بعد الأكل","ألم أسفل الظهر ينزل للرجل","طفلي عنده حرارة وكحة"],
+    youSaid:"قلت",
+    emTitle:"قد تكون حالة طارئة",
+    emText:"اتصل على 997 أو توجّه لأقرب طوارئ الآن. لا تنتظر موعدًا.",
+    emCall:"اتصل على 997", emLine:"للاستشارات الصحية، رقم وزارة الصحة 937.",
+    emContinue:"لست في حالة طارئة، اعرض الأطباء",
+    match1:"طبيب واحد يناسب حالتك", match2:"طبيبان يناسبان حالتك", matchN:"{n} أطباء يناسبون حالتك",
+    noMatch:"لم نحدد التخصص من وصفك، هذا طبيب أسرة يمكنه توجيهك.",
+    questions:"ثلاثة أسئلة سريعة",
+    qArea:"أي جهة من الرياض؟", qGender:"تفضيل الطبيب؟", qTime:"متى يناسبك؟",
+    any:"أي مكان", noPref:"لا يهم", male:"طبيب", female:"طبيبة",
+    morning:"صباحًا", evening:"مساءً", anyTime:"أي وقت",
+    north:"الشمال", east:"الشرق", west:"الغرب", south:"الجنوب", central:"الوسط",
+    northF:"شمال الرياض", eastF:"شرق الرياض", westF:"غرب الرياض", southF:"جنوب الرياض", centralF:"وسط الرياض",
+    showDoctor:"اعرض طبيبي", best:"الطبيب الأنسب لك",
+    fictional:"طبيب افتراضي للتجربة",
+    fSpec:"التخصص", fExp:"خبير في", fQual:"المؤهل من", fClinic:"العيادة", fArea:"المنطقة", fDays:"الأيام", fHours:"الساعات", fPhone:"الجوال",
+    matchedOn:"سبب الاختيار: {w}",
+    prefNote:"لا يوجد طبيب يطابق كل تفضيلاتك، وهذا الأقرب لحالتك.",
+    copy:"انسخ الرقم", copied:"تم النسخ", again:"ابدأ من جديد",
+    satthu:"السبت إلى الخميس", suthu:"الأحد إلى الخميس",
+    hMorning:"8 صباحًا إلى 1 ظهرًا", hEvening:"5 مساءً إلى 9 مساءً", sep:"، "
+  }
+};
+
+/* ---------- Fictional doctors (edit freely) ---------- */
+/* n=name, g=gender, s=specialty, x=expertise, q=qualified in, c=clinic, a=area, tm=time, d=days, p=phone, k=match words */
+var DOCS = [
+ {n:["Dr. Imran Khan","د. عمران خان"],g:"m",s:["Family medicine","طب الأسرة"],x:["General checkups, fever and flu, tiredness","الفحص العام، الحرارة والإنفلونزا، الإرهاق"],q:["Pakistan and UK","باكستان وبريطانيا"],c:["Diriyah Care Clinic","عيادة الدرعية كير"],a:"south",tm:"evening",d:"satthu",p:"050 000 0001",
+  k:["fever","flu","cold","tired","fatigue","checkup","check-up","general","حراره","حمي","انفلونزا","زكام","تعب","ارهاق","فحص"]},
+ {n:["Dr. Khalid Al-Otaibi","د. خالد العتيبي"],g:"m",s:["Urology","المسالك البولية"],x:["Kidney stones, laser stone removal, repeated stones","حصوات الكلى، تفتيت الحصوات بالليزر، الحصوات المتكررة"],q:["Germany","ألمانيا"],c:["Al-Waha Specialist Clinic","عيادات الواحة التخصصية"],a:"north",tm:"evening",d:"satthu",p:"050 000 0002",
+  k:["kidney","stone","lithotripsy","flank","renal colic","ureter","كلي","حصو","حصي","خاصره","مغص كلوي","حالب","تفتيت"]},
+ {n:["Dr. Faisal Al-Qahtani","د. فيصل القحطاني"],g:"m",s:["Urology","المسالك البولية"],x:["Prostate, urine problems, blood in urine","البروستاتا، مشاكل التبول، دم في البول"],q:["UK","بريطانيا"],c:["Nakheel Medical Center","مركز النخيل الطبي"],a:"east",tm:"morning",d:"suthu",p:"050 000 0003",
+  k:["prostate","urin","bladder","بروستاتا","تبول","بول","مثانه"]},
+ {n:["Dr. Sara Al-Dosari","د. سارة الدوسري"],g:"f",s:["Kidney diseases (nephrology)","أمراض الكلى"],x:["Kidney transplant, dialysis, long-term kidney disease","زراعة الكلى، الغسيل الكلوي، القصور الكلوي المزمن"],q:["Canada","كندا"],c:["Riyadh Bay Clinics","عيادات خليج الرياض"],a:"north",tm:"morning",d:"suthu",p:"050 000 0004",
+  k:["kidney","renal","transplant","dialysis","creatinine","كلي","زراعه","غسيل","كرياتينين","قصور كلوي"]},
+ {n:["Dr. Omar Siddiqui","د. عمر صديقي"],g:"m",s:["Kidney diseases (nephrology)","أمراض الكلى"],x:["Kidney infections, swelling and fluid, kidney-related blood pressure","التهابات الكلى، التورم واحتباس السوائل، ضغط الدم الكلوي"],q:["Germany","ألمانيا"],c:["Qurtuba Health Center","مركز قرطبة الصحي"],a:"west",tm:"evening",d:"satthu",p:"050 000 0005",
+  k:["kidney","kidney infection","swelling","protein in urine","كلي","التهاب الكلي","تورم","احتباس"]},
+ {n:["Dr. Hana Al-Shehri","د. هناء الشهري"],g:"f",s:["Stomach and digestion (gastroenterology)","الجهاز الهضمي"],x:["Acidity and reflux, gastritis, H. pylori","الحموضة والارتجاع، التهاب المعدة، جرثومة المعدة"],q:["USA","أمريكا"],c:["Al-Waha Specialist Clinic","عيادات الواحة التخصصية"],a:"central",tm:"evening",d:"satthu",p:"050 000 0006",
+  k:["acid","reflux","heartburn","burning","stomach","gastritis","pylori","indigestion","حموض","ارتجاع","حرقه","معده","جرثومه","عسر هضم"]},
+ {n:["Dr. Majed Al-Ghamdi","د. ماجد الغامدي"],g:"m",s:["Stomach and digestion (gastroenterology)","الجهاز الهضمي"],x:["Colonoscopy, irritable bowel, fatty liver","منظار القولون، القولون العصبي، الكبد الدهني"],q:["France","فرنسا"],c:["Diriyah Care Clinic","عيادة الدرعية كير"],a:"south",tm:"morning",d:"suthu",p:"050 000 0007",
+  k:["colon","ibs","bowel","constipation","diarrh","liver","hepat","قولون","امساك","اسهال","كبد"]},
+ {n:["Dr. Turki Al-Mutairi","د. تركي المطيري"],g:"m",s:["Spine surgery","جراحة العمود الفقري"],x:["Slipped disc, sciatica, neck and back pain","الانزلاق الغضروفي، عرق النسا، آلام الرقبة والظهر"],q:["Germany","ألمانيا"],c:["Nakheel Medical Center","مركز النخيل الطبي"],a:"north",tm:"evening",d:"satthu",p:"050 000 0008",
+  k:["back pain","lower back","backache","spine","disc","sciatica","neck","leg","ظهر","فقرات","غضروف","عرق النسا","رقبه","رجل"]},
+ {n:["Dr. Nasser Al-Zahrani","د. ناصر الزهراني"],g:"m",s:["Bones and joints (orthopedics)","العظام"],x:["Knee pain, sports injuries, ligament tears","آلام الركبة، إصابات الملاعب، قطع الأربطة"],q:["UK","بريطانيا"],c:["Riyadh Bay Clinics","عيادات خليج الرياض"],a:"east",tm:"evening",d:"satthu",p:"050 000 0009",
+  k:["knee","sport","ligament","acl","shoulder","fracture","ركبه","ملاعب","اربطه","رباط","كتف","كسر"]},
+ {n:["Dr. Reem Al-Harbi","د. ريم الحربي"],g:"f",s:["Diabetes and hormones (endocrinology)","الغدد الصماء والسكري"],x:["Diabetes, thyroid, weight and hormones","السكري، الغدة الدرقية، الوزن والهرمونات"],q:["Canada","كندا"],c:["Qurtuba Health Center","مركز قرطبة الصحي"],a:"west",tm:"morning",d:"suthu",p:"050 000 0010",
+  k:["diabet","sugar","insulin","thyroid","hormone","weight","سكر","درقيه","غده","هرمون","وزن"]},
+ {n:["Dr. Yasser Al-Anazi","د. ياسر العنزي"],g:"m",s:["Heart (cardiology)","القلب"],x:["High blood pressure, palpitations, heart checkups","ارتفاع ضغط الدم، خفقان القلب، فحص القلب"],q:["USA","أمريكا"],c:["Al-Waha Specialist Clinic","عيادات الواحة التخصصية"],a:"central",tm:"morning",d:"suthu",p:"050 000 0011",
+  k:["heart","palpitation","blood pressure","hypertension","cholesterol","قلب","خفقان","ضغط","كوليسترول"]},
+ {n:["Dr. Nora Al-Subaie","د. نورة السبيعي"],g:"f",s:["Children (pediatrics)","طب الأطفال"],x:["Child fever and cough, vaccines, growth checks","حرارة وكحة الأطفال، التطعيمات، متابعة النمو"],q:["Ireland","أيرلندا"],c:["Diriyah Care Clinic","عيادة الدرعية كير"],a:"south",tm:"evening",d:"satthu",p:"050 000 0012",
+  k:["child","baby","infant","toddler","my son","my daughter","vaccin","fever","cough","طفل","اطفال","رضيع","ولدي","بنتي","تطعيم","حراره","كحه"]},
+ {n:["Dr. Bilal Ahmed","د. بلال أحمد"],g:"m",s:["Children (pediatrics)","طب الأطفال"],x:["Child asthma, child allergies, newborn care","ربو الأطفال، حساسية الأطفال، رعاية حديثي الولادة"],q:["Pakistan and UK","باكستان وبريطانيا"],c:["Nakheel Medical Center","مركز النخيل الطبي"],a:"east",tm:"morning",d:"suthu",p:"050 000 0013",
+  k:["child","baby","newborn","asthma","allerg","wheez","طفل","اطفال","مولود","ربو","حساسيه","صفير"]},
+ {n:["Dr. Lama Al-Rashid","د. لمى الراشد"],g:"f",s:["Women’s health (obstetrics)","النساء والولادة"],x:["Pregnancy follow-up, high-risk pregnancy, delivery planning","متابعة الحمل، الحمل عالي الخطورة، التخطيط للولادة"],q:["UK","بريطانيا"],c:["Riyadh Bay Clinics","عيادات خليج الرياض"],a:"north",tm:"morning",d:"suthu",p:"050 000 0014",
+  k:["pregnan","delivery","antenatal","حمل","حامل","ولاده"]},
+ {n:["Dr. Amal Al-Jaber","د. أمل الجابر"],g:"f",s:["Women’s health (gynecology)","أمراض النساء"],x:["PCOS, period problems, fertility","تكيس المبايض، اضطرابات الدورة، تأخر الإنجاب"],q:["Egypt and UK","مصر وبريطانيا"],c:["Al-Waha Specialist Clinic","عيادات الواحة التخصصية"],a:"west",tm:"evening",d:"satthu",p:"050 000 0015",
+  k:["pcos","ovar","period","menstru","fertil","تكيس","مبايض","دوره","انجاب","عقم"]},
+ {n:["Dr. Abdullah Al-Fahad","د. عبدالله الفهد"],g:"m",s:["Skin (dermatology)","الجلدية"],x:["Acne, eczema, hair loss","حب الشباب، الإكزيما، تساقط الشعر"],q:["Sweden","السويد"],c:["Qurtuba Health Center","مركز قرطبة الصحي"],a:"central",tm:"evening",d:"satthu",p:"050 000 0016",
+  k:["skin","acne","pimple","eczema","rash","itch","hair loss","hair fall","psoria","جلد","حبوب","حب الشباب","اكزيما","حكه","طفح","تساقط الشعر","صدفيه"]},
+ {n:["Dr. Hamad Al-Shammari","د. حمد الشمري"],g:"m",s:["Ear, nose and throat","الأنف والأذن والحنجرة"],x:["Sinus, tonsils, ear infections and hearing","الجيوب الأنفية، اللوز، التهابات الأذن والسمع"],q:["Austria","النمسا"],c:["Diriyah Care Clinic","عيادة الدرعية كير"],a:"south",tm:"evening",d:"satthu",p:"050 000 0017",
+  k:["sinus","nose","tonsil","throat","ear","hearing","snor","جيوب","انف","لوز","حلق","اذن","سمع","شخير"]},
+ {n:["Dr. Mona Al-Saleh","د. منى الصالح"],g:"f",s:["Eyes (ophthalmology)","العيون"],x:["Blurred vision, cataract, dry and red eyes","ضعف النظر، المياه البيضاء، جفاف واحمرار العين"],q:["USA","أمريكا"],c:["Nakheel Medical Center","مركز النخيل الطبي"],a:"north",tm:"morning",d:"suthu",p:"050 000 0018",
+  k:["eye","vision","blurr","cataract","glasses","عين","عيون","نظر","مياه بيضاء","نظاره"]},
+ {n:["Dr. Ziad Al-Malki","د. زياد المالكي"],g:"m",s:["Brain and nerves (neurology)","المخ والأعصاب"],x:["Migraine and headache, epilepsy, numbness","الصداع النصفي والصداع، الصرع، التنميل"],q:["Germany","ألمانيا"],c:["Riyadh Bay Clinics","عيادات خليج الرياض"],a:"east",tm:"evening",d:"satthu",p:"050 000 0019",
+  k:["headache","migraine","epilep","numb","tingl","dizz","nerve","صداع","شقيقه","صرع","تنميل","دوخه","اعصاب"]},
+ {n:["Dr. Sultan Al-Dossary","د. سلطان الدوسري"],g:"m",s:["Chest and lungs (pulmonology)","الأمراض الصدرية"],x:["Asthma, long-lasting cough, sleep apnea","الربو، الكحة المزمنة، انقطاع النفس أثناء النوم"],q:["UK","بريطانيا"],c:["Qurtuba Health Center","مركز قرطبة الصحي"],a:"west",tm:"morning",d:"suthu",p:"050 000 0020",
+  k:["asthma","cough","breath","lung","apnea","apnoea","snor","ربو","كحه","سعال","تنفس","رئه"]},
+ {n:["Dr. Huda Al-Amri","د. هدى العمري"],g:"f",s:["Mental health (psychiatry)","الطب النفسي"],x:["Anxiety, low mood, sleep problems","القلق، الاكتئاب، اضطرابات النوم"],q:["Jordan and Canada","الأردن وكندا"],c:["Al-Waha Specialist Clinic","عيادات الواحة التخصصية"],a:"central",tm:"evening",d:"satthu",p:"050 000 0021",
+  k:["anxi","stress","depress","low mood","panic","insomnia","sleep","قلق","توتر","اكتئاب","حزن","نوم","ارق","هلع"]},
+ {n:["Dr. Rana Al-Otaibi","د. رنا العتيبي"],g:"f",s:["Joints (rheumatology)","الروماتيزم"],x:["Joint pain, arthritis, gout","آلام المفاصل، التهاب المفاصل، النقرس"],q:["Germany","ألمانيا"],c:["Nakheel Medical Center","مركز النخيل الطبي"],a:"east",tm:"morning",d:"suthu",p:"050 000 0022",
+  k:["joint","arthrit","gout","rheumat","مفاصل","مفصل","روماتيزم","نقرس"]},
+ {n:["Dr. Saad Al-Qarni","د. سعد القرني"],g:"m",s:["Dentistry","طب الأسنان"],x:["Toothache, root canal, gum bleeding","ألم الأسنان، علاج العصب، نزيف اللثة"],q:["Saudi Arabia","السعودية"],c:["Riyadh Bay Clinics","عيادات خليج الرياض"],a:"west",tm:"evening",d:"satthu",p:"050 000 0023",
+  k:["tooth","teeth","dental","gum","molar","اسنان","ضرس","لثه"]},
+ {n:["Dr. Waleed Al-Sharif","د. وليد الشريف"],g:"m",s:["General surgery","الجراحة العامة"],x:["Hernia, gallbladder stones, appendix","الفتق، حصوات المرارة، الزائدة الدودية"],q:["UK","بريطانيا"],c:["Qurtuba Health Center","مركز قرطبة الصحي"],a:"central",tm:"morning",d:"suthu",p:"050 000 0024",
+  k:["hernia","gallbladder","gall","appendi","lump","فتق","مراره","حصوات المراره","زائده","كتله"]}
+];
+
+/* ---------- Emergency words ---------- */
+var EMERGENCY = ["chest pain","cant breathe","cannot breathe","not breathing","unconscious","fainted","passed out","seizure","convuls",
+ "severe bleeding","bleeding heavily","vomiting blood","blood in vomit","stroke","face droop","slurred","suicid","kill myself","end my life","overdose",
+ "الم في الصدر","الم بالصدر","الم صدر","الم الصدر","لا استطيع التنفس","ما اقدر اتنفس","اغماء","فقدان الوعي","تشنج","نزيف شديد",
+ "استفراغ دم","ترجيع دم","دم مع الاستفراغ","جلطه","انتحار","اقتل نفسي","جرعه زائده"];
+
+/* ---------- Helpers ---------- */
+function norm(s){
+  return String(s).toLowerCase()
+    .replace(/[\u064B-\u0652\u0640]/g,"")
+    .replace(/[أإآ]/g,"ا").replace(/ة/g,"ه").replace(/ى/g,"ي")
+    .replace(/[’'`]/g,"").replace(/\s+/g," ").trim();
+}
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function reEsc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"); }
+function has(text, word){
+  if(/[a-z]/.test(word)) return new RegExp("(^|[^a-z])"+reEsc(word)).test(text);
+  return text.indexOf(word) !== -1;
+}
+DOCS.forEach(function(d,i){ d.i=i; d.kn=d.k.map(norm); });
+var EM = EMERGENCY.map(norm);
+var L = function(){ return lang==="ar" ? 1 : 0; };
+function t(k, vars){
+  var s = T[lang][k];
+  if(vars){ Object.keys(vars).forEach(function(v){ s = s.replace("{"+v+"}", vars[v]); }); }
+  return s;
+}
+
+/* ---------- State ---------- */
+var lang = "en";
+var state = { shown:false, text:"", emergency:false, ack:false, ranked:[], fallback:false,
+  prefs:{ area:"any", gender:"any", time:"any" }, final:null };
+
+/* ---------- Matching ---------- */
+function isEmergency(n){
+  if(EM.some(function(w){ return has(n,w); })) return true;
+  var fever = has(n,"fever") || has(n,"حراره") || has(n,"حمي");
+  var kidney = has(n,"kidney") || has(n,"flank") || has(n,"كلي") || has(n,"خاصره");
+  return fever && kidney;
+}
+function rank(n){
+  var r = DOCS.map(function(d){
+    var hits = [];
+    d.kn.forEach(function(w,j){ if(has(n,w)) hits.push(d.k[j]); });
+    return { d:d, score:hits.length, hits:hits };
+  }).filter(function(x){ return x.score > 0; })
+    .sort(function(a,b){ return b.score - a.score || a.d.i - b.d.i; });
+  state.fallback = r.length === 0;
+  return r.length ? r : [{ d:DOCS[0], score:0, hits:[] }];
+}
+function inferPrefs(n){
+  var p = { area:"any", gender:"any", time:"any" };
+  var areas = { north:["north","شمال"], east:["east","شرق"], west:["west","غرب"], south:["south","جنوب"], central:["central","downtown","وسط"] };
+  Object.keys(areas).forEach(function(a){ if(areas[a].some(function(w){ return has(n,w); })) p.area = a; });
+  if(["female doctor","lady doctor","woman doctor","طبيبه","دكتوره"].some(function(w){ return has(n,w); })) p.gender = "f";
+  else if(["male doctor","طبيب رجل"].some(function(w){ return has(n,w); })) p.gender = "m";
+  if(["morning","صباح"].some(function(w){ return has(n,w); })) p.time = "morning";
+  else if(["evening","night","after work","مساء","بالليل"].some(function(w){ return has(n,w); })) p.time = "evening";
+  return p;
+}
+function pick(){
+  var p = state.prefs;
+  var pool = state.ranked.slice(0,6).map(function(x){
+    var bonus = 0, misses = 0;
+    if(p.area!=="any"){ if(x.d.a===p.area) bonus+=4; else misses++; }
+    if(p.gender!=="any"){ if(x.d.g===p.gender) bonus+=3; else misses++; }
+    if(p.time!=="any"){ if(x.d.tm===p.time) bonus+=2; else misses++; }
+    return { x:x, s:x.score*10 + bonus, misses:misses };
+  }).sort(function(a,b){ return b.s - a.s || a.x.d.i - b.x.d.i; });
+  return { x:pool[0].x, misses:pool[0].misses };
+}
+
+/* ---------- Rendering ---------- */
+function matchesLabel(n){
+  if(n===1) return t("match1");
+  if(n===2 && lang==="ar") return t("match2");
+  return t("matchN",{n:n});
+}
+function chip(key, val, label){
+  var on = state.prefs[key]===val;
+  return '<button type="button" data-act="pref" data-key="'+key+'" data-val="'+val+'" aria-pressed="'+on+'">'+esc(label)+'</button>';
+}
+function renderResults(){
+  var box = document.getElementById("results");
+  if(!state.shown){ box.innerHTML = ""; return; }
+  var h = '<div class="said"><span>'+esc(t("youSaid"))+'</span><p>“'+esc(state.text)+'”</p></div>';
+
+  if(state.emergency){
+    h += '<div class="emergency" role="alert"><h2>'+esc(t("emTitle"))+'</h2><p>'+esc(t("emText"))+'</p>'+
+         '<a class="callbtn" href="tel:997">'+esc(t("emCall"))+'</a>'+
+         '<p style="margin-top:6px">'+esc(t("emLine"))+'</p>'+
+         (state.ack ? '' : '<button type="button" class="ghost" data-act="ack">'+esc(t("emContinue"))+'</button>')+'</div>';
+    if(!state.ack){ box.innerHTML = h; return; }
+  }
+
+  var top = state.ranked.slice(0,3);
+  h += '<h2 class="section">'+esc(state.fallback ? t("best") : matchesLabel(top.length))+'</h2>';
+  if(state.fallback) h += '<p class="note">'+esc(t("noMatch"))+'</p>';
+  h += '<div class="list">';
+  top.forEach(function(x){
+    h += '<div class="row"><div><strong>'+esc(x.d.n[L()])+'</strong><small>'+esc(x.d.s[L()])+'</small></div>'+
+         '<span class="where">'+esc(t(x.d.a+"F"))+'</span></div>';
+  });
+  h += '</div>';
+
+  h += '<h2 class="section">'+esc(t("questions"))+'</h2>';
+  h += '<div class="q"><p>'+esc(t("qArea"))+'</p><div class="chips">'+
+       ["north","east","west","south","central"].map(function(a){ return chip("area",a,t(a)); }).join("")+
+       chip("area","any",t("any"))+'</div></div>';
+  h += '<div class="q"><p>'+esc(t("qGender"))+'</p><div class="chips">'+
+       chip("gender","m",t("male"))+chip("gender","f",t("female"))+chip("gender","any",t("noPref"))+'</div></div>';
+  h += '<div class="q"><p>'+esc(t("qTime"))+'</p><div class="chips">'+
+       chip("time","morning",t("morning"))+chip("time","evening",t("evening"))+chip("time","any",t("anyTime"))+'</div></div>';
+  h += '<button type="button" class="primary" data-act="show">'+esc(t("showDoctor"))+'</button>';
+
+  if(state.final){
+    var d = state.final.x.d, i = L();
+    h += '<h2 class="section" id="bestHead">'+esc(t("best"))+'</h2>';
+    if(state.final.misses > 0) h += '<p class="note">'+esc(t("prefNote"))+'</p>';
+    h += '<article class="card"><div class="card-head"><div class="name">'+esc(d.n[i])+'</div>'+
+         '<div class="spec">'+esc(d.s[i])+'</div><span class="badge">'+esc(t("fictional"))+'</span></div>'+
+         '<dl class="facts">'+
+         fact(t("fExp"), d.x[i])+fact(t("fQual"), d.q[i])+fact(t("fClinic"), d.c[i])+
+         fact(t("fArea"), t(d.a+"F"))+fact(t("fDays"), t(d.d))+
+         fact(t("fHours"), t(d.tm==="morning"?"hMorning":"hEvening"))+
+         '<div class="fact"><dt>'+esc(t("fPhone"))+'</dt><dd class="phone">'+esc(d.p)+'</dd></div>'+
+         '</dl>';
+    if(state.final.x.hits.length) h += '<p class="matched">'+esc(t("matchedOn",{w:state.final.x.hits.slice(0,4).join(t("sep"))}))+'</p>';
+    h += '<div class="card-actions"><button type="button" class="primary" data-act="copy" data-phone="'+esc(d.p)+'">'+esc(t("copy"))+'</button>'+
+         '<button type="button" class="ghost" data-act="again">'+esc(t("again"))+'</button></div></article>';
+  }
+  box.innerHTML = h;
+}
+function fact(label, val){ return '<div class="fact"><dt>'+esc(label)+'</dt><dd>'+esc(val)+'</dd></div>'; }
+
+var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function goTo(el){ if(el) el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block:"start" }); }
+
+/* ---------- Search ---------- */
+var qBox = document.getElementById("q");
+var msg = document.getElementById("msg");
+function setMsg(s){ msg.textContent = s || ""; }
+function runSearch(){
+  var text = qBox.value.trim();
+  if(!text){ setMsg(t("emptyInput")); return; }
+  setMsg("");
+  var n = norm(text);
+  state.text = text;
+  state.emergency = isEmergency(n);
+  state.ack = false;
+  state.ranked = rank(n);
+  state.prefs = inferPrefs(n);
+  state.final = null;
+  state.shown = true;
+  renderResults();
+  goTo(document.getElementById("results"));
+}
+document.getElementById("findBtn").addEventListener("click", runSearch);
+
+document.getElementById("results").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if(!b) return;
+  var act = b.getAttribute("data-act");
+  if(act==="ack"){ state.ack = true; renderResults(); }
+  else if(act==="pref"){ state.prefs[b.getAttribute("data-key")] = b.getAttribute("data-val"); state.final = null; renderResults(); }
+  else if(act==="show"){ state.final = pick(); renderResults(); goTo(document.getElementById("bestHead")); }
+  else if(act==="copy"){
+    var ph = b.getAttribute("data-phone");
+    var done = function(){ b.textContent = t("copied"); };
+    if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(ph).then(done, function(){}); }
+  }
+  else if(act==="again"){
+    state.shown = false; state.final = null; qBox.value = ""; renderResults();
+    window.scrollTo({ top:0, behavior: reduceMotion ? "auto" : "smooth" });
+    document.getElementById("mic").focus();
+  }
+});
+
+/* ---------- Voice ---------- */
+var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+var mic = document.getElementById("mic"), micStatus = document.getElementById("micStatus"), micLabel = document.getElementById("micLabel");
+var rec = null, listening = false;
+function setListening(on){
+  listening = on;
+  mic.classList.toggle("listening", on);
+  mic.setAttribute("aria-pressed", on ? "true" : "false");
+  micStatus.textContent = t(on ? "micListening" : "micIdle");
+  micLabel.textContent = micStatus.textContent;
+}
+function startListening(){
+  rec = new SR();
+  rec.lang = lang==="ar" ? "ar-SA" : "en-US";
+  rec.interimResults = true;
+  rec.continuous = false;
+  var finalText = "";
+  rec.onresult = function(e){
+    var interim = "";
+    for(var i=e.resultIndex; i<e.results.length; i++){
+      var r = e.results[i];
+      if(r.isFinal) finalText += r[0].transcript + " "; else interim += r[0].transcript;
+    }
+    qBox.value = (finalText + interim).trim();
+  };
+  rec.onerror = function(e){
+    if(e.error==="not-allowed" || e.error==="service-not-allowed") setMsg(t("micDenied"));
+    else if(e.error==="no-speech") setMsg(t("noSpeech"));
+  };
+  var thisRec = rec, finished = false;
+  thisRec.finish = function(){
+    if(finished) return;
+    finished = true;
+    clearTimeout(thisRec.killTimer);
+    if(rec === thisRec) rec = null;
+    setListening(false);
+    if(qBox.value.trim()) runSearch();
+  };
+  rec.onend = function(){ thisRec.finish(); };
+  setMsg("");
+  try { rec.start(); setListening(true); } catch(err){ rec = null; setListening(false); }
+}
+function stopListening(){
+  if(!rec){ setListening(false); return; }
+  var r = rec;
+  setListening(false);
+  try { r.stop(); } catch(err){}
+  // Some phones never end the session on stop(), so force it after a short wait
+  r.killTimer = setTimeout(function(){
+    try { r.abort(); } catch(err){}
+    r.finish();
+  }, 800);
+}
+if(!SR){ mic.disabled = true; }
+mic.addEventListener("click", function(){
+  if(!SR){ setMsg(t("noVoice")); return; }
+  if(listening) stopListening(); else { qBox.value = ""; startListening(); }
+});
+
+/* ---------- Language ---------- */
+function renderExamples(){
+  var ex = document.getElementById("examples");
+  ex.innerHTML = T[lang].examples.map(function(s){ return '<button type="button">'+esc(s)+'</button>'; }).join("");
+}
+document.getElementById("examples").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if(!b) return;
+  qBox.value = b.textContent; runSearch();
+});
+function applyStatic(){
+  document.documentElement.lang = lang;
+  document.documentElement.dir = lang==="ar" ? "rtl" : "ltr";
+  document.querySelectorAll("[data-i18n]").forEach(function(el){ el.textContent = t(el.getAttribute("data-i18n")); });
+  document.querySelectorAll("[data-i18n-ph]").forEach(function(el){ el.placeholder = t(el.getAttribute("data-i18n-ph")); });
+  document.getElementById("langBtn").textContent = t("langBtn");
+  document.title = t("brand") + (lang==="ar" ? " (تجريبي)" : " (demo)");
+  micStatus.textContent = t(listening ? "micListening" : "micIdle");
+  micLabel.textContent = micStatus.textContent;
+  if(!SR) setMsg(t("noVoice"));
+}
+document.getElementById("langBtn").addEventListener("click", function(){
+  if(listening) stopListening();
+  lang = lang==="en" ? "ar" : "en";
+  applyStatic(); renderExamples(); renderResults();
+});
+
+applyStatic();
+renderExamples();
+})();
+</script>
+</body>
+</html>
