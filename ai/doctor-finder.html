@@ -3,36 +3,36 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Find my doctor (demo)</title>
+<title>Voice-based doctor finder by Dr. Muhammad Farooq</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   color-scheme: light dark;
-  --teal:#0e6b6b; --teal-deep:#0a4d4d; --brand:#0e6b6b;
-  --gold:#c9a227; --gold-soft:#f3e7bf; --gold-on-teal:#ffe08a;
-  --bg:#f2f6f5; --surface:#ffffff; --ink:#153231; --muted:#566b69; --line:#d5e0de;
-  --on-teal:#f2f8f7; --on-teal-muted:#c3dedb;
-  --danger:#a8261b; --danger-bg:#fcebe8; --on-danger:#ffffff;
+  --teal:#800020; --teal-deep:#5C0A1E; --brand:#800020; --byline:#0B6E4F;
+  --gold:#E0B700; --gold-soft:#F4E6B0; --gold-on-teal:#FFE27A;
+  --bg:#FAF7EE; --surface:#ffffff; --ink:#2A1418; --muted:#6B5A5D; --line:#E6DCD5;
+  --on-teal:#FAF7EE; --on-teal-muted:#F1CBD3;
+  --danger:#B42318; --danger-bg:#FDECEA; --on-danger:#ffffff;
   --serif:'Instrument Serif', Georgia, 'Times New Roman', serif;
   --sans:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --teal:#0f5f5f; --teal-deep:#0b3f3f; --brand:#6cc9c1;
-    --gold:#ddb847; --gold-soft:#3a3218; --gold-on-teal:#ffe08a;
-    --bg:#0b1514; --surface:#12201f; --ink:#e2eeec; --muted:#9bb1ae; --line:#24403d;
-    --on-teal:#eef7f6; --on-teal-muted:#b2d2ce;
-    --danger:#ff9b8f; --danger-bg:#3b1714; --on-danger:#2a0d0a;
+    --teal:#6E0A20; --teal-deep:#4A0716; --brand:#EBA3B2; --byline:#5FC9A6;
+    --gold:#E0B700; --gold-soft:#3A3218; --gold-on-teal:#FFE27A;
+    --bg:#140C0D; --surface:#1F1517; --ink:#F2E9EA; --muted:#B9A5A8; --line:#3A2A2D;
+    --on-teal:#FAF1F2; --on-teal-muted:#E9BFC8;
+    --danger:#FF9B8F; --danger-bg:#3B1714; --on-danger:#2A0D0A;
   }
 }
 :root[data-theme="dark"]{
-  --teal:#0f5f5f; --teal-deep:#0b3f3f; --brand:#6cc9c1;
-  --gold:#ddb847; --gold-soft:#3a3218; --gold-on-teal:#ffe08a;
-  --bg:#0b1514; --surface:#12201f; --ink:#e2eeec; --muted:#9bb1ae; --line:#24403d;
-  --on-teal:#eef7f6; --on-teal-muted:#b2d2ce;
-  --danger:#ff9b8f; --danger-bg:#3b1714; --on-danger:#2a0d0a;
+  --teal:#6E0A20; --teal-deep:#4A0716; --brand:#EBA3B2; --byline:#5FC9A6;
+  --gold:#E0B700; --gold-soft:#3A3218; --gold-on-teal:#FFE27A;
+  --bg:#140C0D; --surface:#1F1517; --ink:#F2E9EA; --muted:#B9A5A8; --line:#3A2A2D;
+  --on-teal:#FAF1F2; --on-teal-muted:#E9BFC8;
+  --danger:#FF9B8F; --danger-bg:#3B1714; --on-danger:#2A0D0A;
 }
 html[lang="ar"]{ --sans:'IBM Plex Sans Arabic', 'DM Sans', system-ui, sans-serif; --serif:'IBM Plex Sans Arabic', Georgia, serif; }
 *{ box-sizing:border-box; }
@@ -47,7 +47,8 @@ header.top{
   padding-top:calc(env(safe-area-inset-top,0px) + 14px); padding-bottom:12px;
   display:flex; justify-content:space-between; align-items:center; gap:12px;
 }
-.brand{ font-family:var(--serif); font-size:1.55rem; color:var(--brand); line-height:1; }
+.brand{ font-family:var(--serif); font-size:1.45rem; color:var(--brand); line-height:1.1; }
+.byline{ color:var(--byline); font-size:.88rem; font-weight:500; margin-top:3px; }
 html[lang="ar"] .brand{ font-weight:700; font-size:1.3rem; }
 .lang{
   border:1px solid var(--line); background:var(--surface); color:var(--ink);
@@ -62,7 +63,7 @@ html[lang="ar"] h1{ font-weight:700; font-size:clamp(1.55rem,6.5vw,2.05rem); lin
 .mic{
   width:116px; height:116px; border-radius:50%; border:none; cursor:pointer;
   background:var(--gold); color:#1c1606; display:grid; place-items:center;
-  margin:0 auto; position:relative; box-shadow:0 0 0 9px rgba(221,184,71,.2);
+  margin:0 auto; position:relative; box-shadow:0 0 0 9px rgba(224,183,0,.22);
 }
 .mic svg{ width:46px; height:46px; }
 .mic:disabled{ opacity:.45; cursor:not-allowed; }
@@ -152,7 +153,10 @@ html[lang="ar"] .card-head .name{ font-weight:700; font-size:1.5rem; line-height
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="brand" data-i18n="brand">Find my doctor</div>
+    <div>
+      <div class="brand" data-i18n="brand">Voice-based doctor finder</div>
+      <div class="byline" data-i18n="byline">by Dr. Muhammad Farooq</div>
+    </div>
     <button class="lang" id="langBtn" type="button">عربي</button>
   </header>
 
@@ -195,7 +199,7 @@ html[lang="ar"] .card-head .name{ font-weight:700; font-size:1.5rem; line-height
 /* ---------- Text in both languages ---------- */
 var T = {
   en:{
-    brand:"Find my doctor", langBtn:"عربي",
+    brand:"Voice-based doctor finder", byline:"by Dr. Muhammad Farooq", langBtn:"عربي",
     banner:"Demo with fictional doctors. Not medical advice. Phone numbers are not real.",
     title:"Tell us what’s wrong. We’ll find your doctor.",
     sub:"Speak in English or Arabic. Mention your symptoms, any past history and your area of Riyadh.",
@@ -230,7 +234,7 @@ var T = {
     hMorning:"8 am to 1 pm", hEvening:"5 pm to 9 pm", sep:", "
   },
   ar:{
-    brand:"اعثر على طبيبي", langBtn:"English",
+    brand:"ابحث عن طبيبك بصوتك", byline:"إعداد د. محمد فاروق", langBtn:"English",
     banner:"نسخة تجريبية بأطباء افتراضيين. ليست استشارة طبية. أرقام الجوال غير حقيقية.",
     title:"أخبرنا بما تشعر به، ونجد لك طبيبك.",
     sub:"تحدّث بالعربية أو الإنجليزية. اذكر الأعراض والتاريخ المرضي والحي الذي تسكنه في الرياض.",
@@ -570,7 +574,7 @@ function applyStatic(){
   document.querySelectorAll("[data-i18n]").forEach(function(el){ el.textContent = t(el.getAttribute("data-i18n")); });
   document.querySelectorAll("[data-i18n-ph]").forEach(function(el){ el.placeholder = t(el.getAttribute("data-i18n-ph")); });
   document.getElementById("langBtn").textContent = t("langBtn");
-  document.title = t("brand") + (lang==="ar" ? " (تجريبي)" : " (demo)");
+  document.title = t("brand") + " | " + t("byline");
   micStatus.textContent = t(listening ? "micListening" : "micIdle");
   micLabel.textContent = micStatus.textContent;
   if(!SR) setMsg(t("noVoice"));
